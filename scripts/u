@@ -1,0 +1,10 @@
+if [ -z "$1" ]; then
+  #ucon20
+  ucon21
+  #ucon24
+  #ucon25
+  #ucon28
+else
+  ucon$1
+fi
+cd `cat ~/.beexit`

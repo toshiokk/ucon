@@ -1,0 +1,38 @@
+fbbpp.o: fbbpp.c stdincs.h config.h ucon.h mytypes.h font.h hex.h pen.h \
+  fbcommon.h vtermlow.h vterm.h term.h fbbpp.h util.h sequence.h \
+  message.h picofont.h main.h im/imj.h
+fbcommon.o: fbcommon.c stdincs.h config.h ucon.h mytypes.h font.h hex.h \
+  pen.h fbcommon.h vtermlow.h vterm.h term.h fbbpp.h util.h sequence.h \
+  message.h picofont.h main.h im/imj.h
+font.o: font.c stdincs.h config.h ucon.h mytypes.h font.h hex.h pen.h \
+  fbcommon.h vtermlow.h vterm.h term.h fbbpp.h util.h sequence.h \
+  message.h picofont.h main.h im/imj.h
+hex.o: hex.c stdincs.h config.h ucon.h mytypes.h font.h hex.h pen.h \
+  fbcommon.h vtermlow.h vterm.h term.h fbbpp.h util.h sequence.h \
+  message.h picofont.h main.h im/imj.h
+main.o: main.c stdincs.h config.h ucon.h mytypes.h font.h hex.h pen.h \
+  fbcommon.h vtermlow.h vterm.h term.h fbbpp.h util.h sequence.h \
+  message.h picofont.h main.h im/imj.h
+message.o: message.c stdincs.h config.h ucon.h mytypes.h font.h hex.h \
+  pen.h fbcommon.h vtermlow.h vterm.h term.h fbbpp.h util.h sequence.h \
+  message.h picofont.h main.h im/imj.h
+pen.o: pen.c stdincs.h config.h ucon.h mytypes.h font.h hex.h pen.h \
+  fbcommon.h vtermlow.h vterm.h term.h fbbpp.h util.h sequence.h \
+  message.h picofont.h main.h im/imj.h
+picofont.o: picofont.c stdincs.h config.h ucon.h mytypes.h font.h hex.h \
+  pen.h fbcommon.h vtermlow.h vterm.h term.h fbbpp.h util.h sequence.h \
+  message.h picofont.h main.h im/imj.h
+term.o: term.c stdincs.h config.h ucon.h mytypes.h font.h hex.h pen.h \
+  fbcommon.h vtermlow.h vterm.h term.h fbbpp.h util.h sequence.h \
+  message.h picofont.h main.h im/imj.h im/imj.cpp im/imj.h im/imjcui.cpp \
+  im/imjcui.h
+util.o: util.c stdincs.h config.h ucon.h mytypes.h font.h hex.h pen.h \
+  fbcommon.h vtermlow.h vterm.h term.h fbbpp.h util.h sequence.h \
+  message.h picofont.h main.h im/imj.h
+vterm.o: vterm.c stdincs.h config.h ucon.h mytypes.h font.h hex.h pen.h \
+  fbcommon.h vtermlow.h vterm.h term.h fbbpp.h util.h sequence.h \
+  message.h picofont.h main.h im/imj.h
+vtermlow.o: vtermlow.c stdincs.h config.h ucon.h mytypes.h font.h hex.h \
+  pen.h fbcommon.h vtermlow.h vterm.h term.h fbbpp.h util.h sequence.h \
+  message.h picofont.h main.h im/imj.h
+imj.o: im/imj.cpp im/imj.h

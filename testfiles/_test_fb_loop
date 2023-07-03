@@ -1,0 +1,6 @@
+# _test_fb -- test Framebuffer color depth of 8,15,16,24,32 BPP(Bits Per Pixel)
+# Usage: _test_fb [8|15|16|24|32]
+while [ 0 ]; do
+  sd ./_test_fb
+  sleep 1
+done

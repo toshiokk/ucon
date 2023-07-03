@@ -1,0 +1,320 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>imjqt</class>
+ <widget class="QDialog" name="imjqt">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>329</width>
+    <height>152</height>
+   </rect>
+  </property>
+  <property name="font">
+   <font>
+    <family>ucon12</family>
+    <pointsize>12</pointsize>
+   </font>
+  </property>
+  <property name="windowTitle">
+   <string>Japanese Input Method</string>
+  </property>
+  <widget class="QPushButton" name="pushButtonConvert">
+   <property name="geometry">
+    <rect>
+     <x>4</x>
+     <y>28</y>
+     <width>80</width>
+     <height>20</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Convert</string>
+   </property>
+   <property name="autoDefault">
+    <bool>false</bool>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="pushButtonHiragana">
+   <property name="geometry">
+    <rect>
+     <x>4</x>
+     <y>48</y>
+     <width>80</width>
+     <height>20</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Hiragana</string>
+   </property>
+   <property name="autoDefault">
+    <bool>false</bool>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="pushButtonKatakana">
+   <property name="geometry">
+    <rect>
+     <x>4</x>
+     <y>68</y>
+     <width>80</width>
+     <height>20</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Katakana</string>
+   </property>
+   <property name="autoDefault">
+    <bool>false</bool>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="pushButtonHankakuKatakana">
+   <property name="geometry">
+    <rect>
+     <x>4</x>
+     <y>88</y>
+     <width>80</width>
+     <height>20</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Hankaku-Kata</string>
+   </property>
+   <property name="autoDefault">
+    <bool>false</bool>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="pushButtonZenkakuAlphaNumeric">
+   <property name="geometry">
+    <rect>
+     <x>4</x>
+     <y>108</y>
+     <width>80</width>
+     <height>20</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Alpha-Numeric</string>
+   </property>
+   <property name="autoDefault">
+    <bool>false</bool>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="pushButtonHankakuAlphaNumeric">
+   <property name="geometry">
+    <rect>
+     <x>4</x>
+     <y>128</y>
+     <width>80</width>
+     <height>20</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Hankaku-A-N</string>
+   </property>
+   <property name="autoDefault">
+    <bool>false</bool>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="pushButtonLeft">
+   <property name="geometry">
+    <rect>
+     <x>84</x>
+     <y>68</y>
+     <width>40</width>
+     <height>20</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>&lt;&lt;</string>
+   </property>
+   <property name="autoDefault">
+    <bool>false</bool>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="pushButtonLight">
+   <property name="geometry">
+    <rect>
+     <x>124</x>
+     <y>68</y>
+     <width>40</width>
+     <height>20</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>&gt;&gt;</string>
+   </property>
+   <property name="autoDefault">
+    <bool>false</bool>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="pushButtonCommitOne">
+   <property name="geometry">
+    <rect>
+     <x>84</x>
+     <y>88</y>
+     <width>80</width>
+     <height>20</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Commit-One</string>
+   </property>
+   <property name="autoDefault">
+    <bool>false</bool>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="pushButtonCommitAll">
+   <property name="geometry">
+    <rect>
+     <x>84</x>
+     <y>108</y>
+     <width>80</width>
+     <height>20</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Commit-All</string>
+   </property>
+   <property name="autoDefault">
+    <bool>false</bool>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="pushButtonClose">
+   <property name="geometry">
+    <rect>
+     <x>84</x>
+     <y>128</y>
+     <width>80</width>
+     <height>20</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>CLOSE</string>
+   </property>
+   <property name="autoDefault">
+    <bool>false</bool>
+   </property>
+  </widget>
+  <widget class="QListWidget" name="listBox1">
+   <property name="geometry">
+    <rect>
+     <x>164</x>
+     <y>28</y>
+     <width>160</width>
+     <height>80</height>
+    </rect>
+   </property>
+   <item>
+    <property name="text">
+     <string>New Item</string>
+    </property>
+   </item>
+  </widget>
+  <widget class="QLabel" name="textLabel1">
+   <property name="geometry">
+    <rect>
+     <x>164</x>
+     <y>108</y>
+     <width>160</width>
+     <height>20</height>
+    </rect>
+   </property>
+   <property name="frameShape">
+    <enum>QFrame::Panel</enum>
+   </property>
+   <property name="frameShadow">
+    <enum>QFrame::Sunken</enum>
+   </property>
+   <property name="text">
+    <string>123456789012345678</string>
+   </property>
+   <property name="wordWrap">
+    <bool>false</bool>
+   </property>
+  </widget>
+  <widget class="QLineEdit" name="lineEdit1">
+   <property name="geometry">
+    <rect>
+     <x>4</x>
+     <y>4</y>
+     <width>320</width>
+     <height>21</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="pushButtonOn">
+   <property name="geometry">
+    <rect>
+     <x>84</x>
+     <y>28</y>
+     <width>80</width>
+     <height>20</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>ON</string>
+   </property>
+   <property name="autoDefault">
+    <bool>false</bool>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="pushButtonOff">
+   <property name="geometry">
+    <rect>
+     <x>84</x>
+     <y>48</y>
+     <width>80</width>
+     <height>20</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>OFF</string>
+   </property>
+   <property name="autoDefault">
+    <bool>false</bool>
+   </property>
+  </widget>
+  <widget class="QLabel" name="textLabel2">
+   <property name="geometry">
+    <rect>
+     <x>164</x>
+     <y>128</y>
+     <width>160</width>
+     <height>20</height>
+    </rect>
+   </property>
+   <property name="frameShape">
+    <enum>QFrame::Panel</enum>
+   </property>
+   <property name="frameShadow">
+    <enum>QFrame::Sunken</enum>
+   </property>
+   <property name="text">
+    <string>123456789012345678</string>
+   </property>
+   <property name="wordWrap">
+    <bool>false</bool>
+   </property>
+  </widget>
+ </widget>
+ <layoutdefault spacing="6" margin="11"/>
+ <tabstops>
+  <tabstop>lineEdit1</tabstop>
+  <tabstop>pushButtonConvert</tabstop>
+  <tabstop>pushButtonHiragana</tabstop>
+  <tabstop>pushButtonKatakana</tabstop>
+  <tabstop>pushButtonHankakuKatakana</tabstop>
+  <tabstop>pushButtonZenkakuAlphaNumeric</tabstop>
+  <tabstop>pushButtonHankakuAlphaNumeric</tabstop>
+  <tabstop>pushButtonOn</tabstop>
+  <tabstop>pushButtonOff</tabstop>
+  <tabstop>pushButtonLeft</tabstop>
+  <tabstop>pushButtonLight</tabstop>
+  <tabstop>pushButtonCommitOne</tabstop>
+  <tabstop>pushButtonCommitAll</tabstop>
+  <tabstop>pushButtonClose</tabstop>
+  <tabstop>listBox1</tabstop>
+ </tabstops>
+ <resources/>
+ <connections/>
+</ui>

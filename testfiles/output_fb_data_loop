@@ -1,0 +1,25 @@
+# _test_fb -- test Framebuffer color depth of 8,15,16,24,32 BPP(Bits Per Pixel)
+# Usage: _test_fb [8|15|16|24|32]
+dev_fb=/dev/fb0
+if [ ! -w $dev_fb ]; then
+  echo "$dev_fb is NOT WRITABLE. do # su - ; chown og+w $dev_fb"
+  exit 1
+fi
+while [ 0 ]; do
+  if [ "$1" = "32" ]; then
+    echo "Testing 32 Bits/Pixel ..."
+    ./output_fb_data 32 >$dev_fb
+  elif [ "$1" = "24" ]; then
+    echo "Testing 24 Bits/Pixel ..."
+    ./output_fb_data 24 >$dev_fb
+  elif [ "$1" = "16" ]; then
+    echo "Testing 16 Bits/Pixel ..."
+    ./output_fb_data 16 >$dev_fb
+  elif [ "$1" = "15" ]; then
+    echo "Testing 15 Bits/Pixel ..."
+    ./output_fb_data 15 >$dev_fb
+  else
+    echo "Testing 8 Bits/Pixel ..."
+    ./output_fb_data 8 >$dev_fb
+  fi
+done

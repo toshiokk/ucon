@@ -1,0 +1,206 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>imjqttest</class>
+ <widget class="QMainWindow" name="imjqttest">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>357</width>
+    <height>169</height>
+   </rect>
+  </property>
+  <property name="font">
+   <font>
+    <family>unifont [qt]</family>
+    <pointsize>16</pointsize>
+   </font>
+  </property>
+  <property name="windowTitle">
+   <string>IM Qt test</string>
+  </property>
+  <widget class="QWidget" name="widget">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>357</width>
+     <height>169</height>
+    </rect>
+   </property>
+   <widget class="QPushButton" name="pushButton07">
+    <property name="geometry">
+     <rect>
+      <x>168</x>
+      <y>120</y>
+      <width>80</width>
+      <height>25</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>test-3</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="pushButton06">
+    <property name="geometry">
+     <rect>
+      <x>88</x>
+      <y>120</y>
+      <width>80</width>
+      <height>25</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>test-2</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="pushButton05">
+    <property name="geometry">
+     <rect>
+      <x>8</x>
+      <y>120</y>
+      <width>80</width>
+      <height>25</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>test-1</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="pushButton03">
+    <property name="geometry">
+     <rect>
+      <x>8</x>
+      <y>64</y>
+      <width>80</width>
+      <height>25</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Show keypad</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="pushButton04">
+    <property name="geometry">
+     <rect>
+      <x>8</x>
+      <y>92</y>
+      <width>80</width>
+      <height>25</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Hide keypad</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="pushButton01">
+    <property name="geometry">
+     <rect>
+      <x>8</x>
+      <y>8</y>
+      <width>80</width>
+      <height>25</height>
+     </rect>
+    </property>
+    <property name="toolTip">
+     <string comment="start calibration">CALIBRATE</string>
+    </property>
+    <property name="whatsThis">
+     <string comment="To start calibration, push this button.">Button for calibration</string>
+    </property>
+    <property name="text">
+     <string>IM ON</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="pushButton02">
+    <property name="geometry">
+     <rect>
+      <x>8</x>
+      <y>36</y>
+      <width>80</width>
+      <height>25</height>
+     </rect>
+    </property>
+    <property name="toolTip">
+     <string comment="Restart touch screen">RESTART</string>
+    </property>
+    <property name="whatsThis">
+     <string comment="To restart touch screen, push this.">Button for restarting touch screen</string>
+    </property>
+    <property name="text">
+     <string>IM OFF</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="textLabel01">
+    <property name="geometry">
+     <rect>
+      <x>92</x>
+      <y>8</y>
+      <width>256</width>
+      <height>24</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>helvetica [qt]</family>
+      <pointsize>14</pointsize>
+     </font>
+    </property>
+    <property name="toolTip">
+     <string comment="Static text label">TEXTLABEL</string>
+    </property>
+    <property name="whatsThis">
+     <string comment="Text label is used to show the messages">Text label shows messages</string>
+    </property>
+    <property name="frameShape">
+     <enum>QFrame::StyledPanel</enum>
+    </property>
+    <property name="frameShadow">
+     <enum>QFrame::Sunken</enum>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+    <property name="wordWrap">
+     <bool>false</bool>
+    </property>
+   </widget>
+   <widget class="QTextEdit" name="textEdit1">
+    <property name="geometry">
+     <rect>
+      <x>92</x>
+      <y>36</y>
+      <width>256</width>
+      <height>80</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="pushButton09">
+    <property name="geometry">
+     <rect>
+      <x>248</x>
+      <y>120</y>
+      <width>100</width>
+      <height>25</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Exit</string>
+    </property>
+   </widget>
+  </widget>
+ </widget>
+ <tabstops>
+  <tabstop>pushButton01</tabstop>
+  <tabstop>pushButton02</tabstop>
+  <tabstop>pushButton03</tabstop>
+  <tabstop>pushButton04</tabstop>
+  <tabstop>pushButton05</tabstop>
+  <tabstop>pushButton06</tabstop>
+  <tabstop>pushButton07</tabstop>
+  <tabstop>pushButton09</tabstop>
+  <tabstop>textEdit1</tabstop>
+ </tabstops>
+ <resources/>
+ <connections/>
+</ui>

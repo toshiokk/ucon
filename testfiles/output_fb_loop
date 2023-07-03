@@ -1,0 +1,32 @@
+# continuouslly output to /dev/fb0
+echo_1920_3f()
+{
+cnt=0
+while [ "$cnt" -lt 1920 ]; do
+  echo -n "\177\177\177\177"
+  sleep 0.01
+  cnt=$((cnt+1))
+done
+}
+echo_1920_bf()
+{
+cnt=0
+while [ "$cnt" -lt 1920 ]; do
+  echo -n "\277\277\277\277"
+  sleep 0.01
+  cnt=$((cnt+1))
+done
+}
+
+if [ -n "$1" ]; then
+  if [ "$1" = "0" ]; then
+    echo_1920_3f
+  else
+    echo_1920_bf
+  fi
+else
+  while [ 0 ]; do
+    ./output_fb_loop 0 >/dev/fb0
+    ./output_fb_loop 1 >/dev/fb0
+  done
+fi

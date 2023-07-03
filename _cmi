@@ -1,0 +1,4 @@
+./configure
+make clean
+./__m
+./__mi

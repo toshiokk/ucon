@@ -1,0 +1,12 @@
+while [ 0 ]; do
+  sd chvt 3
+  sleep 1
+  sd chvt 4
+  sleep 1
+  sd chvt 4
+  sleep 1
+  sd chvt 4
+  sleep 1
+  sd chvt 4
+  sleep 1
+done

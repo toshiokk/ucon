@@ -1,0 +1,47 @@
+rm -f _diff.txt
+rm -f _sdiff.txt
+
+old_dir=../old/src
+
+diff_one()
+{
+  echo kdiff3 $old_dir/$1 $1 ================================================== >>_diff.txt
+#  sdiff -w 260 $old_dir/$1 $1 >>_diff.txt
+  diff $old_dir/$1 $1 >>_diff.txt
+  sdiff-ln 200 $old_dir/$1 $1 >>_sdiff.txt
+}
+
+diff_one config.h
+diff_one fbbpp.h
+diff_one fbcommon.h
+diff_one font.h
+diff_one hex.h
+diff_one main.h
+diff_one message.h
+diff_one mydebug.h
+diff_one myminmax.h
+diff_one myselect.h
+diff_one mytypes.h
+diff_one pen.h
+diff_one picofont.h
+diff_one sequence.h
+diff_one stdincs.h
+diff_one term.h
+diff_one ucon.h
+diff_one util.h
+diff_one vterm.h
+diff_one vtermlow.h
+diff_one fbbpp.c
+diff_one fbcommon.c
+diff_one font.c
+diff_one hex.c
+diff_one main.c
+diff_one message.c
+diff_one myminmax.c
+diff_one myselect.c
+diff_one pen.c
+diff_one picofont.c
+diff_one term.cpp
+diff_one util.c
+diff_one vterm.c
+diff_one vtermlow.c

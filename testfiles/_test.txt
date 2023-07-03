@@ -1,0 +1,13 @@
+或春の日暮です。唐の都洛陽（らくやう）の西の門の下に、ぼんやり空を仰いでゐる、一人の若者がありました。
+若者は名は杜子春（とししゆん）といつて、元は金持の息子でしたが、今は財産を費（つか）ひ尽（つく）して、その日の暮しにも困る位、憐（あはれ）な身分になつてゐるのです。
+何しろその頃洛陽といへば、 天下に並ぶもののない、繁昌を極めた都ですから、往来（わうらい）にはまだしつきりなく、人や車が通つてゐました。
+門一ぱいに当つてゐる、 油のやうな夕日の光の中に、老人のかぶつた紗（しや）の帽子や、土耳古（トルコ）の女の金の耳環や、白馬に飾つた色糸の手綱（たづな）が、絶えず流れて行く容子（ようす）は、まるで画のやうな美しさです。
+しかし杜子春は相変らず、 門の壁に身を凭（もた）せて、ぼんやり空ばかり眺めてゐました。空には、もう細い月が、うらうらと靡（なび）いた霞の中に、まるで爪の痕（あと）かと思ふ程、かすかに白く浮んでゐるのです。
+「日は暮れるし、腹は減るし、 その上もうどこへ行つても、泊めてくれる所はなささうだし――こんな思ひをして生きてゐる位なら、一そ川へでも身を投げて、死んでしまつた方がましかも知れない。」
+杜子春はひとりさつきから、こんな取りとめもないことを思ひめぐらしてゐたのです。
+
+Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
+1. Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+2. Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
+THIS SOFTWARE IS PROVIDED BY NORITOSHI MASUICHI ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL THE TERRENCE R. LAMBERT BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.

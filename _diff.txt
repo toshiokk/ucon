@@ -1,0 +1,229 @@
+kdiff3 ../old/src/config.h config.h ==================================================
+14c14
+< #define ENABLE_255COLUMNS 1
+---
+> /* #undef ENABLE_255COLUMNS */
+kdiff3 ../old/src/fbbpp.h fbbpp.h ==================================================
+66a67,70
+> #ifdef ENABLE_DEBUG
+> void test_fill_top_of_fb(void);
+> #endif // ENABLE_DEBUG
+> 
+kdiff3 ../old/src/fbcommon.h fbcommon.h ==================================================
+64c64
+< void fb_close(frame_buffer_t *fb);
+---
+> int fb_close(frame_buffer_t *fb);
+kdiff3 ../old/src/font.h font.h ==================================================
+kdiff3 ../old/src/hex.h hex.h ==================================================
+kdiff3 ../old/src/main.h main.h ==================================================
+kdiff3 ../old/src/message.h message.h ==================================================
+kdiff3 ../old/src/mydebug.h mydebug.h ==================================================
+11a12,13
+> ///
+> #define ENABLE_DEBUG
+kdiff3 ../old/src/myminmax.h myminmax.h ==================================================
+kdiff3 ../old/src/myselect.h myselect.h ==================================================
+kdiff3 ../old/src/mytypes.h mytypes.h ==================================================
+kdiff3 ../old/src/pen.h pen.h ==================================================
+kdiff3 ../old/src/picofont.h picofont.h ==================================================
+kdiff3 ../old/src/sequence.h sequence.h ==================================================
+kdiff3 ../old/src/stdincs.h stdincs.h ==================================================
+kdiff3 ../old/src/term.h term.h ==================================================
+kdiff3 ../old/src/ucon.h ucon.h ==================================================
+kdiff3 ../old/src/util.h util.h ==================================================
+kdiff3 ../old/src/vterm.h vterm.h ==================================================
+kdiff3 ../old/src/vtermlow.h vtermlow.h ==================================================
+122c122
+< //  Lap top
+---
+> //  Standard Lap top
+125,130d124
+< #ifdef ENABLE_255COLUMNS
+< # define MAX_TERM_COLS	274		// NOTE: If your terminal interface supports columns > 254
+< #else // ENABLE_255COLUMNS
+< # define MAX_TERM_COLS	254		// WORKAROUND: ncurses doesn't support columns > 254
+< #endif // ENABLE_255COLUMNS
+< #define MAX_TERM_LINES	77
+134,135d127
+< ///#define MAX_TERM_COLS	384
+< ///#define MAX_TERM_LINES	108
+138a131,139
+> #ifdef ENABLE_255COLUMNS
+> // NOTE: If your terminal interface supports columns > 254
+> ///# define MAX_TERM_COLS	274
+> # define MAX_TERM_COLS	384
+> #else // ENABLE_255COLUMNS
+> # define MAX_TERM_COLS	254		// WORKAROUND: ncurses doesn't support columns > 254
+> #endif // ENABLE_255COLUMNS
+> ///#define MAX_TERM_LINES	77
+> #define MAX_TERM_LINES	108
+211,214d211
+< typedef struct vt_state_ {
+< 	bool_t active;				// selected
+< } vt_state_t;
+< 
+227,229d223
+< 
+< void vterm_set_active(void);
+< void vterm_set_inactive(void);
+kdiff3 ../old/src/fbbpp.c fbbpp.c ==================================================
+115a116
+> 
+194,195c195
+< ///
+< #define I810_FB_DUMMY_ACCESS
+---
+> ///TTT#define I810_FB_DUMMY_ACCESS
+810a811,825
+> 
+> #ifdef ENABLE_DEBUG
+> void test_fill_top_of_fb(void)
+> {
+> #define TEST_FILL_SIZE	(80 * 25 * 4 * 5)
+> 	static u_char base = 0x00;
+> 	volatile u_char *fb;
+> _MFLF_
+> 	fb = fb_fb_start;
+> 	for (size_t bytes = 0; bytes < TEST_FILL_SIZE; bytes++) {
+> 		fb[bytes] = base + bytes;
+> 	}
+> 	base += 0x10;
+> }
+> #endif // ENABLE_DEBUG
+kdiff3 ../old/src/fbcommon.c fbcommon.c ==================================================
+250c250
+< void fb_close(frame_buffer_t *fb)
+---
+> int fb_close(frame_buffer_t *fb)
+251a252,253
+> 	int ret = 0;
+> 
+264,267c266,276
+< 	if (fb->fd_fb >= 0)
+< 		close(fb->fd_fb);
+< 	if (fb->fd_tty0 >= 0)
+< 		close(fb->fd_tty0);
+---
+> 	if (fb->fd_fb >= 0) {
+> 		if (close(fb->fd_fb) < 0) {
+> 			ret = -1;
+> 		}
+> 	}
+> 	if (fb->fd_tty0 >= 0) {
+> 		if (close(fb->fd_tty0) < 0) {
+> 			ret = -1;
+> 		}
+> 	}
+> 	return ret;
+kdiff3 ../old/src/font.c font.c ==================================================
+kdiff3 ../old/src/hex.c hex.c ==================================================
+kdiff3 ../old/src/main.c main.c ==================================================
+170a171
+> 			app->verbose = TRUE;	// "-d" option enables "-v" too
+kdiff3 ../old/src/message.c message.c ==================================================
+kdiff3 ../old/src/myminmax.c myminmax.c ==================================================
+kdiff3 ../old/src/myselect.c myselect.c ==================================================
+kdiff3 ../old/src/pen.c pen.c ==================================================
+kdiff3 ../old/src/picofont.c picofont.c ==================================================
+kdiff3 ../old/src/term.cpp term.cpp ==================================================
+64d63
+< int sigterm_signaled = 0;
+65a65
+> int sigterm_signaled = 0;
+88c88,89
+< PRIVATE void term_return_to_kd_text_mode(term_t *term);
+---
+> PRIVATE void term_restore_kd_text_mode(term_t *term);
+> #if 0
+89a91
+> #endif
+235d236
+< ///
+540c541
+< 	term_return_to_kd_text_mode(term);
+---
+> 	term_restore_kd_text_mode(term);
+543c544
+< 	fb_close(&frame_buffer__);
+---
+> 	ret_val_eater = fb_close(&frame_buffer__);
+600c601
+< PRIVATE void term_return_to_kd_text_mode(term_t *term)
+---
+> PRIVATE void term_restore_kd_text_mode(term_t *term)
+604a606
+> #if 0
+617a620
+> #endif
+710c713
+< 	if (strncmp("/dev/", term->pty_slave_name, 5) == 0)
+---
+> 	if (strncmp("/dev/", term->pty_slave_name, 5) == 0) {
+711a715
+> 	}
+kdiff3 ../old/src/util.c util.c ==================================================
+kdiff3 ../old/src/vterm.c vterm.c ==================================================
+161c161
+< dump_string(string, bytes);
+---
+> ///dump_string(string, bytes);
+165c165
+< ///mflf_d_printf("%02x\n", chr);
+---
+> ///mflf_d_printf("%02x[%c]\n", chr, isgraph(chr) ? chr : '.');
+kdiff3 ../old/src/vtermlow.c vtermlow.c ==================================================
+40c40
+< vt_state_t vt_state__;
+---
+> bool_t vt_state_active;				// selected
+81c81
+< 	vt_state__.active = 0;
+---
+> 	vt_state_active = 0;
+128c128
+< 	if (sig_release_signaled > sig_release_replyed) {
+---
+> 	if (sig_release_signaled != sig_release_replyed) {
+130c130
+< 		vterm_set_inactive();
+---
+> 		vt_state_active = 0;
+141c141
+< 	if (sig_acquire_signaled > sig_acquire_replyed) {
+---
+> 	if (sig_acquire_signaled != sig_acquire_replyed) {
+147c147
+< 		vterm_set_active();
+---
+> 		vt_state_active = 1;
+173,181d172
+< void vterm_set_active(void)
+< {
+< 	vt_state__.active = 1;
+< }
+< void vterm_set_inactive(void)
+< {
+< 	vt_state__.active = 0;
+< }
+< /*---------------------------------------------------------------------------*/
+362c353,355
+< 	if (vt_state__.active == 0)
+---
+> mflf_d_printf("vt_state_active: %d\n", vt_state_active);
+> 	if (vt_state_active == 0) {
+> mflf_d_printf("vt_state_active == 0\n");
+363a357
+> 	}
+455c449,451
+< 	if (vt_state__.active == 0)
+---
+> mflf_d_printf("vt_state_active: %d\n", vt_state_active);
+> 	if (vt_state_active == 0) {
+> mflf_d_printf("vt_state_active == 0\n");
+456a453
+> 	}
+528a526,528
+> #ifdef ENABLE_DEBUG
+> ///	test_fill_top_of_fb();
+> #endif // ENABLE_DEBUG

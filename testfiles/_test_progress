@@ -1,0 +1,82 @@
+#!/bin/bash
+
+/bin/echo -ne "\e[1;1H"
+for line in {1..10}; do
+  /bin/echo $line
+done
+for line in {1..100}; do
+  echo -n "."
+done
+for line in {1..20}; do
+  sleep 0.5
+  echo -n "."
+done
+
+/bin/echo -ne "\e[1;1H"
+for line in {1..10}; do
+  /bin/echo $line
+done
+for line in {1..100}; do
+  echo -n "."
+done
+for line in {1..20}; do
+  sleep 0.5
+  echo -n "－"
+done
+
+/bin/echo -ne "\e[1;1H"
+for line in {1..10}; do
+  /bin/echo $line
+done
+for line in {1..101}; do
+  echo -n "."
+done
+for line in {1..20}; do
+  sleep 0.5
+  echo -n "－"
+done
+
+/bin/echo -ne "\e[1;1H"
+for line in {1..10}; do
+  /bin/echo $line
+done
+for line in {1..100}; do
+  echo -n "."
+done
+for line in {1..20}; do
+  sleep 0.5
+  echo -n "."
+done
+
+for line in {1..50}; do
+  /bin/echo $line
+done
+for line in {1..100}; do
+  echo -n "."
+done
+for line in {1..20}; do
+  sleep 0.5
+  echo -n "."
+done
+
+for line in {1..50}; do
+  /bin/echo $line
+done
+for line in {1..100}; do
+  echo -n "."
+done
+for line in {1..20}; do
+  sleep 0.5
+  echo -n "－"
+done
+
+for line in {1..50}; do
+  /bin/echo $line
+done
+for line in {1..101}; do
+  echo -n "."
+done
+for line in {1..20}; do
+  sleep 0.5
+  echo -n "－"
+done

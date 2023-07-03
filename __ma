@@ -1,0 +1,5 @@
+LANG=C
+#./configure
+make clean
+#make -f Makefile.man clean
+./__m

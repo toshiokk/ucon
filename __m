@@ -1,0 +1,7 @@
+LANG=C
+make $1 2>&1 | tee __error
+#make -f Makefile.man $1 2>__error
+#cat __error
+ls -l ucon
+strip ucon
+ls -l ucon

@@ -1,0 +1,8 @@
+echo "diff fonts/_ucon10.hex old/ucon10.hex"
+diff fonts/_ucon10.hex old/ucon10.hex
+echo "diff fonts/_ucon12.hex old/ucon12.hex"
+diff fonts/_ucon12.hex old/ucon12.hex
+echo "diff fonts/_ucon14.hex old/ucon14.hex"
+diff fonts/_ucon14.hex old/ucon14.hex
+echo "diff fonts/_ucon16.hex old/ucon16.hex"
+diff fonts/_ucon16.hex old/ucon16.hex

@@ -1,0 +1,6 @@
+sd dd if=/dev/urandom of=/dev/fb0 2>/dev/null
+sleep 1
+sd dd if=/dev/zero of=/dev/fb0 2>/dev/null
+sleep 1
+cat /dev/zero | tr "\000" "\377" | sd dd of=/dev/fb0 2>/dev/null
+sleep 1

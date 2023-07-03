@@ -1,0 +1,54 @@
+# On Ubuntu removable drive is mounted with suid attr OFF.
+# copy binary to $HOME and execute there.
+{
+  LANG=C; export LANG
+  pwd
+  ls -al ucon
+  sd cp -auv ucon $HOME
+  cd $HOME
+  pwd
+#  LANG=ja_JP.UTF-8; export LANG
+  #TERM=linux; export TERM
+  #echo "LANG:"$LANG
+  #echo "TERM:"$TERM
+  sd chown root:utmp ./ucon
+#  sd chown root:tty ./ucon
+  sd chmod +s ./ucon
+  ls -al ucon
+  reset
+  if [ "$1" = "16" ]; then
+    ./ucon -d -f 16
+  elif [ "$1" = "32" ]; then
+    ./ucon -d -f 16 -x 2 -w
+  elif [ "$1" = "48" ]; then
+    ./ucon -d -f 16 -x 3 -w
+  elif [ "$1" = "14" ]; then
+    ./ucon -d -f 14
+  elif [ "$1" = "28" ]; then
+    ./ucon -d -f 14 -x 2 -w
+  elif [ "$1" = "42" ]; then
+    ./ucon -d -f 14 -x 3 -w
+  elif [ "$1" = "12" ]; then
+    ./ucon -d -f 12
+  elif [ "$1" = "24" ]; then
+    ./ucon -d -f 12 -x 2 -w
+  elif [ "$1" = "25" ]; then
+    ./ucon -d -f 12 -x 2 -y 3 -w
+  elif [ "$1" = "36" ]; then
+    ./ucon -d -f 12 -x 3 -w
+  elif [ "$1" = "48" ]; then
+    ./ucon -d -f 12 -x 4 -w
+  elif [ "$1" = "10" ]; then
+    ./ucon -d -f 10
+  elif [ "$1" = "20" ]; then
+    ./ucon -d -f 10 -x 2 -w
+  elif [ "$1" = "21" ]; then
+    ./ucon -d -f 10 -x 2 -y3 -w
+  elif [ "$1" = "30" ]; then
+    ./ucon -d -f 10 -x 3 -w
+  elif [ "$1" = "40" ]; then
+    ./ucon -d -f 10 -x 4 -w
+  else
+    ./ucon -d -f 12 -x 2 -y 3 -w
+  fi
+} 2>__test_ucon.log >&2

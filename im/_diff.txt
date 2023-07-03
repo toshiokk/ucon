@@ -1,0 +1,93 @@
+imj.h ------------------------------------------------------
+kdiff3 ../../old/src/im/imj.h imj.h #------------------------------------
+imjcui.h ------------------------------------------------------
+kdiff3 ../../old/src/im/imjcui.h imjcui.h #------------------------------------
+imjqt.h ------------------------------------------------------
+kdiff3 ../../old/src/im/imjqt.h imjqt.h #------------------------------------
+imjqttest.h ------------------------------------------------------
+kdiff3 ../../old/src/im/imjqttest.h imjqttest.h #------------------------------------
+mydebug.h ------------------------------------------------------
+kdiff3 ../../old/src/im/mydebug.h mydebug.h #------------------------------------
+mylineedit.h ------------------------------------------------------
+kdiff3 ../../old/src/im/mylineedit.h mylineedit.h #------------------------------------
+myminmax.h ------------------------------------------------------
+kdiff3 ../../old/src/im/myminmax.h myminmax.h #------------------------------------
+mystring.h ------------------------------------------------------
+kdiff3 ../../old/src/im/mystring.h mystring.h #------------------------------------
+mytypes.h ------------------------------------------------------
+kdiff3 ../../old/src/im/mytypes.h mytypes.h #------------------------------------
+myutf8.h ------------------------------------------------------
+kdiff3 ../../old/src/im/myutf8.h myutf8.h #------------------------------------
+mywchar.h ------------------------------------------------------
+kdiff3 ../../old/src/im/mywchar.h mywchar.h #------------------------------------
+precomp.h ------------------------------------------------------
+kdiff3 ../../old/src/im/precomp.h precomp.h #------------------------------------
+qincludes.h ------------------------------------------------------
+kdiff3 ../../old/src/im/qincludes.h qincludes.h #------------------------------------
+stdincs.h ------------------------------------------------------
+kdiff3 ../../old/src/im/stdincs.h stdincs.h #------------------------------------
+util.h ------------------------------------------------------
+kdiff3 ../../old/src/im/util.h util.h #------------------------------------
+utilincs.h ------------------------------------------------------
+kdiff3 ../../old/src/im/utilincs.h utilincs.h #------------------------------------
+5,6d4
+< #include "config.h"
+< 
+mydebug.c ------------------------------------------------------
+kdiff3 ../../old/src/im/mydebug.c mydebug.c #------------------------------------
+300d299
+< 	char buf[DEBUG_BUF_LEN+1];
+myminmax.c ------------------------------------------------------
+kdiff3 ../../old/src/im/myminmax.c myminmax.c #------------------------------------
+mystring.c ------------------------------------------------------
+kdiff3 ../../old/src/im/mystring.c mystring.c #------------------------------------
+13c13
+< 	for (idx = 0; string[idx] && idx < bytes; ) {
+---
+> 	for (idx = 0; idx < bytes && string[idx]; ) {
+myutf8.c ------------------------------------------------------
+kdiff3 ../../old/src/im/myutf8.c myutf8.c #------------------------------------
+mywchar.c ------------------------------------------------------
+kdiff3 ../../old/src/im/mywchar.c mywchar.c #------------------------------------
+util.c ------------------------------------------------------
+kdiff3 ../../old/src/im/util.c util.c #------------------------------------
+imj.cpp ------------------------------------------------------
+kdiff3 ../../old/src/im/imj.cpp imj.cpp #------------------------------------
+3044c3044
+< 	for (idx = 0 ; roman_table[idx][0] && idx < MAX_ROM_TABLE_LINES; idx++) {
+---
+> 	for (idx = 0 ; idx < MAX_ROM_TABLE_LINES && roman_table[idx][0]; idx++) {
+3082c3082
+< 	for (idx = 0 ; roman_table[idx][0] && idx < MAX_ROM_TABLE_LINES; idx++) {
+---
+> 	for (idx = 0 ; idx < MAX_ROM_TABLE_LINES && roman_table[idx][0]; idx++) {
+3469c3469,3470
+< 	for ( ; IS_CTRL(*ptr); ptr++) {
+---
+> 	for ( ; IS_CTRL(*ptr); ) {
+> 		ptr++;
+3483c3484,3485
+< 	for ( ; IS_SP_CTRL(*ptr); ptr++) {
+---
+> 	for ( ; IS_SP_CTRL(*ptr); ) {
+> 		ptr++;
+imjcui.cpp ------------------------------------------------------
+kdiff3 ../../old/src/im/imjcui.cpp imjcui.cpp #------------------------------------
+imjcuitest.cpp ------------------------------------------------------
+kdiff3 ../../old/src/im/imjcuitest.cpp imjcuitest.cpp #------------------------------------
+31d30
+< 	int ret;
+34d32
+< 	char output[IM_INPUT_LINE_LEN+1];
+240d237
+< 	int ret;
+246c243
+< 	ret = imcui_filter(buffer, 1, &len, IM_INPUT_LINE_LEN);
+---
+> 	imcui_filter(buffer, 1, &len, IM_INPUT_LINE_LEN);
+261d257
+< 	char buf[IM_INPUT_LINE_LEN+1];
+imjqt.cpp ------------------------------------------------------
+kdiff3 ../../old/src/im/imjqt.cpp imjqt.cpp #------------------------------------
+imjqttest.cpp ------------------------------------------------------
+kdiff3 ../../old/src/im/imjqttest.cpp imjqttest.cpp #------------------------------------

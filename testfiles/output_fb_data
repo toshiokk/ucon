@@ -1,0 +1,13 @@
+# _test_fb -- test Framebuffer color depth of 8,15,16,24,32 BPP(Bits Per Pixel)
+# Usage: _test_fb [8|15|16|24|32]
+test_fb_32()
+{
+  /bin/echo -ne "\377\377\377\377"
+}
+
+cnt=0
+while [ "$cnt" -lt 1920 ]; do
+  test_fb_32
+  sleep 0.01
+  cnt=$(($cnt+1))
+done

@@ -1,0 +1,16 @@
+echo "diff all sources with old files ..."
+
+rm _diff.txt
+
+old_dir=../../old/src/im
+
+diff_one()
+{
+  echo "$1 ------------------------------------------------------" >>_diff.txt
+  echo "kdiff3 $old_dir/$1 $1 #------------------------------------" >>_diff.txt
+  diff $old_dir/$1 $1 >>_diff.txt
+}
+
+for file in *.h *.c *.cpp; do
+  diff_one $file
+done

@@ -1,0 +1,7 @@
+. set_qte4_env
+qmake -v | head -1
+uic -version
+moc -v
+LANG=C make clean 2>_error
+cat _error
+./_mqt

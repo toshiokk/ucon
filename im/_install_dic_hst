@@ -1,0 +1,3 @@
+mkdir -p ~/.imj
+cp -auv imj.dic ~/.imj
+cp -auv imj.hst ~/.imj

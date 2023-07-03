@@ -1,0 +1,2 @@
+./configure --enable-255columns
+#./configure --enable-255columns --enable-debug

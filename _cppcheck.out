@@ -1,0 +1,209 @@
+fbcommon.c:368:10: style: The scope of the variable 'argb32' can be reduced. [variableScope]
+ u_int32 argb32;
+         ^
+fbcommon.c:567:0: information: Skipping configuration 'ENABLE_DIMMER;FBIOBLANK' since the value of 'FBIOBLANK' is unknown. Use -D if you want to check it. You can use -U to skip it explicitly. [ConfigurationNotChecked]
+ if (ioctl(fd_fb, FBIOBLANK, blank) < 0) {
+^
+font.c:277:7: style: The scope of the variable 'glyphs' can be reduced. [variableScope]
+ long glyphs = 0;
+      ^
+font.c:278:6: style: The scope of the variable 'glyph_idx' can be reduced. [variableScope]
+ int glyph_idx;
+     ^
+im/.moc/moc_imjqttestui.cpp:0:0: information: This file is not analyzed. Cppcheck failed to extract a valid configuration. Use -v for more details. [noValidConfiguration]
+
+^
+im/.moc/moc_imjqtui.cpp:0:0: information: This file is not analyzed. Cppcheck failed to extract a valid configuration. Use -v for more details. [noValidConfiguration]
+
+^
+im/imj.h:79:1: style: The class 'imjcandidates' does not declare a constructor although it has private member variables which likely require initialization. [noConstructor]
+class imjcandidates
+^
+im/imj.h:186:1: style: The class 'imj' does not declare a constructor although it has private member variables which likely require initialization. [noConstructor]
+class imj
+^
+main.c:202:15: style: Variable 'app->verbose' is reassigned a value before the old one has been used. [redundantAssignment]
+ app->verbose = TRUE;
+              ^
+main.c:199:15: note: app->verbose is assigned
+ app->verbose = FALSE;
+              ^
+main.c:202:15: note: app->verbose is overwritten
+ app->verbose = TRUE;
+              ^
+main.c:203:13: style: Variable 'app->debug' is reassigned a value before the old one has been used. [redundantAssignment]
+ app->debug = TRUE;
+            ^
+main.c:200:13: note: app->debug is assigned
+ app->debug = FALSE;
+            ^
+main.c:203:13: note: app->debug is overwritten
+ app->debug = TRUE;
+            ^
+picofont.c:240:6: style: The scope of the variable 'hex' can be reduced. [variableScope]
+ int hex;
+     ^
+picofont.c:236:10: style: Parameter 'pico_font' can be declared with const [constParameter]
+ u_char *pico_font, u_char *gly, int bytes_per_line, int top_space, int bytes_per_digit, int digit_space)
+         ^
+picofont.c:275:0: information: Skipping configuration 'UNDEFINED_FONT_WIDTH' since the value of 'UNDEFINED_FONT_WIDTH' is unknown. Use -D if you want to check it. You can use -U to skip it explicitly. [ConfigurationNotChecked]
+ columns = UNDEFINED_FONT_WIDTH;
+^
+im/imj.cpp:121:14: style: Condition 'ret==0' is always true [knownConditionTrueFalse]
+  ret = (ret == 0) ? 1 : ret;
+             ^
+im/imj.cpp:101:12: note: Assignment 'ret=0', assigned value is 0
+ int ret = 0;
+           ^
+im/imj.cpp:121:14: note: Condition 'ret==0' is always true
+  ret = (ret == 0) ? 1 : ret;
+             ^
+im/imj.cpp:1069:6: style: The scope of the variable 'hst_match_len' can be reduced. [variableScope]
+ int hst_match_len;  // history
+     ^
+im/imj.cpp:1070:6: style: The scope of the variable 'dic_match_len' can be reduced. [variableScope]
+ int dic_match_len;  // dictionary
+     ^
+im/imj.cpp:1267:6: style: The scope of the variable 'candids' can be reduced. [variableScope]
+ int candids;
+     ^
+im/imj.cpp:1348:7: style: The scope of the variable 'dic_rec' can be reduced. [variableScope]
+ char dic_rec[MAX_DIC_LINE_LEN+1];
+      ^
+im/imj.cpp:1804:7: style: The scope of the variable 'bunsetsu' can be reduced. [variableScope]
+ char bunsetsu[MAX_KATSUYOU_LIST_LEN+1];
+      ^
+im/imj.cpp:1805:6: style: The scope of the variable 'len' can be reduced. [variableScope]
+ int len;
+     ^
+im/imj.cpp:2053:6: style: The scope of the variable 'entry_idx' can be reduced. [variableScope]
+ int entry_idx;
+     ^
+im/imj.cpp:2112:14: style: The scope of the variable 'hst_pronun' can be reduced. [variableScope]
+ const char *hst_pronun;
+             ^
+im/imj.cpp:2207:14: style: The scope of the variable 'hst_pronun' can be reduced. [variableScope]
+ const char *hst_pronun;
+             ^
+im/imj.cpp:2208:6: style: The scope of the variable 'hst_pronun_len' can be reduced. [variableScope]
+ int hst_pronun_len;
+     ^
+im/imj.cpp:2241:6: style: The scope of the variable 'last_entry_idx' can be reduced. [variableScope]
+ int last_entry_idx;  // (last entry index to be moved)+1
+     ^
+im/imj.cpp:2856:6: style: The scope of the variable 'off_h_from' can be reduced. [variableScope]
+ int off_h_from;  // offset of the begining of spelling
+     ^
+im/imj.cpp:2857:6: style: The scope of the variable 'off_h_to' can be reduced. [variableScope]
+ int off_h_to;  // offset of the end of spelling
+     ^
+im/imj.cpp:2859:6: style: The scope of the variable 'len_r' can be reduced. [variableScope]
+ int len_r;
+     ^
+im/imj.cpp:2901:6: style: The scope of the variable 'len_r' can be reduced. [variableScope]
+ int len_r;
+     ^
+im/imj.cpp:2921:6: style: The scope of the variable 'len_r' can be reduced. [variableScope]
+ int len_r;
+     ^
+im/imj.cpp:2944:6: style: The scope of the variable 'len_r' can be reduced. [variableScope]
+ int len_r;
+     ^
+im/imj.cpp:2967:6: style: The scope of the variable 'len_r' can be reduced. [variableScope]
+ int len_r;
+     ^
+im/imj.cpp:3004:7: style: The scope of the variable 'buf_h' can be reduced. [variableScope]
+ char buf_h[MAX_ROM_HIRA_LEN+1];
+      ^
+im/imj.cpp:3036:6: style: The scope of the variable 'len_r' can be reduced. [variableScope]
+ int len_r;
+     ^
+im/imj.cpp:3077:14: style: The scope of the variable 'tbl_hira' can be reduced. [variableScope]
+ const char *tbl_hira;
+             ^
+im/imjcui.cpp:276:6: style: The scope of the variable 'str_len' can be reduced. [variableScope]
+ int str_len;
+     ^
+screenshot.c:125:10: style: The scope of the variable 'buf' can be reduced. [variableScope]
+ u_char *buf;
+         ^
+vterm.c:213:7: style: The scope of the variable 'buf' can be reduced. [variableScope]
+ char buf[1];
+      ^
+fbcommon.c:462:0: style: The function 'argb32_from_rgb16' is never used. [unusedFunction]
+
+^
+fbcommon.c:576:0: style: The function 'dump_rgb15' is never used. [unusedFunction]
+
+^
+fbcommon.c:534:0: style: The function 'fb_put_cmap' is never used. [unusedFunction]
+
+^
+font.c:153:0: style: The function 'font_correct_selection' is never used. [unusedFunction]
+
+^
+font.c:294:0: style: The function 'font_get_glyph_bitmap' is never used. [unusedFunction]
+
+^
+font.c:271:0: style: The function 'font_is_loaded' is never used. [unusedFunction]
+
+^
+term.cpp:605:0: style: The function 'get_current_vt_num' is never used. [unusedFunction]
+
+^
+pen.c:39:0: style: The function 'pen_destroy' is never used. [unusedFunction]
+
+^
+pen.c:232:0: style: The function 'pen_get_bc_rgb' is never used. [unusedFunction]
+
+^
+pen.c:135:0: style: The function 'pen_get_bgc_idx' is never used. [unusedFunction]
+
+^
+pen.c:241:0: style: The function 'pen_get_fc_rgb' is never used. [unusedFunction]
+
+^
+pen.c:149:0: style: The function 'pen_get_fgc_idx' is never used. [unusedFunction]
+
+^
+pen.c:72:0: style: The function 'pen_get_x' is never used. [unusedFunction]
+
+^
+pen.c:76:0: style: The function 'pen_get_y' is never used. [unusedFunction]
+
+^
+pen.c:96:0: style: The function 'pen_italic' is never used. [unusedFunction]
+
+^
+pen.c:53:0: style: The function 'pen_move_yx' is never used. [unusedFunction]
+
+^
+pen.c:58:0: style: The function 'pen_set_yx' is never used. [unusedFunction]
+
+^
+pen.c:100:0: style: The function 'pen_unitalic' is never used. [unusedFunction]
+
+^
+fbcommon.c:394:0: style: The function 'r_g_b_24_from_color_idx' is never used. [unusedFunction]
+
+^
+fbcommon.c:399:0: style: The function 'r_g_b_24_from_rgb15' is never used. [unusedFunction]
+
+^
+fbcommon.c:454:0: style: The function 'rgb15_from_rgb16' is never used. [unusedFunction]
+
+^
+fbcommon.c:383:0: style: The function 'rgb16_from_color_idx' is never used. [unusedFunction]
+
+^
+fbcommon.c:425:0: style: The function 'rgb16_from_r_g_b_24' is never used. [unusedFunction]
+
+^
+fbcommon.c:436:0: style: The function 'rgb16_from_rgb15' is never used. [unusedFunction]
+
+^
+vterm.c:144:0: style: The function 'vterm_emulate_str_yx_bc_fc' is never used. [unusedFunction]
+
+^
+nofile:0:0: information: Cppcheck cannot find all the include files (use --check-config for details) [missingInclude]
+

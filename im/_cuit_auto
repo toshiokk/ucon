@@ -1,0 +1,7 @@
+# automated conversion test
+mk_backup_file _debug.log
+op="-"
+#op="+"
+./imjcuitest $op <漢字-ひらがな-TinySegmenter.txt 2>_debug.log  | tee _conv.log
+./imjcuitest $op <漢字-ひらがな-VINE-Linux.txt    2>>_debug.log | tee -a _conv.log
+./imjcuitest $op <漢字-ひらがな-雨にも負けず.txt  2>>_debug.log | tee -a _conv.log

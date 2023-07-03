@@ -1,0 +1,4 @@
+mk_backup_file _debug.log
+stty raw -echo
+./imjcuitest 2>_debug.log
+stty -raw echo

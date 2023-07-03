@@ -1,0 +1,10 @@
+XXX{[0m}
+XXX{[999;999H}
+XXX{[6n}
+XXX{[999;999H}
+XXX{[6n}
+XXX{[999;999H}
+XXX{[6n}
+XXX{[?25l}
+sig.c 128 handler_sigsegv Received SIGSEGV
+sig.c 140 handler_sigsegv 

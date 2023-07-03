@@ -1,0 +1,6 @@
+while : ; do
+  {
+    echo -n "."
+  } >/dev/pts/0
+  sleep 1
+done

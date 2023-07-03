@@ -1,0 +1,1 @@
+wc *.h im/imj.h im/imjcui.h *.c *.cpp im/imj.cpp im/imjcui.cpp >__ucon.bep

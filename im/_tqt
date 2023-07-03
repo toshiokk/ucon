@@ -1,0 +1,12 @@
+mk_backup_file _debug.log
+{
+./imjqttest
+ret="$?"
+echo "ret:"$ret
+if [ "$ret" -eq 1 ]; then
+  ./imjqttest -qws
+  ret="$?"
+  echo "ret:"$ret
+fi
+} >_debug.log 2>&1
+resetterm

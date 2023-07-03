@@ -1,0 +1,9 @@
+LANG=ja_JP.UTF-8; export LANG
+#TERM=linux; export TERM
+#echo "LANG:"$LANG
+#echo "TERM:"$TERM
+sd chown root:utmp ./ucon
+sd chmod ug+s ./ucon
+ls -al ucon
+
+./ucon -c ./_test_c_opt 2>__test_ucon.log
