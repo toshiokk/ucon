@@ -192,8 +192,13 @@ int vterm_emulate_char(vterm_t *vterm, u_char chr)
 	case ESC_ST_OSC_3:
 		vterm_parse_func_osc(vterm, chr);
 		break;
+	case ESC_ST_LPAR_4:
+		// ESC '(' 'B' : ASCII code set
+		// nothing to do
+		vterm->esc_seq_parse_state = ESC_ST_0;
+		break;
 #ifdef ENABLE_STATUS_LINE
-	case ESC_ST_SL_4:
+	case ESC_ST_SL_5:
 		vterm_parse_func_status_line(vterm, chr);
 		break;
 #endif // ENABLE_STATUS_LINE
@@ -446,7 +451,8 @@ PRIVATE void vterm_parse_func_esc(vterm_t *vterm, u_char chr)
 		break;
 	case '%'/*ISO_DOCS*/:		/* % */
 		break;
-	case '('/*ISO_GZD4*/:		/* ( */
+	case '('/*ISO_GZD4*/:		/* ESC ( */
+		vterm->esc_seq_parse_state = ESC_ST_LPAR_4;
 		break;
 	case ','/*MULE__GZD6*/:		/* , */
 		break;
@@ -619,7 +625,7 @@ PRIVATE void vterm_parse_func_csi(vterm_t *vterm, u_char chr)
 		break;
 	case '?':			// ESC [ {n} ?
 #ifdef ENABLE_STATUS_LINE
-		vterm->esc_seq_parse_state = ESC_ST_SL_4;
+		vterm->esc_seq_parse_state = ESC_ST_SL_5;
 #else
 		vterm->esc_seq_parse_state = ESC_ST_CSI_2;
 #endif // ENABLE_STATUS_LINE

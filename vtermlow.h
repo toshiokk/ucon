@@ -182,8 +182,9 @@ typedef struct vterm_ {
 		ESC_ST_ESC_1,
 		ESC_ST_CSI_2,
 		ESC_ST_OSC_3,
+		ESC_ST_LPAR_4,
 #ifdef ENABLE_STATUS_LINE
-		ESC_ST_SL_4
+		ESC_ST_SL_5
 #endif // ENABLE_STATUS_LINE
 	} esc_seq_parse_state;
 
