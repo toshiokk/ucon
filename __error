@@ -1,6 +1,0 @@
-make  all-am
-make[1]: Entering directory '/home/user/tools/ucon/src'
-gcc -DHAVE_CONFIG_H -I.     -g -O2 -MT vterm.o -MD -MP -MF .deps/vterm.Tpo -c -o vterm.o vterm.c
-mv -f .deps/vterm.Tpo .deps/vterm.Po
-g++  -g -O2   -o ucon myminmax.o mystring.o myutf8.o mydebug.o main.o fbcommon.o fbbpp.o font.o picofont.o message.o hex.o pen.o util.o vterm.o vtermlow.o term.o  -lutil 
-make[1]: Leaving directory '/home/user/tools/ucon/src'

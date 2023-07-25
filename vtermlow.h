@@ -125,18 +125,23 @@ typedef struct /*text_char_*/ {
 //  Full Hi-vision
 //   1920 / 5 = 384
 //   1080 / 10 = 108
+//  WQXGA
+//   2560 / 5 = 512
+//   1600 / 10 = 160
 //  8K
 //   7680 / 5 = 1536
 //   4320 / 10 = 432
 #ifdef ENABLE_255COLUMNS
 // NOTE: If your terminal interface supports columns > 254
 ///# define MAX_TERM_COLS	274
-# define MAX_TERM_COLS	384
+///# define MAX_TERM_COLS	384
+# define MAX_TERM_COLS	512
 #else // ENABLE_255COLUMNS
 # define MAX_TERM_COLS	254		// WORKAROUND: ncurses doesn't support columns > 254
 #endif // ENABLE_255COLUMNS
 ///#define MAX_TERM_LINES	77
-#define MAX_TERM_LINES	108
+///#define MAX_TERM_LINES	108
+#define MAX_TERM_LINES	160
 
 #define OVERLAY_TEXT_LEN		100
 #define OVERLAY_TEXT_Y			0
