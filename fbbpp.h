@@ -44,8 +44,10 @@ struct fb_driver_ {
 	int bitsPerPixel;
 	int fbVisual;		// unused
 	void (*clear_all)(c_idx_t color_idx, rgb15_t rgb);
-	void (*fill_char_box)(int left_x, int top_y, int fnt_sx, int fnt_sy, c_idx_t color_idx, rgb15_t rgb);
-	void (*reverse_char_box)(int left_x, int top_y, int fnt_sx, int fnt_sy, c_idx_t color_idx, rgb15_t rgb);
+	void (*fill_char_box)(int left_x, int top_y, int fnt_sx, int fnt_sy,
+	 c_idx_t color_idx, rgb15_t rgb);
+	void (*reverse_char_box)(int left_x, int top_y, int fnt_sx, int fnt_sy,
+	 c_idx_t color_idx, rgb15_t rgb);
 	void (*paint_char_box)(int left_x, int top_y,
 	 const u_char *font, int fnt_sx, int fnt_sy, int font_bytes_per_line,
 	 c_idx_t bc_idx, c_idx_t fc_idx, rgb15_t bc_rgb, rgb15_t fc_rgb);

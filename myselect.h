@@ -21,8 +21,10 @@ extern "C" {
 #define MYSELECT_BIT_STATUS1	0x0100
 #define MYSELECT_BIT_STATUS2	0x0200
 
-int my_select_msec(int fd_read1, int fd_read2, int fd_write1, int fd_write2, int fd_status1, int fd_status2, int msec);
-int my_select(int fd_read1, int fd_read2, int fd_write1, int fd_write2, int fd_status1, int fd_status2, int usec);
+int my_select_msec(int fd_read1, int fd_read2, int fd_write1, int fd_write2,
+ int fd_status1, int fd_status2, int msec);
+int my_select(int fd_read1, int fd_read2, int fd_write1, int fd_write2,
+ int fd_status1, int fd_status2, int usec);
 
 #if defined(__cplusplus)
 }

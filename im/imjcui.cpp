@@ -91,7 +91,8 @@ PRIVATE int send_buf_bytes = 0;
 PRIVATE void send_keys(char *key_seq, int key_seq_len);
 
 PRIVATE int get_candidate_list_str(char *buffer, int buf_len);
-PRIVATE const char *get_candid_string(int candid_idx, int cur_candid_idx, char *buffer, int buf_len);
+PRIVATE const char *get_candid_string(int candid_idx, int cur_candid_idx,
+ char *buffer, int buf_len);
 
 PRIVATE int convert_key_seq(int key, char *key_seq, int *key_seq_len);
 
@@ -313,7 +314,8 @@ PRIVATE int get_candidate_list_str(char *buffer, int buf_len)
 
 	return num_of_candids;
 }
-PRIVATE const char *get_candid_string(int candid_idx, int cur_candid_idx, char *buffer, int buf_len)
+PRIVATE const char *get_candid_string(int candid_idx, int cur_candid_idx,
+ char *buffer, int buf_len)
 {
 	const char *template__;
 	char buf[MAX_CANDID_LEN+1];

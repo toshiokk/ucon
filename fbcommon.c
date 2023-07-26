@@ -200,7 +200,7 @@ flf_d_printf("Selected driver index: %d, bits per pixel: %d\n",
 	fb->bytes_per_line = fb_fix.line_length;
 	fb->bits_per_pixel = fb_var.bits_per_pixel;
 	fb->bytes_per_pixel = (fb_var.bits_per_pixel + (8-1)) / 8;
-	verbose_printf("width:%d, height:%d, bits_per_pixel:%d, bytes_per_pixel:%d, bytes_per_line:%d\n",
+	verbose_printf("width:%d, height:%d, bits/pixel:%d, bytes/pixel:%d, bytes/line:%d\n",
 	 fb->width, fb->height, fb->bits_per_pixel, fb->bytes_per_pixel, fb->bytes_per_line);
 
 #ifndef PAGE_MASK

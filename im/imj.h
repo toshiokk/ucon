@@ -51,11 +51,13 @@
 #define IM_KE_SELECT_LAST			IM_KE(CTRL_CODE('Z'))
 
 #define IM_MAX_INPUT_CHARS		60
-#define IM_INPUT_LINE_LEN		(MAX_UTF8C_BYTES * IM_MAX_INPUT_CHARS)		// 連文節入力の最大長(3*60=180 bytes)
+										// 連文節入力の最大長(3*60=180 bytes)
+#define IM_INPUT_LINE_LEN		(MAX_UTF8C_BYTES * IM_MAX_INPUT_CHARS)
 
 // Dictionary file
 #define MAX_DIC_PRONUN_CHARS	16		// 活用を除いた辞書登録読みの最大文字数
-#define MAX_DIC_PRONUN_LEN		(MAX_UTF8C_BYTES * MAX_DIC_PRONUN_CHARS)	// 活用を除いた辞書登録読みの最大長("朝霧高原"...)
+										// 活用を除いた辞書登録読みの最大長("朝霧高原"...)
+#define MAX_DIC_PRONUN_LEN		(MAX_UTF8C_BYTES * MAX_DIC_PRONUN_CHARS)
 //#define ROM_FILE_NAME		"atok.rom"
 #define DIC_FILE_NAME		"imj.dic"		// dictionary file name
 #define CNVHST_FILE_NAME	"imj.hst"		// conversion hisory file name
@@ -63,17 +65,24 @@
 #define MAX_DIC_RECORDS		1000000			// 1,000,000
 #define MAX_CANNA_HINSHI_CODE_LEN	(1+10+1+3)		// "#ABCDEFGHIJ*500"
 
-#define MAX_CANDID_LEN			(MAX_UTF8C_BYTES * IM_MAX_INPUT_CHARS)	// 変換候補の最大長("演じなければ"...)
+										// 変換候補の最大長("演じなければ"...)
+#define MAX_CANDID_LEN		(MAX_UTF8C_BYTES * IM_MAX_INPUT_CHARS)
 
 //#define MAX_CONVERSION_HISTORIES	1000
 #define MAX_CONVERSION_HISTORIES	2000
 ///#define MAX_CONVERSION_HISTORIES	10000
-#define MAX_HISTORY_PRONUN_LEN		(MAX_UTF8C_BYTES * IM_MAX_INPUT_CHARS)				// "えくすてんでっどえでぃしょん"
-#define MAX_HISTORY_CONVERTED_LEN	(MAX_UTF8C_BYTES * IM_MAX_INPUT_CHARS)				// "エクステンデッドエディション"
-#define MAX_HISTORY_INPUT_LEN		(MAX_HISTORY_PRONUN_LEN+MAX_HISTORY_CONVERTED_LEN)		// "えくすてんでっどえでぃしょん"
-#define MAX_CONVERSION_HISTORY_LEN	(MAX_HISTORY_PRONUN_LEN+1+MAX_HISTORY_CONVERTED_LEN)	// "かんじ 漢字"
-#define MAX_INPUT_HISTORY_LEN		(1+MAX_HISTORY_INPUT_LEN)								// " えくすてんでっどえでぃしょん"
-#define MAX_HISTORY_BUF_LEN			(MAX_HISTORY_PRONUN_LEN+1+MAX_HISTORY_CONVERTED_LEN+1)	// "かんじ 漢字\n"
+										// "えくすてんでっどえでぃしょん"
+#define MAX_HISTORY_PRONUN_LEN		(MAX_UTF8C_BYTES * IM_MAX_INPUT_CHARS)
+										// "エクステンデッドエディション"
+#define MAX_HISTORY_CONVERTED_LEN	(MAX_UTF8C_BYTES * IM_MAX_INPUT_CHARS)
+										// "えくすてんでっどえでぃしょん"
+#define MAX_HISTORY_INPUT_LEN		(MAX_HISTORY_PRONUN_LEN+MAX_HISTORY_CONVERTED_LEN)
+										// "かんじ 漢字"
+#define MAX_CONVERSION_HISTORY_LEN	(MAX_HISTORY_PRONUN_LEN+1+MAX_HISTORY_CONVERTED_LEN)
+										// " えくすてんでっどえでぃしょん"
+#define MAX_INPUT_HISTORY_LEN		(1+MAX_HISTORY_INPUT_LEN)
+										// "かんじ 漢字\n"
+#define MAX_HISTORY_BUF_LEN			(MAX_HISTORY_PRONUN_LEN+1+MAX_HISTORY_CONVERTED_LEN+1)
 
 // 変換候補 -------------------------------------------------------------------
 class imjcandidates
@@ -129,12 +138,12 @@ public:
 	static void imjdic_dump_all_tangos(void);
 
 	static int imjdic_search_total_len(char *pronun, int len_to_match, imjcandidates *_candidates);
-	static int imjdic_search_gokan_katsuyou(char *pronun, int gokan_len_to_match, int gok_kat_len_to_match,
-	 imjcandidates *_candidates);
+	static int imjdic_search_gokan_katsuyou(char *pronun,
+	 int gokan_len_to_match, int gok_kat_len_to_match, imjcandidates *_candidates);
 	static int imjdic_disp_search_stats(char *pronun);
 	static int imjdic_bsearch_compare(const void *key, const void *element);
-	static int imjdic_compare_katsuyou(char *dic_rec, char *pronun, int gokan_len, int expanded_len,
-	 imjcandidates *_candidates);
+	static int imjdic_compare_katsuyou(char *dic_rec, char *pronun,
+	 int gokan_len, int expanded_len, imjcandidates *_candidates);
 
 	static int imjdic_get_pronun(char *dic_rec, char *pronun, int buf_len);
 	static int imjdic_get_num_of_candids(char *dic_record);
@@ -192,7 +201,7 @@ class imj
 	int im_i_cur_history_idx;				// input history index currently selected
 
 	int im_c_len_to_match;					// length of pronunciation currently being converted
-	int im_c_cur_cand_idx;				// index currently selected
+	int im_c_cur_cand_idx;					// index currently selected
 	char im_c_cur_candid[MAX_CANDID_LEN+1];		// currently selected candidate "漢字"
 	char im_commit_buffer[IM_INPUT_LINE_LEN+1];	// buffer in which committed string is held
 public:

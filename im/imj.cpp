@@ -69,7 +69,8 @@ PRIVATE const char *expand_regexp(const char *regexp, char *buf_ret, int buf_len
 PRIVATE const char *parse_re_parallel(const char *regexp, char *buf_ret, int buf_len);
 PRIVATE const char *parse_re_bunsetsu(const char *regexp, char *buf_ret, int buf_len);
 PRIVATE const char *parse_re_chars(const char *regexp, char *buf_ret, int buf_len);
-PRIVATE char *concat_bunsetsu(const char *bunsetsu1, const char *bunsetsu2, char *buffer, int buf_len);
+PRIVATE char *concat_bunsetsu(const char *bunsetsu1, const char *bunsetsu2,
+ char *buffer, int buf_len);
 PRIVATE int re_word_len(const char *str);
 PRIVATE void add_space_separator(char *buf, int buf_len);
 
@@ -773,7 +774,8 @@ char *imj::join_bunsetsu(int start_bunsetsu_idx, int end_bunsetsu_idx, const cha
 			im_c_get_cur_candid(buf, MAX_CANDID_LEN);
 //flf_d_printf("%s\n", buf);
 		} else {
-			_renbunsetsu._renbunsetsu[bunsetsu_idx]._candidates.get_candid(0, buf, MAX_CANDID_LEN);
+			_renbunsetsu._renbunsetsu[bunsetsu_idx]
+			 ._candidates.get_candid(0, buf, MAX_CANDID_LEN);
 //flf_d_printf("%s\n", buf);
 		}
 		if (strlen(buffer)) {
@@ -1040,7 +1042,8 @@ void imjrenbunsetsu::shift_bunsetsu(void)
 
 	_num_of_bunsetsu--;
 	for (bunsetsu_idx = 0; bunsetsu_idx < _num_of_bunsetsu; bunsetsu_idx++) {
-		memcpy_ol(&_renbunsetsu[bunsetsu_idx], &_renbunsetsu[bunsetsu_idx+1], sizeof(_renbunsetsu[bunsetsu_idx]));
+		memcpy_ol(&_renbunsetsu[bunsetsu_idx], &_renbunsetsu[bunsetsu_idx+1],
+		 sizeof(_renbunsetsu[bunsetsu_idx]));
 	}
 }
 void imjrenbunsetsu::dump(void)
@@ -1083,7 +1086,8 @@ int imjtanbunsetsu::conv_tanbunsetsu(char *romaji, char *pronun, int len_to_matc
 //flf_d_printf("romaji:[%s], pronun:[%s], len_to_match:%d\n", romaji, pronun, len_to_match);
 		hst_match_len = imjchst_search_longest_match_len(pronun);
 		dic_match_len = imjdic::imjdic_search_total_len(pronun, len_to_match, &_candidates);
-		if (hst_match_len >= dic_match_len)		// if conversion-history gotten, give priority to it
+		// if conversion-history gotten, give priority to it
+		if (hst_match_len >= dic_match_len)
 			len_to_match = hst_match_len;
 		if (len_to_match <= 0) {
 			len_to_match = MAX_(dic_match_len, hst_match_len);
@@ -1324,7 +1328,8 @@ int imjdic::imjdic_search_total_len(char *pronun, int len_to_match, imjcandidate
 		if (len_to_match <= 0) {
 			len_to_match = utf8c_bytes(pronun);	// one char
 		}
-//flf_d_printf("pronun:[%s], len_to_match: %d, max_match_len: %d\n", pronun, len_to_match, max_match_len);
+//flf_d_printf("pronun:[%s], len_to_match: %d, max_match_len: %d\n",
+// pronun, len_to_match, max_match_len);
 	}
 	max_match_len = 0;
 	for (gokan_len_to_match = utf8c_bytes(pronun); ;
@@ -1335,13 +1340,14 @@ int imjdic::imjdic_search_total_len(char *pronun, int len_to_match, imjcandidate
 		if (gokan_len_to_match >= MIN_((int)strlen(pronun), MAX_DIC_PRONUN_LEN))
 			break;
 	}
-//flf_d_printf("pronun:[%s], len_to_match: %d, max_match_len: %d\n", pronun, len_to_match, max_match_len);
+//flf_d_printf("pronun:[%s], len_to_match: %d, max_match_len: %d\n",
+// pronun, len_to_match, max_match_len);
 //	imjdic_disp_search_stats(pronun);
 	return max_match_len;
 }
 
-int imjdic::imjdic_search_gokan_katsuyou(char *pronun, int gokan_len_to_match, int gok_kat_len_to_match,
- imjcandidates *_candidates)
+int imjdic::imjdic_search_gokan_katsuyou(char *pronun,
+ int gokan_len_to_match, int gok_kat_len_to_match, imjcandidates *_candidates)
 {
 	struct bsearch_key key;
 	long *result_of_search;
@@ -1360,7 +1366,8 @@ int imjdic::imjdic_search_gokan_katsuyou(char *pronun, int gokan_len_to_match, i
 	if (result_of_search) {
 		if (imjdic_read_record(bsearch_match_offset, dic_rec, MAX_DIC_LINE_LEN) >= 0) {
 //flf_d_printf("dic_rec: [%s]\n", dic_rec);
-			match_len = imjdic_compare_katsuyou(dic_rec, pronun, gokan_len_to_match, gok_kat_len_to_match,
+			match_len = imjdic_compare_katsuyou(dic_rec, pronun,
+			 gokan_len_to_match, gok_kat_len_to_match,
 			 _candidates);
 		}
 	}
@@ -1418,8 +1425,8 @@ int imjdic::imjdic_bsearch_compare(const void *key, const void *element)
 	bsearch_match_offset = match_offset;
 	return ret;
 }
-int imjdic::imjdic_compare_katsuyou(char *dic_rec, char *pronun, int gokan_len, int gok_kat_len_to_match,
- imjcandidates *_candidates)
+int imjdic::imjdic_compare_katsuyou(char *dic_rec, char *pronun,
+ int gokan_len, int gok_kat_len_to_match, imjcandidates *_candidates)
 {
 	int candids;
 	int candid_idx;
@@ -1457,7 +1464,8 @@ int imjdic::imjdic_compare_katsuyou(char *dic_rec, char *pronun, int gokan_len, 
 				if (word_len(ptr_k) == katsuyou_len
 				 && strncmp(&pronun[gokan_len], ptr_k, word_len(ptr_k)) == 0) {
 					strcpy(extended, gokan);
-					utf8strcat_blen_slen(extended, MAX_CANDID_LEN, ptr_k, word_len(ptr_k));	// "買" + "います"
+										// "買" + "います"
+					utf8strcat_blen_slen(extended, MAX_CANDID_LEN, ptr_k, word_len(ptr_k));
 					_candidates->append_one_candid(extended);
 					katsuyou_match_len = katsuyou_len;
 				}
@@ -1477,7 +1485,8 @@ fl_d_printf("dic_search_records: %d:[%s]\n", dic_search_records, pronun);
 	dic_max_search_records = MAX_(dic_search_records, dic_max_search_records);
 fl_d_printf("dic_max_search_records: %d\n", dic_max_search_records);
 	dic_total_search_records += dic_search_records;
-	dic_avg_search_records = dic_total_search_records / (dic_search_words == 0 ? 1 : dic_search_words);
+	dic_avg_search_records = dic_total_search_records
+	 / (dic_search_words == 0 ? 1 : dic_search_words);
 fl_d_printf("dic_search_words: %d\n", dic_search_words);
 fl_d_printf("dic_avg_search_records: %d\n", dic_avg_search_records);
 fl_d_printf(")))))))))))))))))))))))))))))))))))))))))))))))))\n");
@@ -1707,9 +1716,11 @@ void imjdic_test_katsuyou(void)
 	flf_d_printf("[%s]\n==>[%s]\n----\n", re, buffer);
 #endif
 	for (gokan_idx = 0; ex_katsuyou[gokan_idx][0]; gokan_idx++) {
-		imjdic_get_katsuyous_from_hinshi_code(ex_katsuyou[gokan_idx], katsuyous, MAX_KATSUYOU_LIST_LEN);
+		imjdic_get_katsuyous_from_hinshi_code(ex_katsuyou[gokan_idx],
+		 katsuyous, MAX_KATSUYOU_LIST_LEN);
 		max_katsuyou_len = MAX_(max_katsuyou_len, strlen(katsuyous));
-		concat_bunsetsu(skip_word_sp(ex_katsuyou[gokan_idx]), katsuyous, buffer, MAX_KATSUYOU_LIST_LEN);
+		concat_bunsetsu(skip_word_sp(ex_katsuyou[gokan_idx]), katsuyous,
+		 buffer, MAX_KATSUYOU_LIST_LEN);
 		flf_d_printf("[%s]\n[%s]\n", ex_katsuyou[gokan_idx], buffer);
 	}
 flf_d_printf("max_katsuyou_len: %d\n", max_katsuyou_len);
@@ -1726,7 +1737,8 @@ char *imjdic_get_katsuyous_from_hinshi_code(const char *code, char *buffer, int 
 //flf_d_printf("katsuyou_table[%d]:[%s]\n", tbl_idx, katsuyou_table[tbl_idx]);
 		if (word_len(code) == word_len(katsuyou_table[tbl_idx])
 		 && strncmp(code, katsuyou_table[tbl_idx], word_len(code)) == 0) {
-			expand_regexp(&katsuyou_table[tbl_idx][next_word(katsuyou_table[tbl_idx])], buffer, buf_len);
+			expand_regexp(&katsuyou_table[tbl_idx][next_word(katsuyou_table[tbl_idx])],
+			 buffer, buf_len);
 		}
 	}
 //flf_d_printf("katsuyou_code: [%s] ==> katsuyou: [%s]\n", code, buffer);
@@ -1831,7 +1843,8 @@ PRIVATE const char *parse_re_chars(const char *regexp, char *buf_ret, int buf_le
 //	"a b" + "c d e" ==> "ac ad ae bc bd be"
 //	"" + "c d e" ==> "c d e"
 //	"a" + " c d e" ==> "a ac ad ae"
-PRIVATE char *concat_bunsetsu(const char *bunsetsu1, const char *bunsetsu2, char *buffer, int buf_len)
+PRIVATE char *concat_bunsetsu(const char *bunsetsu1, const char *bunsetsu2,
+ char *buffer, int buf_len)
 {
 	const char *ptr_b1;
 	const char *ptr_b2;
@@ -2261,7 +2274,8 @@ PRIVATE int imjhst_delete_entry(int entry_idx)
 //	+--------+
 		last_entry_idx = MIN_(MAX_CONVERSION_HISTORIES,
 		 imjhst_history_entries);
-///flf_d_printf("%d:[%s] -- %d\n", entry_idx, imjhst_history[entry_idx].pronun_conversion, last_entry_idx);
+///flf_d_printf("%d:[%s] -- %d\n",
+/// entry_idx, imjhst_history[entry_idx].pronun_conversion, last_entry_idx);
 		// shift all entries to 1 older (1 entry disappears)
 		memmove(&imjhst_history[entry_idx], &imjhst_history[entry_idx+1],
 		 (char *)&imjhst_history[last_entry_idx]
@@ -2279,7 +2293,8 @@ PRIVATE int imjhst_put_entry_line(int entry_idx, const char *pronun_conversion)
 {
 ///flf_d_printf("%d:[%s]\n", entry_idx, pronun_conversion);
 	if (entry_idx < MAX_CONVERSION_HISTORIES) {
-		utf8strcpy_blen(imjhst_history[entry_idx].pronun_conversion, MAX_HISTORY_INPUT_LEN, pronun_conversion);
+		utf8strcpy_blen(imjhst_history[entry_idx].pronun_conversion, MAX_HISTORY_INPUT_LEN,
+		 pronun_conversion);
 	}
 	return entry_idx;
 }
@@ -3085,7 +3100,8 @@ PRIVATE int imjatoh_reverse_one2(const char *hira, char *romaji)
 //flf_d_printf("%d ?? %d\n", len_h, strlen(tbl_hira));
 		if (len_h == (int)strlen(tbl_hira)
 		 && strncmp(hira, tbl_hira, len_h) == 0) {
-			utf8strcpy_blen_slen(romaji, MAX_ROM_ALPHA_LEN, roman_table[idx], sp1_word_len(roman_table[idx]));
+			utf8strcpy_blen_slen(romaji, MAX_ROM_ALPHA_LEN, roman_table[idx],
+			 sp1_word_len(roman_table[idx]));
 			break;
 		}
 	}

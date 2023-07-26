@@ -38,8 +38,10 @@ PRIVATE int fb_dots_per_pixel_y;
 //-----------------------------------------------------------------------------
 #ifdef ENABLE_8BPP
 PRIVATE void fb_8bpp_clear_all(c_idx_t color_idx, rgb15_t rgb);
-PRIVATE void fb_8bpp_fill_char_box(int left_x, int top_y, int fnt_sx, int fnt_sy, c_idx_t color_idx, rgb15_t rgb);
-PRIVATE void fb_8bpp_reverse_char_box(int left_x, int top_y, int fnt_sx, int fnt_sy, c_idx_t color_idx, rgb15_t rgb);
+PRIVATE void fb_8bpp_fill_char_box(int left_x, int top_y, int fnt_sx, int fnt_sy,
+ c_idx_t color_idx, rgb15_t rgb);
+PRIVATE void fb_8bpp_reverse_char_box(int left_x, int top_y, int fnt_sx, int fnt_sy,
+ c_idx_t color_idx, rgb15_t rgb);
 PRIVATE void fb_8bpp_paint_char_box(int left_x, int top_y,
  const u_char *font, int fnt_sx, int fnt_sy, int font_bytes_per_line,
  c_idx_t bc_idx, c_idx_t fc_idx, rgb15_t bc_rgb, rgb15_t fc_rgb);
@@ -51,8 +53,10 @@ PRIVATE void fb_8bpp_reverse_all(void);
 
 #ifdef ENABLE_15BPP
 PRIVATE void fb_15bpp_clear_all(c_idx_t color_idx, rgb15_t rgb);
-PRIVATE void fb_15bpp_fill_char_box(int left_x, int top_y, int fnt_sx, int fnt_sy, c_idx_t color_idx, rgb15_t rgb);
-PRIVATE void fb_15bpp_reverse_char_box(int left_x, int top_y, int fnt_sx, int fnt_sy, c_idx_t color_idx, rgb15_t rgb);
+PRIVATE void fb_15bpp_fill_char_box(int left_x, int top_y, int fnt_sx, int fnt_sy,
+ c_idx_t color_idx, rgb15_t rgb);
+PRIVATE void fb_15bpp_reverse_char_box(int left_x, int top_y, int fnt_sx, int fnt_sy,
+ c_idx_t color_idx, rgb15_t rgb);
 PRIVATE void fb_15bpp_paint_char_box(int left_x, int top_y,
  const u_char *font, int fnt_sx, int fnt_sy, int font_bytes_per_line,
  c_idx_t bc_idx, c_idx_t fc_idx, rgb15_t bc_rgb, rgb15_t fc_rgb);
@@ -64,8 +68,10 @@ PRIVATE void fb_15bpp_reverse_all(void);
 
 #ifdef ENABLE_16BPP
 PRIVATE void fb_16bpp_clear_all(c_idx_t color_idx, rgb15_t rgb);
-PRIVATE void fb_16bpp_fill_char_box(int left_x, int top_y, int fnt_sx, int fnt_sy, c_idx_t color_idx, rgb15_t rgb);
-PRIVATE void fb_16bpp_reverse_char_box(int left_x, int top_y, int fnt_sx, int fnt_sy, c_idx_t color_idx, rgb15_t rgb);
+PRIVATE void fb_16bpp_fill_char_box(int left_x, int top_y, int fnt_sx, int fnt_sy,
+ c_idx_t color_idx, rgb15_t rgb);
+PRIVATE void fb_16bpp_reverse_char_box(int left_x, int top_y, int fnt_sx, int fnt_sy,
+ c_idx_t color_idx, rgb15_t rgb);
 PRIVATE void fb_16bpp_paint_char_box(int left_x, int top_y,
  const u_char *font, int fnt_sx, int fnt_sy, int font_bytes_per_line,
  c_idx_t bc_idx, c_idx_t fc_idx, rgb15_t bc_rgb, rgb15_t fc_rgb);
@@ -77,8 +83,10 @@ PRIVATE void fb_16bpp_reverse_all(void);
 
 #if defined(ENABLE_15BPP) || defined(ENABLE_16BPP)
 PRIVATE void fb_15_16bpp_clear_all(u_short rgb);
-PRIVATE void fb_15_16bpp_fill_char_box(int left_x, int top_y, int fnt_sx, int fnt_sy, u_short rgb);
-PRIVATE void fb_15_16bpp_reverse_char_box(int left_x, int top_y, int fnt_sx, int fnt_sy, u_short rgb);
+PRIVATE void fb_15_16bpp_fill_char_box(int left_x, int top_y, int fnt_sx, int fnt_sy,
+ u_short rgb);
+PRIVATE void fb_15_16bpp_reverse_char_box(int left_x, int top_y, int fnt_sx, int fnt_sy,
+ u_short rgb);
 PRIVATE void fb_15_16bpp_paint_char_box(int left_x, int top_y,
  const u_char *font, int fnt_sx, int fnt_sy, int font_bytes_per_line,
  u_short bc_rgb, u_short fc_rgb);
@@ -90,8 +98,10 @@ PRIVATE void fb_15_16bpp_reverse_all(u_short reverse_bits);
 
 #ifdef ENABLE_24BPP
 PRIVATE void fb_24bpp_clear_all(c_idx_t color_idx, rgb15_t rgb);
-PRIVATE void fb_24bpp_fill_char_box(int left_x, int top_y, int fnt_sx, int fnt_sy, c_idx_t color_idx, rgb15_t rgb);
-PRIVATE void fb_24bpp_reverse_char_box(int left_x, int top_y, int fnt_sx, int fnt_sy, c_idx_t color_idx, rgb15_t rgb);
+PRIVATE void fb_24bpp_fill_char_box(int left_x, int top_y, int fnt_sx, int fnt_sy,
+ c_idx_t color_idx, rgb15_t rgb);
+PRIVATE void fb_24bpp_reverse_char_box(int left_x, int top_y, int fnt_sx, int fnt_sy,
+ c_idx_t color_idx, rgb15_t rgb);
 PRIVATE void fb_24bpp_paint_char_box(int left_x, int top_y,
  const u_char *font, int fnt_sx, int fnt_sy, int font_bytes_per_line,
  c_idx_t bc_idx, c_idx_t fc_idx, rgb15_t bc_rgb, rgb15_t fc_rgb);
@@ -103,8 +113,10 @@ PRIVATE void fb_24bpp_reverse_all(void);
 
 #ifdef ENABLE_32BPP
 PRIVATE void fb_32bpp_clear_all(c_idx_t color_idx, rgb15_t rgb);
-PRIVATE void fb_32bpp_fill_char_box(int left_x, int top_y, int fnt_sx, int fnt_sy, c_idx_t color_idx, rgb15_t rgb);
-PRIVATE void fb_32bpp_reverse_char_box(int left_x, int top_y, int fnt_sx, int fnt_sy, c_idx_t color_idx, rgb15_t rgb);
+PRIVATE void fb_32bpp_fill_char_box(int left_x, int top_y, int fnt_sx, int fnt_sy,
+ c_idx_t color_idx, rgb15_t rgb);
+PRIVATE void fb_32bpp_reverse_char_box(int left_x, int top_y, int fnt_sx, int fnt_sy,
+ c_idx_t color_idx, rgb15_t rgb);
 PRIVATE void fb_32bpp_paint_char_box(int left_x, int top_y,
  const u_char *font, int fnt_sx, int fnt_sy, int font_bytes_per_line,
  c_idx_t bc_idx, c_idx_t fc_idx, rgb15_t bc_rgb, rgb15_t fc_rgb);
@@ -203,7 +215,8 @@ void fb_set_metrics(void)
 	fb_fb_bytes_per_line = frame_buffer__.bytes_per_line;
 	fb_dots_per_pixel_x = cur_font_expand_x;
 	fb_dots_per_pixel_y = cur_font_expand_y;
-flf_d_printf("dots_per_pixel_x:%d, dots_per_pixel_y:%d\n", fb_dots_per_pixel_x, fb_dots_per_pixel_y);
+flf_d_printf("dots_per_pixel_x:%d, dots_per_pixel_y:%d\n",
+ fb_dots_per_pixel_x, fb_dots_per_pixel_y);
 }
 
 #ifdef ENABLE_8BPP
@@ -237,7 +250,8 @@ PRIVATE void fb_8bpp_clear_all(c_idx_t color_idx, rgb15_t rgb)
 	pal_idx = pallete_idx_from_color_idx(color_idx);
 	memset(fb_fb_start, pal_idx, fb_fb_mem_size);
 }
-PRIVATE void fb_8bpp_fill_char_box(int left_x, int top_y, int fnt_sx, int fnt_sy, c_idx_t color_idx, rgb15_t rgb)
+PRIVATE void fb_8bpp_fill_char_box(int left_x, int top_y, int fnt_sx, int fnt_sy,
+ c_idx_t color_idx, rgb15_t rgb)
 {
 	int bottom_y, char_sx;
 	u_char pal_idx;
@@ -253,7 +267,8 @@ PRIVATE void fb_8bpp_fill_char_box(int left_x, int top_y, int fnt_sx, int fnt_sy
 		memset(fb_fb_start + yy * fb_fb_bytes_per_line + left_x, pal_idx, char_sx);
 	}
 }
-PRIVATE void fb_8bpp_reverse_char_box(int left_x, int top_y, int fnt_sx, int fnt_sy, c_idx_t color_idx, rgb15_t rgb)
+PRIVATE void fb_8bpp_reverse_char_box(int left_x, int top_y, int fnt_sx, int fnt_sy,
+ c_idx_t color_idx, rgb15_t rgb)
 {
 	int bottom_y, char_sx, dots_x;
 	u_char pal_idx;
@@ -346,14 +361,16 @@ PRIVATE void fb_15bpp_clear_all(c_idx_t color_idx, rgb15_t rgb)
 	rgb15 = rgb15_from_color_idx(color_idx);
 	fb_15_16bpp_clear_all(rgb15);
 }
-PRIVATE void fb_15bpp_fill_char_box(int left_x, int top_y, int fnt_sx, int fnt_sy, c_idx_t color_idx, rgb15_t rgb)
+PRIVATE void fb_15bpp_fill_char_box(int left_x, int top_y, int fnt_sx, int fnt_sy,
+ c_idx_t color_idx, rgb15_t rgb)
 {
 	rgb15_t rgb15;
 
 	rgb15 = rgb15_from_color_idx(color_idx);
 	fb_15_16bpp_fill_char_box(left_x, top_y, fnt_sx, fnt_sy, rgb15);
 }
-PRIVATE void fb_15bpp_reverse_char_box(int left_x, int top_y, int fnt_sx, int fnt_sy, c_idx_t color_idx, rgb15_t rgb)
+PRIVATE void fb_15bpp_reverse_char_box(int left_x, int top_y, int fnt_sx, int fnt_sy,
+ c_idx_t color_idx, rgb15_t rgb)
 {
 	rgb15_t rgb15;
 
@@ -397,14 +414,16 @@ PRIVATE void fb_16bpp_clear_all(c_idx_t color_idx, rgb15_t rgb)
 	rgb16 = rgb16_from_color_idx(color_idx);
 	fb_15_16bpp_clear_all(rgb16);
 }
-PRIVATE void fb_16bpp_fill_char_box(int left_x, int top_y, int fnt_sx, int fnt_sy, c_idx_t color_idx, rgb15_t rgb)
+PRIVATE void fb_16bpp_fill_char_box(int left_x, int top_y, int fnt_sx, int fnt_sy,
+ c_idx_t color_idx, rgb15_t rgb)
 {
 	rgb16_t rgb16;
 
 	rgb16 = rgb16_from_color_idx(color_idx);
 	fb_15_16bpp_fill_char_box(left_x, top_y, fnt_sx, fnt_sy, rgb16);
 }
-PRIVATE void fb_16bpp_reverse_char_box(int left_x, int top_y, int fnt_sx, int fnt_sy, c_idx_t color_idx, rgb15_t rgb)
+PRIVATE void fb_16bpp_reverse_char_box(int left_x, int top_y, int fnt_sx, int fnt_sy,
+ c_idx_t color_idx, rgb15_t rgb)
 {
 	rgb16_t rgb16;
 
@@ -469,7 +488,8 @@ PRIVATE void fb_15_16bpp_fill_char_box(int left_x, int top_y, int fnt_sx, int fn
 		}
 	}
 }
-PRIVATE void fb_15_16bpp_reverse_char_box(int left_x, int top_y, int fnt_sx, int fnt_sy, u_short rgb)
+PRIVATE void fb_15_16bpp_reverse_char_box(int left_x, int top_y, int fnt_sx, int fnt_sy,
+ u_short rgb)
 {
 	int bottom_y, char_sx, dots_x;
 	int yy;
@@ -566,7 +586,8 @@ PRIVATE void fb_24bpp_clear_all(c_idx_t color_idx, rgb15_t rgb)
 		fb += SIZEOF24BPP;
 	}
 }
-PRIVATE void fb_24bpp_fill_char_box(int left_x, int top_y, int fnt_sx, int fnt_sy, c_idx_t color_idx, rgb15_t rgb)
+PRIVATE void fb_24bpp_fill_char_box(int left_x, int top_y, int fnt_sx, int fnt_sy,
+ c_idx_t color_idx, rgb15_t rgb)
 {
 	int bottom_y, char_sx, dots_x;
 	u_char b0, b1, b2;
@@ -589,7 +610,8 @@ PRIVATE void fb_24bpp_fill_char_box(int left_x, int top_y, int fnt_sx, int fnt_s
 		}
 	}
 }
-PRIVATE void fb_24bpp_reverse_char_box(int left_x, int top_y, int fnt_sx, int fnt_sy, c_idx_t color_idx, rgb15_t rgb)
+PRIVATE void fb_24bpp_reverse_char_box(int left_x, int top_y, int fnt_sx, int fnt_sy,
+ c_idx_t color_idx, rgb15_t rgb)
 {
 	int bottom_y, char_sx, dots_x;
 	u_char b0, b1, b2;
@@ -703,7 +725,8 @@ PRIVATE void fb_32bpp_clear_all(c_idx_t color_idx, rgb15_t rgb)
 		*fb++ = argb32;
 	}
 }
-PRIVATE void fb_32bpp_fill_char_box(int left_x, int top_y, int fnt_sx, int fnt_sy, c_idx_t color_idx, rgb15_t rgb)
+PRIVATE void fb_32bpp_fill_char_box(int left_x, int top_y, int fnt_sx, int fnt_sy,
+ c_idx_t color_idx, rgb15_t rgb)
 {
 	int bottom_y, char_sx, dots_x;
 	u_int32 argb32;
@@ -723,7 +746,8 @@ PRIVATE void fb_32bpp_fill_char_box(int left_x, int top_y, int fnt_sx, int fnt_s
 		}
 	}
 }
-PRIVATE void fb_32bpp_reverse_char_box(int left_x, int top_y, int fnt_sx, int fnt_sy, c_idx_t color_idx, rgb15_t rgb)
+PRIVATE void fb_32bpp_reverse_char_box(int left_x, int top_y, int fnt_sx, int fnt_sy,
+ c_idx_t color_idx, rgb15_t rgb)
 {
 	int bottom_y, char_sx, dots_x;
 	u_int32 argb32;

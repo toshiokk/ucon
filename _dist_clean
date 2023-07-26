@@ -1,3 +1,4 @@
 make clean
 rm -f __error autoscan.log becrash.log config.log _autotools.log _debug.log __test_ucon.log
+rm -f _cppcheck.out
 rmbak
