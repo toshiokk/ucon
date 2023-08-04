@@ -46,7 +46,7 @@ PRIVATE void vterm_init_status_line(vterm_t *vterm);
 PRIVATE void vterm_parse_func_status_line(vterm_t *vterm, u_char chr);
 #endif // ENABLE_STATUS_LINE
 
-PRIVATE void vterm_set_mode(vterm_t *vterm, u_char mode, bool_t on_off);
+PRIVATE void vterm_set_mode(vterm_t *vterm, u_short mode, bool_t on_off);
 PRIVATE int vterm_esc_set_attr(vterm_t *vterm, int num, int arg_idx);
 PRIVATE rgb15_t rgb15_from_color256_idx(u_char color256_idx);
 
@@ -709,7 +709,7 @@ PRIVATE void vterm_parse_func_status_line(vterm_t *vterm, u_char chr)
 }
 #endif // ENABLE_STATUS_LINE
 
-PRIVATE void vterm_set_mode(vterm_t *vterm, u_char mode, bool_t on_off)
+PRIVATE void vterm_set_mode(vterm_t *vterm, u_short mode, bool_t on_off)
 {
 	switch(mode) {
 	case 4:		// Enable / Disable insert mode
@@ -720,6 +720,9 @@ PRIVATE void vterm_set_mode(vterm_t *vterm, u_char mode, bool_t on_off)
 	case 25:	// Enable / Disable cursor display
 		vterm_set_cursor_on_off(vterm, on_off);
 		break;
+	case 1004:	// Enable / Disable reporting focus
+	case 1049:	// Enable / Disable alternative screen buffer
+	case 2004:	// Turn on / off bracketed paste mode
 	}
 }
 
