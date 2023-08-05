@@ -803,9 +803,9 @@ PRIVATE int vterm_esc_set_attr(vterm_t *vterm, int num, int arg_idx)
 		} else if (num <= 49) {
 			color_idx = COLOR_DEF_BC;
 		} else if (90 <= num && num <= 97) {
-			color_idx = (num - 90) | COLOR_HIGHLIGHT;		// bright fg color [8, 15]
+			color_idx = (num - 90) | COLOR_HIGHLIGHT;	// bright fg color [8, 15]
 		} else if (100 <= num && num <= 107) {
-			color_idx = (num - 100) | COLOR_HIGHLIGHT;		// bright bg color [8, 15]
+			color_idx = (num - 100) | COLOR_HIGHLIGHT;	// bright bg color [8, 15]
 		}
 		if ((num <= 39) || (90 <= num && num <= 97)) {
 			pen_set_fgc_idx(&(vterm->pen), color_idx);
@@ -819,10 +819,12 @@ PRIVATE int vterm_esc_set_attr(vterm_t *vterm, int num, int arg_idx)
 			if (get_csi_arg(arg_idx+1) == 5) {
 				if (num == 38) {
 					// ESC [ 38 ; 5 ; {color_idx} m
-					pen_set_fc_rgb_direct(&(vterm->pen), rgb15_from_color256_idx(get_csi_arg(arg_idx+2)));
+					pen_set_fc_rgb_direct(&(vterm->pen),
+					 rgb15_from_color256_idx(get_csi_arg(arg_idx+2)));
 				} else {
 					// ESC [ 48 ; 5 ; {color_idx} m
-					pen_set_bc_rgb_direct(&(vterm->pen), rgb15_from_color256_idx(get_csi_arg(arg_idx+2)));
+					pen_set_bc_rgb_direct(&(vterm->pen),
+					 rgb15_from_color256_idx(get_csi_arg(arg_idx+2)));
 				}
 				arg_idx += (3-1);	// eat 3 arguments
 			}
@@ -833,14 +835,14 @@ PRIVATE int vterm_esc_set_attr(vterm_t *vterm, int num, int arg_idx)
 					// ESC [ 38 ; 2 ; {red} ; {green} ; {blue} m
 					pen_set_fc_rgb_direct(&(vterm->pen),
 					 rgb15_from_r_g_b_24(get_csi_arg(arg_idx+2),
-					  get_csi_arg(arg_idx+3),
-					  get_csi_arg(arg_idx+4)));
+										 get_csi_arg(arg_idx+3),
+										 get_csi_arg(arg_idx+4)));
 				} else {
 					// ESC [ 48 ; 2 ; {red} ; {green} ; {blue} m
 					pen_set_bc_rgb_direct(&(vterm->pen),
 					 rgb15_from_r_g_b_24(get_csi_arg(arg_idx+2),
-					  get_csi_arg(arg_idx+3),
-					  get_csi_arg(arg_idx+4)));
+										 get_csi_arg(arg_idx+3),
+										 get_csi_arg(arg_idx+4)));
 				}
 				arg_idx += (5-1);	// eat 5 arguments
 			}
