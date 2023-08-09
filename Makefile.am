@@ -19,6 +19,9 @@ ucon_SOURCES = \
 		vtermlow.c vtermlow.h \
 		term.cpp term.h
 
+AM_CFLAGS = -Wformat-truncation=0
+#AM_CFLAGS = -fno-stack-protector  # WORKAROUND: imj module cause Abort on stack smashing
+
 #ucon_LDADD = -lutil
 # -lpng
 
@@ -58,5 +61,5 @@ install-data-local:
 	$(INSTALL_DATA) im/imj.dic $(HOME)/.imj
 	echo "USER: $(USER)"
 	echo "HOME: $(HOME)"
+
 #
-#AM_CFLAGS = -fno-stack-protector  # WORKAROUND: imj module cause Abort on stack smashing

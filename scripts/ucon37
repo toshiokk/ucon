@@ -1,0 +1,2 @@
+echo "Starting ucon (12) ..."
+ucon -f 12 -x 3 -y 4 -w "$@"

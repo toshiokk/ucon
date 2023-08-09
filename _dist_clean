@@ -1,4 +1,5 @@
 make clean
-rm -f __error autoscan.log becrash.log config.log _autotools.log _debug.log __test_ucon.log
-rm -f _cppcheck.out
+rm -fv Makefile.in configure.scan configure config.h.in* config.status autom4te.cache/*
+rm -fv __error autoscan.log becrash.log config.log _autotools.log _debug.log __test_ucon.log
+rm -fv _cppcheck.out
 rmbak
