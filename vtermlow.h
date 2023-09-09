@@ -182,14 +182,15 @@ typedef struct vterm_ {
 
 	char tab_size;			/* TAB サイズ */
 	bool_t insert;			/* 挿入モード */
+	bool_t dec_sp_gr;		/* DEC Special Graphics mode */
 	enum {
 		ESC_ST_0,
-		ESC_ST_ESC_1,
-		ESC_ST_CSI_2,
-		ESC_ST_OSC_3,
-		ESC_ST_LPAR_4,
+		ESC_ST_1_ESC,
+		ESC_ST_2_CSI,
+		ESC_ST_3_OSC,
+		ESC_ST_4_LPAR,
 #ifdef ENABLE_STATUS_LINE
-		ESC_ST_SL_5
+		ESC_ST_5_SL
 #endif // ENABLE_STATUS_LINE
 	} esc_seq_parse_state;
 

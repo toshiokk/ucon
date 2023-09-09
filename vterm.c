@@ -69,6 +69,9 @@ PRIVATE void clear_csi_args(void);
 PRIVATE int get_csi_arg_idx(void);
 PRIVATE int parse_csi_args(vterm_t *vterm, u_char chr);
 PRIVATE int get_csi_arg(int arg_idx);
+
+PRIVATE wchar_t subst_dec_sp_gr_char(wchar_t ucs21);
+
 #ifdef ENABLE_DEBUG
 PRIVATE void dump_csi_args(char chr);
 #endif // ENABLE_DEBUG
@@ -102,6 +105,7 @@ void vterm_init(vterm_t *vterm, int columns, int lines)
 
 	vterm->tab_size = 8;
 	vterm->insert = FALSE;
+	vterm->dec_sp_gr = FALSE;
 	vterm->esc_seq_parse_state = ESC_ST_0;
 
 	vterm_reset_utf8_state(vterm);
@@ -183,22 +187,30 @@ int vterm_emulate_char(vterm_t *vterm, u_char chr)
 			}
 		}
 		break;
-	case ESC_ST_ESC_1:
+	case ESC_ST_1_ESC:	// ESC
 		vterm_parse_func_esc(vterm, chr);
 		break;
-	case ESC_ST_CSI_2:
+	case ESC_ST_2_CSI:	// ESC [
 		vterm_parse_func_csi(vterm, chr);
 		break;
-	case ESC_ST_OSC_3:
+	case ESC_ST_3_OSC:	// ESC ]
 		vterm_parse_func_osc(vterm, chr);
 		break;
-	case ESC_ST_LPAR_4:
-		// ESC '(' 'B' : ASCII code set
-		// nothing to do
+	case ESC_ST_4_LPAR:	// ESC (
+		switch (chr) {
+		case '0':		// ESC '(' '0' : DEC Special Graphics
+			vterm->dec_sp_gr = TRUE;
+			break;
+		case 'B':		// ESC '(' 'B' : ASCII code set
+			// FALLTHROUGH
+		default:
+			vterm->dec_sp_gr = FALSE;
+			break;
+		}
 		vterm->esc_seq_parse_state = ESC_ST_0;
 		break;
 #ifdef ENABLE_STATUS_LINE
-	case ESC_ST_SL_5:
+	case ESC_ST_5_SL:
 		vterm_parse_func_status_line(vterm, chr);
 		break;
 #endif // ENABLE_STATUS_LINE
@@ -253,7 +265,7 @@ PRIVATE int vterm_iso_C0_set(vterm_t *vterm, u_char chr)
 		vterm_pen_set_x(vterm, 0);
 		break;
 	case ISO_ESC:
-		vterm->esc_seq_parse_state = ESC_ST_ESC_1;
+		vterm->esc_seq_parse_state = ESC_ST_1_ESC;
 		break;
 	case ISO_LS1:
 		// do nothing
@@ -319,6 +331,10 @@ PRIVATE void vterm_put_ucs21_char(vterm_t *vterm, wchar_t ucs21)
 	int width_in_pixels;
 	int width;
 
+	if (vterm->dec_sp_gr) {
+		// substitute to graphic character
+		ucs21 = subst_dec_sp_gr_char(ucs21);
+	}
 	// get font width from font
 	width_in_pixels = font_get_glyph_width(cur_font, ucs21);
 	if (width_in_pixels <= cur_font->font_width)
@@ -410,11 +426,11 @@ PRIVATE void vterm_parse_func_esc(vterm_t *vterm, u_char chr)
 	vterm->esc_seq_parse_state = ESC_ST_0;
 	switch(chr) {
 	case '['/*Fe(ISO_CSI)*/:	/* ESC [ */
-		vterm->esc_seq_parse_state = ESC_ST_CSI_2;
+		vterm->esc_seq_parse_state = ESC_ST_2_CSI;
 		clear_csi_args();
 		break;
 	case ']'/*Fe(ISO_OSC)*/:	/* ESC ] */
-		vterm->esc_seq_parse_state = ESC_ST_OSC_3;
+		vterm->esc_seq_parse_state = ESC_ST_3_OSC;
 		clear_csi_args();
 		break;
 	case 'D'/*Fe(TERM_IND)*/: 	/* ESC D */
@@ -452,7 +468,7 @@ PRIVATE void vterm_parse_func_esc(vterm_t *vterm, u_char chr)
 	case '%'/*ISO_DOCS*/:		/* % */
 		break;
 	case '('/*ISO_GZD4*/:		/* ESC ( */
-		vterm->esc_seq_parse_state = ESC_ST_LPAR_4;
+		vterm->esc_seq_parse_state = ESC_ST_4_LPAR;
 		break;
 	case ','/*MULE__GZD6*/:		/* , */
 		break;
@@ -625,9 +641,9 @@ PRIVATE void vterm_parse_func_csi(vterm_t *vterm, u_char chr)
 		break;
 	case '?':			// ESC [ {n} ?
 #ifdef ENABLE_STATUS_LINE
-		vterm->esc_seq_parse_state = ESC_ST_SL_5;
+		vterm->esc_seq_parse_state = ESC_ST_5_SL;
 #else
-		vterm->esc_seq_parse_state = ESC_ST_CSI_2;
+		vterm->esc_seq_parse_state = ESC_ST_2_CSI;
 #endif // ENABLE_STATUS_LINE
 		break;
 	default:
@@ -702,7 +718,7 @@ PRIVATE void vterm_parse_func_status_line(vterm_t *vterm, u_char chr)
 		vterm->status_line = SL_NONE;
 		break;
 	default:
-		vterm->esc_seq_parse_state = ESC_ST_CSI_2;
+		vterm->esc_seq_parse_state = ESC_ST_2_CSI;
 		vterm_parse_func_csi(vterm, chr);
 		break;
 	}
@@ -1027,6 +1043,72 @@ PRIVATE int get_csi_arg(int arg_idx)
 	}
 	return 0;
 }
+
+// DEC Special Graphics support -----------------------------------------------
+// UTF8 codes for DEC Special Graphics
+#define	DEC_SP_GR_CHAR_BEGIN	'`'
+#define	DEC_SP_GR_CHAR_END		'~'
+#define	DEC_SP_GR_CHARS			(DEC_SP_GR_CHAR_END - DEC_SP_GR_CHAR_BEGIN + 1)
+
+char *dec_sp_gr_utf8[DEC_SP_GR_CHARS] = {
+	"♦", // `
+	"▒", // a
+	"␉", // b
+	"␌", // c
+	"␍", // d
+	"␊", // e
+	"°", //  f
+	"±", //  g
+	"␤", // h
+	"␋", // i
+	"┘", // j
+	"┐", // k
+	"┌", // l
+	"└", // m
+	"┼", // n
+	"─", // o
+	"─", // p
+	"─", // q
+	"─", // r
+	"─", // s
+	"├", // t
+	"┤", // u
+	"┴", // v
+	"┬", // w
+	"│", // x
+	"≤", // y
+	"≥", // z
+	"π", //  {
+	"≠", // |
+	"£", //  }
+	"·", //  ~
+};
+wchar_t dec_sp_gr_ucs21[DEC_SP_GR_CHARS];
+
+PRIVATE void make_ucs21_tbl_for_dec_sp_gr(void)
+{
+	static char converted = 0;
+	wchar_t ucs21;
+
+	if (converted == 0) {
+		for (int idx = 0; idx < DEC_SP_GR_CHARS; idx++) {
+#define MAX_UTF8C_BYTES			4
+			mbtowc(&ucs21, dec_sp_gr_utf8[idx], MAX_UTF8C_BYTES);
+			dec_sp_gr_ucs21[idx] = ucs21;
+		}
+	}
+	converted = 1;
+}
+PRIVATE wchar_t subst_dec_sp_gr_char(wchar_t ucs21)
+{
+	make_ucs21_tbl_for_dec_sp_gr();
+	if (DEC_SP_GR_CHAR_BEGIN <= ucs21 && ucs21 <= DEC_SP_GR_CHAR_END) {
+		return dec_sp_gr_ucs21[ucs21 - DEC_SP_GR_CHAR_BEGIN];
+	}
+	return ucs21;	// No substitution
+}
+//-----------------------------------------------------------------------------
+
 #ifdef ENABLE_DEBUG
 PRIVATE void dump_csi_args(char chr)
 {

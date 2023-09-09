@@ -1,4 +1,4 @@
 rm_bak
 __m clean
 cd ..
-tar czvf ucon`yymmdd-hhmm`.tgz src/*
+tar czvf ucon`yymmdd-hhmm`.tgz ucon/*
