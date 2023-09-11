@@ -1,7 +1,7 @@
 rm -f _diff.txt
 rm -f _sdiff.txt
 
-old_dir=../old/src
+old_dir=../old/ucon
 
 diff_one()
 {

@@ -1,229 +1,97 @@
-kdiff3 ../old/src/config.h config.h ==================================================
+kdiff3 ../old/ucon/config.h config.h ==================================================
 14c14
-< #define ENABLE_255COLUMNS 1
+< /* #undef ENABLE_255COLUMNS */
 ---
-> /* #undef ENABLE_255COLUMNS */
-kdiff3 ../old/src/fbbpp.h fbbpp.h ==================================================
-66a67,70
-> #ifdef ENABLE_DEBUG
-> void test_fill_top_of_fb(void);
-> #endif // ENABLE_DEBUG
-> 
-kdiff3 ../old/src/fbcommon.h fbcommon.h ==================================================
-64c64
-< void fb_close(frame_buffer_t *fb);
+> #define ENABLE_255COLUMNS 1
+kdiff3 ../old/ucon/fbbpp.h fbbpp.h ==================================================
+kdiff3 ../old/ucon/fbcommon.h fbcommon.h ==================================================
+kdiff3 ../old/ucon/font.h font.h ==================================================
+kdiff3 ../old/ucon/hex.h hex.h ==================================================
+kdiff3 ../old/ucon/main.h main.h ==================================================
+kdiff3 ../old/ucon/message.h message.h ==================================================
+kdiff3 ../old/ucon/mydebug.h mydebug.h ==================================================
+kdiff3 ../old/ucon/myminmax.h myminmax.h ==================================================
+kdiff3 ../old/ucon/myselect.h myselect.h ==================================================
+kdiff3 ../old/ucon/mytypes.h mytypes.h ==================================================
+kdiff3 ../old/ucon/pen.h pen.h ==================================================
+kdiff3 ../old/ucon/picofont.h picofont.h ==================================================
+kdiff3 ../old/ucon/sequence.h sequence.h ==================================================
+kdiff3 ../old/ucon/stdincs.h stdincs.h ==================================================
+kdiff3 ../old/ucon/term.h term.h ==================================================
+37d36
+< ///	int fd_tty_vt;
+kdiff3 ../old/ucon/ucon.h ucon.h ==================================================
+kdiff3 ../old/ucon/util.h util.h ==================================================
+kdiff3 ../old/ucon/vterm.h vterm.h ==================================================
+kdiff3 ../old/ucon/vtermlow.h vtermlow.h ==================================================
+kdiff3 ../old/ucon/fbbpp.c fbbpp.c ==================================================
+kdiff3 ../old/ucon/fbcommon.c fbcommon.c ==================================================
+kdiff3 ../old/ucon/font.c font.c ==================================================
+95,96c95,99
+< PRIVATE int comp_font_multi_t(const void *aa, const void *bb);
+< PRIVATE int calc_font_pixel_size(font_multi_t *font_multi);
 ---
-> int fb_close(frame_buffer_t *fb);
-kdiff3 ../old/src/font.h font.h ==================================================
-kdiff3 ../old/src/hex.h hex.h ==================================================
-kdiff3 ../old/src/main.h main.h ==================================================
-kdiff3 ../old/src/message.h message.h ==================================================
-kdiff3 ../old/src/mydebug.h mydebug.h ==================================================
-11a12,13
-> ///
-> #define ENABLE_DEBUG
-kdiff3 ../old/src/myminmax.h myminmax.h ==================================================
-kdiff3 ../old/src/myselect.h myselect.h ==================================================
-kdiff3 ../old/src/mytypes.h mytypes.h ==================================================
-kdiff3 ../old/src/pen.h pen.h ==================================================
-kdiff3 ../old/src/picofont.h picofont.h ==================================================
-kdiff3 ../old/src/sequence.h sequence.h ==================================================
-kdiff3 ../old/src/stdincs.h stdincs.h ==================================================
-kdiff3 ../old/src/term.h term.h ==================================================
-kdiff3 ../old/src/ucon.h ucon.h ==================================================
-kdiff3 ../old/src/util.h util.h ==================================================
-kdiff3 ../old/src/vterm.h vterm.h ==================================================
-kdiff3 ../old/src/vtermlow.h vtermlow.h ==================================================
-122c122
-< //  Lap top
+> PRIVATE int comp_font_area(const void *aa, const void *bb);
+> PRIVATE int comp_font_width(const void *aa, const void *bb);
+> PRIVATE int calc_font_area(font_multi_t *font_multi);
+> PRIVATE int calc_font_width(font_multi_t *font_multi);
+> PRIVATE int calc_font_height(font_multi_t *font_multi);
+106c109,110
+< 	qsort(font_multi_table, FONT_MULTI_TABLE_ENTRIES, sizeof(font_multi_t), comp_font_multi_t);
 ---
-> //  Standard Lap top
-125,130d124
-< #ifdef ENABLE_255COLUMNS
-< # define MAX_TERM_COLS	274		// NOTE: If your terminal interface supports columns > 254
-< #else // ENABLE_255COLUMNS
-< # define MAX_TERM_COLS	254		// WORKAROUND: ncurses doesn't support columns > 254
-< #endif // ENABLE_255COLUMNS
-< #define MAX_TERM_LINES	77
-134,135d127
-< ///#define MAX_TERM_COLS	384
-< ///#define MAX_TERM_LINES	108
-138a131,139
-> #ifdef ENABLE_255COLUMNS
-> // NOTE: If your terminal interface supports columns > 254
-> ///# define MAX_TERM_COLS	274
-> # define MAX_TERM_COLS	384
-> #else // ENABLE_255COLUMNS
-> # define MAX_TERM_COLS	254		// WORKAROUND: ncurses doesn't support columns > 254
-> #endif // ENABLE_255COLUMNS
-> ///#define MAX_TERM_LINES	77
-> #define MAX_TERM_LINES	108
-211,214d211
-< typedef struct vt_state_ {
-< 	bool_t active;				// selected
-< } vt_state_t;
-< 
-227,229d223
-< 
-< void vterm_set_active(void);
-< void vterm_set_inactive(void);
-kdiff3 ../old/src/fbbpp.c fbbpp.c ==================================================
-115a116
-> 
-194,195c195
-< ///
-< #define I810_FB_DUMMY_ACCESS
+> 	qsort(font_multi_table, FONT_MULTI_TABLE_ENTRIES, sizeof(font_multi_t), comp_font_area);
+> 	qsort(font_multi_table, FONT_MULTI_TABLE_ENTRIES, sizeof(font_multi_t), comp_font_width);
+125c129
+< PRIVATE int comp_font_multi_t(const void *aa, const void *bb)
 ---
-> ///TTT#define I810_FB_DUMMY_ACCESS
-810a811,825
-> 
-> #ifdef ENABLE_DEBUG
-> void test_fill_top_of_fb(void)
+> PRIVATE int comp_font_area(const void *aa, const void *bb)
+127c131
+< 	return calc_font_pixel_size((font_multi_t *)aa) - calc_font_pixel_size((font_multi_t *)bb);
+---
+> 	return calc_font_area((font_multi_t *)aa) - calc_font_area((font_multi_t *)bb);
+129c133,141
+< PRIVATE int calc_font_pixel_size(font_multi_t *font_multi)
+---
+> PRIVATE int comp_font_width(const void *aa, const void *bb)
 > {
-> #define TEST_FILL_SIZE	(80 * 25 * 4 * 5)
-> 	static u_char base = 0x00;
-> 	volatile u_char *fb;
-> _MFLF_
-> 	fb = fb_fb_start;
-> 	for (size_t bytes = 0; bytes < TEST_FILL_SIZE; bytes++) {
-> 		fb[bytes] = base + bytes;
+> 	int diff = calc_font_width((font_multi_t *)aa) - calc_font_width((font_multi_t *)bb);
+> 	if (diff) {
+> 		return diff;
 > 	}
-> 	base += 0x10;
+> 	return calc_font_height((font_multi_t *)aa) - calc_font_height((font_multi_t *)bb);
 > }
-> #endif // ENABLE_DEBUG
-kdiff3 ../old/src/fbcommon.c fbcommon.c ==================================================
-250c250
-< void fb_close(frame_buffer_t *fb)
----
-> int fb_close(frame_buffer_t *fb)
-251a252,253
-> 	int ret = 0;
+> PRIVATE int calc_font_area(font_multi_t *font_multi)
+136a149,163
+> PRIVATE int calc_font_width(font_multi_t *font_multi)
+> {
+> 	font_t *font;
 > 
-264,267c266,276
-< 	if (fb->fd_fb >= 0)
-< 		close(fb->fd_fb);
-< 	if (fb->fd_tty0 >= 0)
-< 		close(fb->fd_tty0);
+> 	font = &fonts__[font_multi->font_idx];
+> 	return font->font_width * font_multi->multi_x;
+> }
+> PRIVATE int calc_font_height(font_multi_t *font_multi)
+> {
+> 	font_t *font;
+> 
+> 	font = &fonts__[font_multi->font_idx];
+> 	return font->font_height * font_multi->multi_y;
+> }
+> 
+kdiff3 ../old/ucon/hex.c hex.c ==================================================
+kdiff3 ../old/ucon/main.c main.c ==================================================
+kdiff3 ../old/ucon/message.c message.c ==================================================
+kdiff3 ../old/ucon/myminmax.c myminmax.c ==================================================
+kdiff3 ../old/ucon/myselect.c myselect.c ==================================================
+kdiff3 ../old/ucon/pen.c pen.c ==================================================
+kdiff3 ../old/ucon/picofont.c picofont.c ==================================================
+kdiff3 ../old/ucon/term.cpp term.cpp ==================================================
+253c253,254
+< 		selected = my_select_msec(STDIN_FILENO, term->fd_pty_master, -1, -1, -1, -1, SELECT_TIMEOUT_MSEC);
 ---
-> 	if (fb->fd_fb >= 0) {
-> 		if (close(fb->fd_fb) < 0) {
-> 			ret = -1;
-> 		}
-> 	}
-> 	if (fb->fd_tty0 >= 0) {
-> 		if (close(fb->fd_tty0) < 0) {
-> 			ret = -1;
-> 		}
-> 	}
-> 	return ret;
-kdiff3 ../old/src/font.c font.c ==================================================
-kdiff3 ../old/src/hex.c hex.c ==================================================
-kdiff3 ../old/src/main.c main.c ==================================================
-170a171
-> 			app->verbose = TRUE;	// "-d" option enables "-v" too
-kdiff3 ../old/src/message.c message.c ==================================================
-kdiff3 ../old/src/myminmax.c myminmax.c ==================================================
-kdiff3 ../old/src/myselect.c myselect.c ==================================================
-kdiff3 ../old/src/pen.c pen.c ==================================================
-kdiff3 ../old/src/picofont.c picofont.c ==================================================
-kdiff3 ../old/src/term.cpp term.cpp ==================================================
-64d63
-< int sigterm_signaled = 0;
-65a65
-> int sigterm_signaled = 0;
-88c88,89
-< PRIVATE void term_return_to_kd_text_mode(term_t *term);
----
-> PRIVATE void term_restore_kd_text_mode(term_t *term);
-> #if 0
-89a91
-> #endif
-235d236
-< ///
-540c541
-< 	term_return_to_kd_text_mode(term);
----
-> 	term_restore_kd_text_mode(term);
-543c544
-< 	fb_close(&frame_buffer__);
----
-> 	ret_val_eater = fb_close(&frame_buffer__);
-600c601
-< PRIVATE void term_return_to_kd_text_mode(term_t *term)
----
-> PRIVATE void term_restore_kd_text_mode(term_t *term)
-604a606
-> #if 0
-617a620
-> #endif
-710c713
-< 	if (strncmp("/dev/", term->pty_slave_name, 5) == 0)
----
-> 	if (strncmp("/dev/", term->pty_slave_name, 5) == 0) {
-711a715
-> 	}
-kdiff3 ../old/src/util.c util.c ==================================================
-kdiff3 ../old/src/vterm.c vterm.c ==================================================
-161c161
-< dump_string(string, bytes);
----
-> ///dump_string(string, bytes);
-165c165
-< ///mflf_d_printf("%02x\n", chr);
----
-> ///mflf_d_printf("%02x[%c]\n", chr, isgraph(chr) ? chr : '.');
-kdiff3 ../old/src/vtermlow.c vtermlow.c ==================================================
-40c40
-< vt_state_t vt_state__;
----
-> bool_t vt_state_active;				// selected
-81c81
-< 	vt_state__.active = 0;
----
-> 	vt_state_active = 0;
-128c128
-< 	if (sig_release_signaled > sig_release_replyed) {
----
-> 	if (sig_release_signaled != sig_release_replyed) {
-130c130
-< 		vterm_set_inactive();
----
-> 		vt_state_active = 0;
-141c141
-< 	if (sig_acquire_signaled > sig_acquire_replyed) {
----
-> 	if (sig_acquire_signaled != sig_acquire_replyed) {
-147c147
-< 		vterm_set_active();
----
-> 		vt_state_active = 1;
-173,181d172
-< void vterm_set_active(void)
-< {
-< 	vt_state__.active = 1;
-< }
-< void vterm_set_inactive(void)
-< {
-< 	vt_state__.active = 0;
-< }
-< /*---------------------------------------------------------------------------*/
-362c353,355
-< 	if (vt_state__.active == 0)
----
-> mflf_d_printf("vt_state_active: %d\n", vt_state_active);
-> 	if (vt_state_active == 0) {
-> mflf_d_printf("vt_state_active == 0\n");
-363a357
-> 	}
-455c449,451
-< 	if (vt_state__.active == 0)
----
-> mflf_d_printf("vt_state_active: %d\n", vt_state_active);
-> 	if (vt_state_active == 0) {
-> mflf_d_printf("vt_state_active == 0\n");
-456a453
-> 	}
-528a526,528
-> #ifdef ENABLE_DEBUG
-> ///	test_fill_top_of_fb();
-> #endif // ENABLE_DEBUG
+> 		selected = my_select_msec(STDIN_FILENO, term->fd_pty_master, -1, -1, -1, -1,
+> 		 SELECT_TIMEOUT_MSEC);
+444d444
+< ///	term->fd_tty_vt = -1;
+kdiff3 ../old/ucon/util.c util.c ==================================================
+kdiff3 ../old/ucon/vterm.c vterm.c ==================================================
+kdiff3 ../old/ucon/vtermlow.c vtermlow.c ==================================================

@@ -34,7 +34,6 @@ extern "C" {
 
 typedef struct term_ {
 	int orig_kdmode;	// original KDMODE(KD_TEXT or KD_GRAPHICS)
-///	int fd_tty_vt;
 	int fd_console;		// /dev/console
 	int fd_pty_master;	// master end of pseudo-tty (terminal)
 	int fd_pty_slave;	// slave end of pseudo-tty (application)

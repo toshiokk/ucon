@@ -250,7 +250,8 @@ mflf_d_printf("SIGUSR2(acquire) signaled\n");
 		}
 #endif
 #define SELECT_TIMEOUT_MSEC		100
-		selected = my_select_msec(STDIN_FILENO, term->fd_pty_master, -1, -1, -1, -1, SELECT_TIMEOUT_MSEC);
+		selected = my_select_msec(STDIN_FILENO, term->fd_pty_master, -1, -1, -1, -1,
+		 SELECT_TIMEOUT_MSEC);
 ///mflf_d_printf("my_select(): %04x\n", selected);
 		if (selected < 0) {
 			_ERR_
@@ -441,7 +442,6 @@ PRIVATE int ret_val_eater;
 PRIVATE int term_init(term_t *term)
 {
 	term->orig_kdmode = -1;
-///	term->fd_tty_vt = -1;
 	term->fd_console = -1;
 	term->fd_pty_master = -1;
 	term->fd_pty_slave = -1;

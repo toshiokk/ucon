@@ -92,8 +92,11 @@ font_multi_t font_multi_table[] = {
 };
 #define	FONT_MULTI_TABLE_ENTRIES	(sizeof(font_multi_table) / sizeof(font_multi_table[0]))
 
-PRIVATE int comp_font_multi_t(const void *aa, const void *bb);
-PRIVATE int calc_font_pixel_size(font_multi_t *font_multi);
+PRIVATE int comp_font_area(const void *aa, const void *bb);
+PRIVATE int comp_font_width(const void *aa, const void *bb);
+PRIVATE int calc_font_area(font_multi_t *font_multi);
+PRIVATE int calc_font_width(font_multi_t *font_multi);
+PRIVATE int calc_font_height(font_multi_t *font_multi);
 PRIVATE int font_select__(int font_size, int multi_x, int multi_y);
 int font_select(int font_size, int multi_x, int multi_y)
 {
@@ -103,7 +106,8 @@ flf_d_printf("font_multi_table entries: %d\n", FONT_MULTI_TABLE_ENTRIES);
 ///
 #define	SORT_BY_SHAPE_SIZE
 #ifdef	SORT_BY_SHAPE_SIZE
-	qsort(font_multi_table, FONT_MULTI_TABLE_ENTRIES, sizeof(font_multi_t), comp_font_multi_t);
+	qsort(font_multi_table, FONT_MULTI_TABLE_ENTRIES, sizeof(font_multi_t), comp_font_area);
+	qsort(font_multi_table, FONT_MULTI_TABLE_ENTRIES, sizeof(font_multi_t), comp_font_width);
 #endif
 	if ((font_multi_idx = font_select__(font_size, multi_x, multi_y)) >= 0) {
 		return font_multi_idx;
@@ -122,11 +126,19 @@ flf_d_printf("font_multi_table entries: %d\n", FONT_MULTI_TABLE_ENTRIES);
 	}
 	return -1;	// no font selected
 }
-PRIVATE int comp_font_multi_t(const void *aa, const void *bb)
+PRIVATE int comp_font_area(const void *aa, const void *bb)
 {
-	return calc_font_pixel_size((font_multi_t *)aa) - calc_font_pixel_size((font_multi_t *)bb);
+	return calc_font_area((font_multi_t *)aa) - calc_font_area((font_multi_t *)bb);
 }
-PRIVATE int calc_font_pixel_size(font_multi_t *font_multi)
+PRIVATE int comp_font_width(const void *aa, const void *bb)
+{
+	int diff = calc_font_width((font_multi_t *)aa) - calc_font_width((font_multi_t *)bb);
+	if (diff) {
+		return diff;
+	}
+	return calc_font_height((font_multi_t *)aa) - calc_font_height((font_multi_t *)bb);
+}
+PRIVATE int calc_font_area(font_multi_t *font_multi)
 {
 	font_t *font;
 
@@ -134,6 +146,21 @@ PRIVATE int calc_font_pixel_size(font_multi_t *font_multi)
 	return font->font_width * font_multi->multi_x
 	 * font->font_height * font_multi->multi_y;
 }
+PRIVATE int calc_font_width(font_multi_t *font_multi)
+{
+	font_t *font;
+
+	font = &fonts__[font_multi->font_idx];
+	return font->font_width * font_multi->multi_x;
+}
+PRIVATE int calc_font_height(font_multi_t *font_multi)
+{
+	font_t *font;
+
+	font = &fonts__[font_multi->font_idx];
+	return font->font_height * font_multi->multi_y;
+}
+
 PRIVATE int font_select__(int font_size, int multi_x, int multi_y)
 {
 	int font_multi_idx;
