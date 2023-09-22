@@ -1,5 +1,5 @@
 LANG=C
 ./__m
-sudo make install
+sd make install
 #sd make -f Makefile.man install
 sudo chown $USER -Rv $HOME/.imj

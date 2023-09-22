@@ -329,10 +329,14 @@ PRIVATE void call_interval_timer_process(vterm_t *vterm)
 ///
 #define ON_THE_FLY_FONT_CHANGE
 #ifdef ON_THE_FLY_FONT_CHANGE
-#define DEC_FONT_SIZE_KEY_STR	"\x1b\x3d"	// Alt-'='
-#define DEC_FONT_SIZE_KEY_STR_LEN	2
-#define INC_FONT_SIZE_KEY_STR	"\x1b\x2b"	// Alt-'+'
-#define INC_FONT_SIZE_KEY_STR_LEN	2
+#define DEC_FONT_SIZE_KEY1_STR	"\x1b\x2d"	// Alt-'-'
+#define DEC_FONT_SIZE_KEY1_STR_LEN	2
+#define DEC_FONT_SIZE_KEY2_STR	"\x1b\x5f"	// Alt-'_'
+#define DEC_FONT_SIZE_KEY2_STR_LEN	2
+#define INC_FONT_SIZE_KEY1_STR	"\x1b\x2b"	// Alt-'+'
+#define INC_FONT_SIZE_KEY1_STR_LEN	2
+#define INC_FONT_SIZE_KEY2_STR	"\x1b\x3d"	// Alt-'='
+#define INC_FONT_SIZE_KEY2_STR_LEN	2
 #endif // ON_THE_FLY_FONT_CHANGE
 
 PRIVATE void check_hot_key(term_t *term, char *buf, int input_len)
@@ -349,13 +353,17 @@ PRIVATE void check_hot_key(term_t *term, char *buf, int input_len)
 	}
 #endif // ENABLE_SCREEN_SHOT
 #ifdef ON_THE_FLY_FONT_CHANGE
-	if ((input_len == DEC_FONT_SIZE_KEY_STR_LEN)
-	  && (strncmp(buf, DEC_FONT_SIZE_KEY_STR, DEC_FONT_SIZE_KEY_STR_LEN) == 0)) {
+	if (((input_len == DEC_FONT_SIZE_KEY1_STR_LEN)
+	  && (strncmp(buf, DEC_FONT_SIZE_KEY1_STR, DEC_FONT_SIZE_KEY1_STR_LEN) == 0))
+	 || ((input_len == DEC_FONT_SIZE_KEY2_STR_LEN)
+	  && (strncmp(buf, DEC_FONT_SIZE_KEY2_STR, DEC_FONT_SIZE_KEY2_STR_LEN) == 0))) {
 		// Change font size smaller
 		term_change_font_size(term, -1);
 	}
-	if ((input_len == INC_FONT_SIZE_KEY_STR_LEN)
-	  && (strncmp(buf, INC_FONT_SIZE_KEY_STR, INC_FONT_SIZE_KEY_STR_LEN) == 0)) {
+	if (((input_len == INC_FONT_SIZE_KEY1_STR_LEN)
+	  && (strncmp(buf, INC_FONT_SIZE_KEY1_STR, INC_FONT_SIZE_KEY1_STR_LEN) == 0))
+	 || ((input_len == INC_FONT_SIZE_KEY2_STR_LEN)
+	  && (strncmp(buf, INC_FONT_SIZE_KEY2_STR, INC_FONT_SIZE_KEY2_STR_LEN) == 0))) {
 		// Change font size larger
 		term_change_font_size(term, +1);
 	}
@@ -387,10 +395,10 @@ _FLF_
 	vterm_set_overlay(&(term->vterm), OVERLAY_IDX_0, -1, 0,
 	 COLOR_LIGHTCYAN, COLOR_LIGHTRED, "", 0, 0);
 	//											1234567890123456789012345678901234567890
-	snprintf(overlay_text, OVERLAY_TEXT_LEN+1, "[Screen size(%dx%d) : Font size(%dx%d)]",
+	snprintf(overlay_text, OVERLAY_TEXT_LEN+1, "[Screen size(%dx%d) : Font size(%dx%d) : Framebuffer size(%dx%d)]",
 	 (&(term->vterm))->text_columns, (&(term->vterm))->text_lines,
-	 cur_font->font_width * cur_font_expand_x,
-	 cur_font->font_height * cur_font_expand_y);
+	 cur_font->font_width * cur_font_expand_x, cur_font->font_height * cur_font_expand_y,
+	 frame_buffer__.width, frame_buffer__.height);
 	vterm_set_overlay(&(term->vterm), OVERLAY_IDX_0, OVERLAY_TEXT_Y, OVERLAY_TEXT_X,
 	 COLOR_LIGHTCYAN, COLOR_LIGHTRED, overlay_text, -1, OVERLAY_TEXT_SECS);
 

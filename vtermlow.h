@@ -125,12 +125,24 @@ typedef struct /*text_char_*/ {
 //  Full Hi-vision
 //   1920 / 5 = 384
 //   1080 / 10 = 108
+//  Full Hi-vision Rotation
+//   1080 / 5 = 216
+//   1920 / 10 = 192
 //  WQXGA
 //   2560 / 5 = 512
 //   1600 / 10 = 160
+//  4K
+//   3840 / 5 = 768
+//   2160 / 10 = 216
+//  4K Rotation
+//   2160 / 5 = 432
+//   3840 / 10 = 384
 //  8K
 //   7680 / 5 = 1536
 //   4320 / 10 = 432
+//  8K Rotation
+//   4320 / 5 = 864
+//   7680 / 10 = 768
 #ifdef ENABLE_255COLUMNS
 // NOTE: If your terminal interface supports columns > 254
 ///# define MAX_TERM_COLS	274
