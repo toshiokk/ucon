@@ -125,35 +125,37 @@ typedef struct /*text_char_*/ {
 //  Full Hi-vision
 //   1920 / 5 = 384
 //   1080 / 10 = 108
-//  Full Hi-vision Rotation
+//  Full Hi-vision portrait
 //   1080 / 5 = 216
 //   1920 / 10 = 192
 //  WQXGA
 //   2560 / 5 = 512
 //   1600 / 10 = 160
-//  4K
-//   3840 / 5 = 768
+//  4K landscape
+//   3840 / 5 = 768 (current target)
 //   2160 / 10 = 216
-//  4K Rotation
+//  4K portrait
 //   2160 / 5 = 432
-//   3840 / 10 = 384
-//  8K
-//   7680 / 5 = 1536
-//   4320 / 10 = 432
-//  8K Rotation
-//   4320 / 5 = 864
-//   7680 / 10 = 768
+//   3840 / 10 = 384 (current target)
+///  8K
+///   7680 / 5 = 1536
+///   4320 / 10 = 432
+///  8K portrait
+///   4320 / 5 = 864
+///   7680 / 10 = 768
 #ifdef ENABLE_255COLUMNS
 // NOTE: If your terminal interface supports columns > 254
-///# define MAX_TERM_COLS	274
-///# define MAX_TERM_COLS	384
-# define MAX_TERM_COLS	512
+////# define MAX_TERM_COLS	274
+////# define MAX_TERM_COLS	384
+////# define MAX_TERM_COLS	512
+# define MAX_TERM_COLS	768	// 4K landscape
 #else // ENABLE_255COLUMNS
 # define MAX_TERM_COLS	254		// WORKAROUND: ncurses doesn't support columns > 254
 #endif // ENABLE_255COLUMNS
-///#define MAX_TERM_LINES	77
-///#define MAX_TERM_LINES	108
-#define MAX_TERM_LINES	160
+////#define MAX_TERM_LINES	77
+////#define MAX_TERM_LINES	108
+////#define MAX_TERM_LINES	160
+#define MAX_TERM_LINES	386	// 4K portrait
 
 #define OVERLAY_TEXT_LEN		100
 #define OVERLAY_TEXT_Y			0
