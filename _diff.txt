@@ -24,10 +24,216 @@ kdiff3 ../old/ucon/ucon.h ucon.h ===============================================
 kdiff3 ../old/ucon/util.h util.h ==================================================
 kdiff3 ../old/ucon/vterm.h vterm.h ==================================================
 kdiff3 ../old/ucon/vtermlow.h vtermlow.h ==================================================
+127a128,130
+> //  Full Hi-vision portrait
+> //   1080 / 5 = 216
+> //   1920 / 10 = 192
+131,133c134,145
+< //  8K
+< //   7680 / 5 = 1536
+< //   4320 / 10 = 432
+---
+> //  4K landscape
+> //   3840 / 5 = 768 (current target)
+> //   2160 / 10 = 216
+> //  4K portrait
+> //   2160 / 5 = 432
+> //   3840 / 10 = 384 (current target)
+> ///  8K
+> ///   7680 / 5 = 1536
+> ///   4320 / 10 = 432
+> ///  8K portrait
+> ///   4320 / 5 = 864
+> ///   7680 / 10 = 768
+136,138c148,151
+< ///# define MAX_TERM_COLS	274
+< ///# define MAX_TERM_COLS	384
+< # define MAX_TERM_COLS	512
+---
+> ////# define MAX_TERM_COLS	274	// Lap top
+> ////# define MAX_TERM_COLS	384	// FHD
+> ////# define MAX_TERM_COLS	512	//  WQXGA
+> # define MAX_TERM_COLS	768	// 4K landscape
+142,144c155,158
+< ///#define MAX_TERM_LINES	77
+< ///#define MAX_TERM_LINES	108
+< #define MAX_TERM_LINES	160
+---
+> ////#define MAX_TERM_LINES	77	// Lap top
+> ////#define MAX_TERM_LINES	108	// FHD
+> ////#define MAX_TERM_LINES	160	//  WQXGA
+> #define MAX_TERM_LINES	384	// 4K portrait
 kdiff3 ../old/ucon/fbbpp.c fbbpp.c ==================================================
 kdiff3 ../old/ucon/fbcommon.c fbcommon.c ==================================================
 kdiff3 ../old/ucon/font.c font.c ==================================================
-95,96c95,99
+38c38
+< #define	SQUARE_SHAPE
+---
+> ///#define	SQUARE_SHAPE
+40c40,41
+< ///#define	HUGE_SHAPE
+---
+> ///
+> #define	HUGE_SHAPE
+43c44,47
+< 	{ 0, 10, 1, 1, },	//  0:  5x10=  50
+---
+> 	{ 0, 10, 1, 1, },	//  5x10=  50
+> #ifdef	TALL_SHAPE
+> 	{ 0, 10, 1, 2, },	//  5x20= 100
+> #endif
+45c49
+< 	{ 0, 10, 2, 1, },	//  1: 10x10= 100
+---
+> 	{ 0, 10, 2, 1, },	// 10x10= 100
+46a51,52
+> 	{ 0, 10, 2, 2, },	// 10x20= 200
+> 	{ 0, 10, 2, 3, },	// 10x30= 300
+48c54,61
+< 	{ 0, 10, 1, 2, },	//  2:  5x20= 100
+---
+> 	{ 0, 10, 2, 4, },	// 10x40= 400
+> #endif
+> 	{ 0, 10, 3, 2, },	// 15x20= 300
+> 	{ 0, 10, 3, 3, },	// 15x30= 450
+> 	{ 0, 10, 3, 4, },	// 15x40= 600
+> 	{ 0, 10, 3, 5, },	// 15x50= 750
+> #ifdef	TALL_SHAPE
+> 	{ 0, 10, 3, 6, },	// 15x60= 900
+50,51d62
+< 	{ 0, 10, 2, 2, },	//  3: 10x20= 200
+< 	{ 0, 10, 2, 3, },	//  4: 10x30= 300
+53,54c64
+< 	{ 0, 10, 3, 2, },	//  5: 15x20= 300
+< 	{ 0, 10, 4, 2, },	//  6: 20x20= 400
+---
+> 	{ 0, 10, 4, 2, },	// 20x20= 400
+56,59c66,69
+< 	{ 0, 10, 3, 3, },	//  7: 15x30= 450
+< 	{ 0, 10, 3, 4, },	//  8: 15x40= 600
+< 	{ 0, 10, 4, 4, },	//  9: 20x40= 800
+< 	{ 1, 12, 1, 1, },	// 10:  6x12=  72
+---
+> 	{ 0, 10, 4, 3, },	// 20x30= 600
+> 	{ 0, 10, 4, 4, },	// 20x40= 800
+> #ifdef	HUGE_SHAPE
+> 	{ 0, 10, 4, 6, },	// 20x60=1200
+61c71
+< 	{ 1, 12, 1, 2, },	// 11:  6x24= 144
+---
+> 	{ 0, 10, 4, 8, },	// 20x80=1600
+63,66c73,74
+< 	{ 1, 12, 2, 2, },	// 12: 12x24= 288
+< 	{ 1, 12, 2, 3, },	// 13: 12x36= 432
+< 	{ 1, 12, 3, 3, },	// 14: 18x36= 648
+< 	{ 1, 12, 3, 4, },	// 15: 18x48= 864
+---
+> #endif
+> 	{ 0, 10, 5, 3, },	// 25x30= 750
+68c76,86
+< 	{ 1, 12, 4, 4, },	// 16: 24x48=1152
+---
+> 	{ 0, 10, 5, 5, },	// 25x50=1250
+> 	{ 0, 10, 5, 7, },	// 25x70=1750
+> 	{ 0, 10, 5, 9, },	// 25x90=2250
+> #endif
+>  //----------------------------------
+> 	{ 1, 12, 1, 1, },	//  6x12=  72
+> #ifdef	TALL_SHAPE
+> 	{ 1, 12, 1, 2, },	//  6x24= 144
+> #endif
+> #ifdef	SQUARE_SHAPE
+> 	{ 1, 12, 2, 1, },	// 12x12= 144
+70c88,89
+< 	{ 2, 14, 1, 1, },	// 17:  7x14=  82
+---
+> 	{ 1, 12, 2, 2, },	// 12x24= 288
+> 	{ 1, 12, 2, 3, },	// 12x36= 432
+72c91
+< 	{ 2, 14, 1, 2, },	// 18:  7x28= 164
+---
+> 	{ 1, 12, 2, 4, },	// 12x48= 576
+74,76c93,95
+< 	{ 2, 14, 2, 2, },	// 19: 14x28= 392
+< 	{ 2, 14, 2, 3, },	// 10: 14x42= 588
+< 	{ 2, 14, 3, 3, },	// 11: 21x42= 882
+---
+> 	{ 1, 12, 3, 2, },	// 18x24= 432
+> 	{ 1, 12, 3, 3, },	// 18x36= 648
+> 	{ 1, 12, 3, 4, },	// 18x48= 864
+78,79c97,107
+< 	{ 2, 14, 3, 4, },	// 12: 21x56=1176
+< 	{ 2, 14, 4, 4, },	// 23: 28x56=1568
+---
+> 	{ 1, 12, 3, 5, },	// 18x60=1080
+> #ifdef	TALL_SHAPE
+> 	{ 1, 12, 3, 6, },	// 18x72=1296
+> #endif
+> #endif
+> 	{ 1, 12, 4, 3, },	// 24x36= 864
+> #ifdef	HUGE_SHAPE
+> 	{ 1, 12, 4, 4, },	// 24x48=1152
+> 	{ 1, 12, 4, 6, },	// 24x72=1728
+> #ifdef	TALL_SHAPE
+> 	{ 1, 12, 4, 8, },	// 24x96=2304
+81c109,117
+< 	{ 3, 16, 1, 1, },	// 24:  8x16= 128
+---
+> #endif
+> //-----------------------------------
+> #ifdef	HUGE_SHAPE
+> 	{ 1, 12, 5, 3, },	// 30x36=1080
+> 	{ 1, 12, 5, 5, },	// 30x60=1800
+> 	{ 1, 12, 5, 7, },	// 30x72=2160
+> 	{ 1, 12, 5, 9, },	// 30x108=3240
+> #endif
+> 	{ 2, 14, 1, 1, },	//  7x14=  98
+83c119,122
+< 	{ 3, 16, 1, 2, },	// 25:  8x32= 256
+---
+> 	{ 2, 14, 1, 2, },	//  7x28= 196
+> #endif
+> #ifdef	SQUARE_SHAPE
+> 	{ 2, 14, 2, 1, },	// 14x14= 196
+85,86c124,127
+< 	{ 3, 16, 2, 2, },	// 26: 16x32= 192
+< 	{ 3, 16, 2, 3, },	// 27: 16x48= 288
+---
+> 	{ 2, 14, 2, 2, },	// 14x28= 392
+> 	{ 2, 14, 2, 3, },	// 14x42= 588
+> 	{ 2, 14, 3, 2, },	// 21x28= 588
+> 	{ 2, 14, 3, 3, },	// 21x42= 882
+88,90c129,153
+< 	{ 3, 16, 3, 3, },	// 28: 24x48=1152
+< 	{ 3, 16, 3, 4, },	// 29: 24x64=1536
+< 	{ 3, 16, 4, 4, },	// 30: 32x64=2048
+---
+> 	{ 2, 14, 3, 4, },	// 21x56=1176
+> 	{ 2, 14, 4, 3, },	// 28x42=1176
+> 	{ 2, 14, 4, 4, },	// 28x56=1568
+> 	{ 2, 14, 4, 6, },	// 28x84=2352
+> 	{ 2, 14, 4, 8, },	// 28x112=3136
+> #endif
+> //-----------------------------------
+> 	{ 3, 16, 1, 1, },	//  8x16= 128
+> #ifdef	TALL_SHAPE
+> 	{ 3, 16, 1, 2, },	//  8x32= 256
+> #endif
+> 	{ 3, 16, 2, 2, },	// 16x32= 512
+> 	{ 3, 16, 2, 3, },	// 16x48= 768
+> #ifdef	TALL_SHAPE
+> 	{ 3, 16, 2, 4, },	// 16x64=1024
+> #endif
+> #ifdef	HUGE_SHAPE
+> 	{ 3, 16, 3, 2, },	// 24x32= 768
+> 	{ 3, 16, 3, 3, },	// 24x48=1152
+> 	{ 3, 16, 3, 4, },	// 24x64=1536
+> 	{ 3, 16, 3, 6, },	// 24x96=2304
+> 	{ 3, 16, 4, 3, },	// 32x48=1536
+> 	{ 3, 16, 4, 4, },	// 32x64=2048
+> 	{ 3, 16, 4, 6, },	// 32x96=3072
+> 	{ 3, 16, 4, 8, },	// 32x128=4096
+95,96c158,162
 < PRIVATE int comp_font_multi_t(const void *aa, const void *bb);
 < PRIVATE int calc_font_pixel_size(font_multi_t *font_multi);
 ---
@@ -36,20 +242,20 @@ kdiff3 ../old/ucon/font.c font.c ===============================================
 > PRIVATE int calc_font_area(font_multi_t *font_multi);
 > PRIVATE int calc_font_width(font_multi_t *font_multi);
 > PRIVATE int calc_font_height(font_multi_t *font_multi);
-106c109,110
+106c172,173
 < 	qsort(font_multi_table, FONT_MULTI_TABLE_ENTRIES, sizeof(font_multi_t), comp_font_multi_t);
 ---
 > 	qsort(font_multi_table, FONT_MULTI_TABLE_ENTRIES, sizeof(font_multi_t), comp_font_area);
 > 	qsort(font_multi_table, FONT_MULTI_TABLE_ENTRIES, sizeof(font_multi_t), comp_font_width);
-125c129
+125c192
 < PRIVATE int comp_font_multi_t(const void *aa, const void *bb)
 ---
 > PRIVATE int comp_font_area(const void *aa, const void *bb)
-127c131
+127c194
 < 	return calc_font_pixel_size((font_multi_t *)aa) - calc_font_pixel_size((font_multi_t *)bb);
 ---
 > 	return calc_font_area((font_multi_t *)aa) - calc_font_area((font_multi_t *)bb);
-129c133,141
+129c196,204
 < PRIVATE int calc_font_pixel_size(font_multi_t *font_multi)
 ---
 > PRIVATE int comp_font_width(const void *aa, const void *bb)
@@ -61,7 +267,7 @@ kdiff3 ../old/ucon/font.c font.c ===============================================
 > 	return calc_font_height((font_multi_t *)aa) - calc_font_height((font_multi_t *)bb);
 > }
 > PRIVATE int calc_font_area(font_multi_t *font_multi)
-136a149,163
+136a212,226
 > PRIVATE int calc_font_width(font_multi_t *font_multi)
 > {
 > 	font_t *font;
@@ -90,7 +296,47 @@ kdiff3 ../old/ucon/term.cpp term.cpp ===========================================
 ---
 > 		selected = my_select_msec(STDIN_FILENO, term->fd_pty_master, -1, -1, -1, -1,
 > 		 SELECT_TIMEOUT_MSEC);
-444d444
+331,334c332,339
+< #define DEC_FONT_SIZE_KEY_STR	"\x1b\x3d"	// Alt-'='
+< #define DEC_FONT_SIZE_KEY_STR_LEN	2
+< #define INC_FONT_SIZE_KEY_STR	"\x1b\x2b"	// Alt-'+'
+< #define INC_FONT_SIZE_KEY_STR_LEN	2
+---
+> #define DEC_FONT_SIZE_KEY1_STR	"\x1b\x2d"	// Alt-'-'
+> #define DEC_FONT_SIZE_KEY1_STR_LEN	2
+> #define DEC_FONT_SIZE_KEY2_STR	"\x1b\x5f"	// Alt-'_'
+> #define DEC_FONT_SIZE_KEY2_STR_LEN	2
+> #define INC_FONT_SIZE_KEY1_STR	"\x1b\x2b"	// Alt-'+'
+> #define INC_FONT_SIZE_KEY1_STR_LEN	2
+> #define INC_FONT_SIZE_KEY2_STR	"\x1b\x3d"	// Alt-'='
+> #define INC_FONT_SIZE_KEY2_STR_LEN	2
+351,352c356,359
+< 	if ((input_len == DEC_FONT_SIZE_KEY_STR_LEN)
+< 	  && (strncmp(buf, DEC_FONT_SIZE_KEY_STR, DEC_FONT_SIZE_KEY_STR_LEN) == 0)) {
+---
+> 	if (((input_len == DEC_FONT_SIZE_KEY1_STR_LEN)
+> 	  && (strncmp(buf, DEC_FONT_SIZE_KEY1_STR, DEC_FONT_SIZE_KEY1_STR_LEN) == 0))
+> 	 || ((input_len == DEC_FONT_SIZE_KEY2_STR_LEN)
+> 	  && (strncmp(buf, DEC_FONT_SIZE_KEY2_STR, DEC_FONT_SIZE_KEY2_STR_LEN) == 0))) {
+356,357c363,366
+< 	if ((input_len == INC_FONT_SIZE_KEY_STR_LEN)
+< 	  && (strncmp(buf, INC_FONT_SIZE_KEY_STR, INC_FONT_SIZE_KEY_STR_LEN) == 0)) {
+---
+> 	if (((input_len == INC_FONT_SIZE_KEY1_STR_LEN)
+> 	  && (strncmp(buf, INC_FONT_SIZE_KEY1_STR, INC_FONT_SIZE_KEY1_STR_LEN) == 0))
+> 	 || ((input_len == INC_FONT_SIZE_KEY2_STR_LEN)
+> 	  && (strncmp(buf, INC_FONT_SIZE_KEY2_STR, INC_FONT_SIZE_KEY2_STR_LEN) == 0))) {
+389c398
+< 	snprintf(overlay_text, OVERLAY_TEXT_LEN+1, "[Screen size(%dx%d) : Font size(%dx%d)]",
+---
+> 	snprintf(overlay_text, OVERLAY_TEXT_LEN+1, "[Screen size(%dx%d) : Font size(%dx%d) : Framebuffer size(%dx%d)]",
+391,392c400,401
+< 	 cur_font->font_width * cur_font_expand_x,
+< 	 cur_font->font_height * cur_font_expand_y);
+---
+> 	 cur_font->font_width * cur_font_expand_x, cur_font->font_height * cur_font_expand_y,
+> 	 frame_buffer__.width, frame_buffer__.height);
+444d452
 < ///	term->fd_tty_vt = -1;
 kdiff3 ../old/ucon/util.c util.c ==================================================
 kdiff3 ../old/ucon/vterm.c vterm.c ==================================================

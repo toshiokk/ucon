@@ -28,7 +28,8 @@
 #include "ucon.h"
 
 PRIVATE const u_char *font_get_undefined_glyph_bitmap__(font_t *font, wchar_t ucs21,
- u_char *pico_font, u_char *gly, int bytes_per_line, int top_space, int bytes_per_digit, int digit_space);
+ u_char *pico_font, u_char *gly,
+ int bytes_per_line, int top_space, int bytes_per_digit, int digit_space);
 
 u_char pico_font_3x6[16*3] = {
 	/* 0 */
@@ -233,7 +234,8 @@ const u_char *font_get_undefined_glyph_bitmap(font_t *font, wchar_t ucs21)
 	return gly;
 }
 PRIVATE const u_char *font_get_undefined_glyph_bitmap__(font_t *font, wchar_t ucs21,
- u_char *pico_font, u_char *gly, int bytes_per_line, int top_space, int bytes_per_digit, int digit_space)
+ u_char *pico_font, u_char *gly,
+ int bytes_per_line, int top_space, int bytes_per_digit, int digit_space)
 {
 	u_char *gp;
 	int bit;

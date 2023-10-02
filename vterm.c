@@ -122,7 +122,8 @@ void vterm_reinit(vterm_t *vterm, int columns, int lines)
 	lines = MIN_(MAX_TERM_LINES, lines);
 	vterm->text_columns = columns;
 	vterm->text_lines = lines;
-flf_d_printf("vterm->text_lines:%2d, vterm->text_columns:%2d\n", vterm->text_lines, vterm->text_columns);
+flf_d_printf("vterm->text_lines:%2d, vterm->text_columns:%2d\n",
+ vterm->text_lines, vterm->text_columns);
 	vterm->text_characters = vterm->text_columns * vterm->text_lines;
 
 	verbose_printf("columns:%d, lines:%d, characters:%d\n",

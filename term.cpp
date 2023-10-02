@@ -211,7 +211,8 @@ PRIVATE void term_parent_serve(term_t *term)
 flf_d_printf("\nstart %s server...\n", PACKAGE);
 	term_close_pty_slave(term);
 
-	snprintf(output_buf, OUTPUT_BUF_LEN, "(((( %s - Framebuffer UTF-8 Console, Ver %s )))) Screen size : %d x %d\r",
+	snprintf(output_buf, OUTPUT_BUF_LEN,
+	 "(((( %s - Framebuffer UTF-8 Console, Ver %s )))) Screen size : %d x %d\r",
 	 PACKAGE, VERSION, term->vterm.text_columns, term->vterm.text_lines);
 	vterm_emulate_str(&(term->vterm), output_buf, -1);
 
@@ -376,13 +377,15 @@ PRIVATE void term_change_font_size(term_t *term, int shift)
 
 d_printf("\n");
 flf_d_printf("shift: %d\n", shift);
-flf_d_printf("vterm->text_lines:%2d, vterm->text_columns:%2d\n", term->vterm.text_lines, term->vterm.text_columns);
+flf_d_printf("vterm->text_lines:%2d, vterm->text_columns:%2d\n",
+ term->vterm.text_lines, term->vterm.text_columns);
 	imj_hide();
 _FLF_
 ///flf_d_printf("cur_font_multi_idx: %d, shift: %d\n", cur_font_multi_idx, shift);
 	cur_font_multi_idx = font_select_next(cur_font_multi_idx, shift);
 ///flf_d_printf("cur_font_multi_idx: %d\n", cur_font_multi_idx);
-	cur_font = font_get_font(cur_font_multi_idx, &cur_font_idx, &cur_font_expand_x, &cur_font_expand_y);
+	cur_font = font_get_font(cur_font_multi_idx, &cur_font_idx,
+	 &cur_font_expand_x, &cur_font_expand_y);
 
 _FLF_
 	vterm_reinit(&(term->vterm),
@@ -395,7 +398,8 @@ _FLF_
 	vterm_set_overlay(&(term->vterm), OVERLAY_IDX_0, -1, 0,
 	 COLOR_LIGHTCYAN, COLOR_LIGHTRED, "", 0, 0);
 	//											1234567890123456789012345678901234567890
-	snprintf(overlay_text, OVERLAY_TEXT_LEN+1, "[Screen size(%dx%d) : Font size(%dx%d) : Framebuffer size(%dx%d)]",
+	snprintf(overlay_text, OVERLAY_TEXT_LEN+1,
+	 "[Screen size(%dx%d) : Font size(%dx%d) : Framebuffer size(%dx%d)]",
 	 (&(term->vterm))->text_columns, (&(term->vterm))->text_lines,
 	 cur_font->font_width * cur_font_expand_x, cur_font->font_height * cur_font_expand_y,
 	 frame_buffer__.width, frame_buffer__.height);
@@ -404,7 +408,8 @@ _FLF_
 
 	vterm_request_repaint_all(&(term->vterm));
 	vterm_set_window_size(&(term->vterm));
-flf_d_printf("vterm->text_lines:%2d, vterm->text_columns:%2d\n\n", term->vterm.text_lines, term->vterm.text_columns);
+flf_d_printf("vterm->text_lines:%2d, vterm->text_columns:%2d\n\n",
+ term->vterm.text_lines, term->vterm.text_columns);
 }
 
 //-----------------------------------------------------------------------------
@@ -491,7 +496,8 @@ PRIVATE int term_init(term_t *term)
 		_ERR_
 		return INIT_ERR7;
 	}
-	cur_font = font_get_font(cur_font_multi_idx, &cur_font_idx, &cur_font_expand_x, &cur_font_expand_y);
+	cur_font = font_get_font(cur_font_multi_idx, &cur_font_idx,
+	 &cur_font_expand_x, &cur_font_expand_y);
 
 	vterm_init(&(term->vterm),
 	 frame_buffer__.width / (cur_font->font_width * cur_font_expand_x),
