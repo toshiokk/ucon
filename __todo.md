@@ -229,23 +229,35 @@ void setup_rotation()
 
 #### Fast box-paint
 ~~~
-int box_paint(ushort text_x, ushort text_y, font *font, uchar fbc, uchar bgc)
-	fb_pixel_data_t fb_bgc;
-	fb_pixel_data_t fb_fgc;
+int box_paint(ushort text_x, ushort text_y, uchar font_multi_x, uchar font_multi_y,
+ uchar *font, uchar font_size_x, uchar font_size_y, uchar fgc, uchar bgc)
+	fb_pixel_data_t fb_fgc = argb32_from_fgc(fgc);
+	fb_pixel_data_t fb_bgc = argb32_from_fgc(bgc);
 
+	fb_pixel_data_t *fb_left;
 	fb_pixel_data_t *fb;
-	fb = (fb_pixel_data_t)(fb_origin
-	 + text_y * fb_font_y_inc
-	 + text_x * fb_font_x_inc);
+	uchar font_byte;
+	uchar font_bit;
+	fb_left = (fb_pixel_data_t *)(fb_origin
+	 + text_y * font_multi_y * fb_font_y_inc
+	 + text_x * font_multi_y * fb_font_x_inc);
 	for (uchar font_y = 0; font_y < font_size_y; font_y++) {
-		for (uchar font_x = 0; font_x < font_size_x; font_x++) {
-			*(fb_pixel_data_t)fb = (font ? fb_fgc : fb_bgc);
-			// paint
-			fb += fb_x_inc;
-			font++;
+		for (uchar multi_y = 0; multi_y < font_multi_y; multi_y++) {
+			fb = fb_left;
+			font_byte = *font++;
+			font_bit = 0x80;
+			for (uchar font_x = 0; font_x < font_size_x; font_x++) {
+				for (uchar multi_x = 0; multi_x < font_multi_x; multi_x++) {
+					*(fb_pixel_data_t *)fb = ((font_byte & font_bit) ? fb_fgc : fb_bgc);
+					// paint
+					fb += fb_x_inc;
+				}
+				font++;
+			}
+			fb_left += fb_y_inc;
 		}
-		fb += fb_y_inc;
 	}
+}
 ~~~
 
 ### 4K support

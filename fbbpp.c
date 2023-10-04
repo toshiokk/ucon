@@ -27,7 +27,7 @@
 
 #include "ucon.h"
 
-// global variablas for speed reasons
+// global variables for speed reasons
 PRIVATE u_char *fb_fb_start;
 PRIVATE u_int32 fb_fb_mem_size;
 PRIVATE u_char *fb_fb_end;
