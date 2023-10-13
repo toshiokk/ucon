@@ -163,7 +163,7 @@ void vterm_emulate_str(vterm_t *vterm, const char *string, int bytes)
 		bytes = strlen(string);
 	}
 ///d_printf("ZZZ");
-///dump_string(string, bytes);
+dump_string(string, bytes);
 ///mflf_d_printf("%d: %s\n", bytes, dump_string_to_static_buf(string, bytes));
 	while (bytes-- > 0) {
 		chr = *(string++);
@@ -1146,7 +1146,7 @@ PRIVATE void put_parsed_str(u_char chr)
 }
 PRIVATE void dump_parsed_str(void)
 {
-	flf_d_printf("");
+	flf_d_printf("\n");
 	dump_string(parsed_str, parsed_str_idx);
 	clear_parsed_str();
 }

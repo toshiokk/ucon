@@ -1,8 +1,8 @@
 kdiff3 ../old/ucon/config.h config.h ==================================================
-14c14
-< /* #undef ENABLE_255COLUMNS */
+23c23
+< /* #undef ENABLE_DEBUG */
 ---
-> #define ENABLE_255COLUMNS 1
+> #define ENABLE_DEBUG 1
 kdiff3 ../old/ucon/fbbpp.h fbbpp.h ==================================================
 kdiff3 ../old/ucon/fbcommon.h fbcommon.h ==================================================
 kdiff3 ../old/ucon/font.h font.h ==================================================
@@ -10,6 +10,11 @@ kdiff3 ../old/ucon/hex.h hex.h =================================================
 kdiff3 ../old/ucon/main.h main.h ==================================================
 kdiff3 ../old/ucon/message.h message.h ==================================================
 kdiff3 ../old/ucon/mydebug.h mydebug.h ==================================================
+12c12,13
+< ///#define ENABLE_DEBUG
+---
+> ///
+> #define ENABLE_DEBUG
 kdiff3 ../old/ucon/myminmax.h myminmax.h ==================================================
 kdiff3 ../old/ucon/myselect.h myselect.h ==================================================
 kdiff3 ../old/ucon/mytypes.h mytypes.h ==================================================
@@ -395,4 +400,12 @@ kdiff3 ../old/ucon/vterm.c vterm.c =============================================
 ---
 > flf_d_printf("vterm->text_lines:%2d, vterm->text_columns:%2d\n",
 >  vterm->text_lines, vterm->text_columns);
+165c166
+< ///dump_string(string, bytes);
+---
+> dump_string(string, bytes);
+1148c1149
+< 	flf_d_printf("");
+---
+> 	flf_d_printf("\n");
 kdiff3 ../old/ucon/vtermlow.c vtermlow.c ==================================================

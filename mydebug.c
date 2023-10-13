@@ -322,7 +322,7 @@ const char *dump_string(const char *string, int bytes)
 {
 	int idx;
 
-	d_printf(" %d{", bytes);
+	mflf_d_printf(" %d{", bytes);
 	for (idx = 0; idx < bytes; idx++) {
 		if (isprint(string[idx]) || ((unsigned char)string[idx]) >= 0x80) {
 			d_printf("%c", string[idx]);
