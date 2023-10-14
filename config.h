@@ -20,7 +20,7 @@
 #define ENABLE_8BPP 1
 
 /* Define this to enable debug */
-#define ENABLE_DEBUG 1
+/* #undef ENABLE_DEBUG */
 
 /* description */
 /* #undef ENABLE_DIMMER */

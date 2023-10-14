@@ -640,6 +640,11 @@ PRIVATE void vterm_parse_func_csi(vterm_t *vterm, u_char chr)
 		break;
 	case 'R':			// ESC [ {n} R
 		break;
+	case '!':			// ESC [ {n} !
+		vterm->esc_seq_parse_state = ESC_ST_2_CSI;
+		break;
+	case 'p':			// Linux "reset" command send ESC [ ! p
+		break;
 	case '?':			// ESC [ {n} ?
 #ifdef ENABLE_STATUS_LINE
 		vterm->esc_seq_parse_state = ESC_ST_5_SL;
