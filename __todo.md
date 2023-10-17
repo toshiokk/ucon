@@ -16,7 +16,7 @@
 Rotate display monitor CW 90 deg (Rotate output of image CCW 90 deg).
 - screen-rotation=0
 ~~~
-+------------------------------+
+*------------------------------+
 |              ##              |
 |             ####             |
 |            ##  ##            |
@@ -28,7 +28,7 @@ Rotate display monitor CW 90 deg (Rotate output of image CCW 90 deg).
 ~~~
 - screen-rotation=1
 ~~~
-+------------------------------+
+*------------------------------+
 |            ###########       |
 |          ##  ##              |
 |        ##    ##              |
@@ -37,10 +37,23 @@ Rotate display monitor CW 90 deg (Rotate output of image CCW 90 deg).
 |          ##  ##              |
 |            ###########       |
 +------------------------------+
++--------------*
+|              |
+|              |
+|      ##      |
+|     ####     |
+|    ##  ##    |
+|   ########   |
+|  ##      ##  |
+| ##        ## |
+|##          ##|
+|              |
+|              |
++--------------+
 ~~~
 - screen-rotation=2
 ~~~
-+------------------------------+
+*------------------------------+
 |        ##          ##        |
 |         ##        ##         |
 |          ##      ##          |
@@ -49,10 +62,19 @@ Rotate display monitor CW 90 deg (Rotate output of image CCW 90 deg).
 |             ####             |
 |              ##              |
 +------------------------------+
++------------------------------+
+|              ##              |
+|             ####             |
+|            ##  ##            |
+|           ########           |
+|          ##      ##          |
+|         ##        ##         |
+|        ##          ##        |
++------------------------------*
 ~~~
 - screen-rotation=3
 ~~~
-+------------------------------+
+*------------------------------+
 |      ############            |
 |              ##  ##          |
 |              ##    ##        |
@@ -61,6 +83,19 @@ Rotate display monitor CW 90 deg (Rotate output of image CCW 90 deg).
 |              ##  ##          |
 |       ############           |
 +------------------------------+
++--------------+
+|              |
+|              |
+|      ##      |
+|     ####     |
+|    ##  ##    |
+|   ########   |
+|  ##      ##  |
+| ##        ## |
+|##          ##|
+|              |
+|              |
+*--------------+
 ~~~
 
 #### Screen rotation
@@ -133,18 +168,19 @@ Rotate display monitor CW 90 deg (Rotate output of image CCW 90 deg).
 #### Parameter conversion
 
 ~~~
-enumb view_rotaion_t {
+enum view_rotation_t {
 	ROT0 = 0,
 	ROT90 = 1,
 	ROT180 = 2,
 	ROT270 = 3,
+	ROT360 = 4,
 };
 
 void *fb_begin;		// FB memory start address
 size_t fb_size;		// FB memory size
 fb_pixel_data_t = ulong;
-	ushort fb_size_x;		// pixels of X
-	ushort fb_size_y;		// pixels of Y
+	ushort fb_size_x;	// pixels of X
+	ushort fb_size_y;	// pixels of Y
 void *fb_top_left; 		// FB address of top_left
 void *fb_bottom_left;		// FB address of bottom_left
 void *fb_bottom_right;		// FB address of bottom_right
@@ -177,7 +213,6 @@ void setup_rotation()
 	fb_bottom_left = fb_begin
 	 + fb_pixel_bytes_x * (fb_size_x - 1) * 0
 	 + fb_pixel_bytes_y * (fb_size_y - 1) * 1;
-	 fb_pixel_bytes_y * (fb_size_y - 1);
 	fb_bottom_right = fb_begin
 	 + fb_pixel_bytes_x * (fb_size_x - 1) * 1
 	 + fb_pixel_bytes_y * (fb_size_y - 1) * 1;
@@ -262,7 +297,7 @@ int box_paint(ushort text_x, ushort text_y, uchar font_multi_x, uchar font_multi
 
 ### 4K support
 - Xsize = 3840
-- Ysize + 2160
+- Ysize = 2160
 
 
 ##### EOF

@@ -73,6 +73,7 @@ PRIVATE void term_parent_serve(term_t *term);
 PRIVATE void call_interval_timer_process(vterm_t *vterm);
 PRIVATE void check_hot_key(term_t *term, char *buf, int input_len);
 PRIVATE void term_change_font_size(term_t *term, int shift);
+PRIVATE void term_change_rotation(term_t *term, int shift);
 
 PRIVATE int term_init(term_t *term);
 PRIVATE void term_destroy(term_t *term, int err);
@@ -328,17 +329,17 @@ PRIVATE void call_interval_timer_process(vterm_t *vterm)
 #endif // ENABLE_SCREEN_SHOT
 
 ///
-#define ON_THE_FLY_FONT_CHANGE
-#ifdef ON_THE_FLY_FONT_CHANGE
+#define ON_THE_FLY_FUNCTION_CHANGE
+#ifdef ON_THE_FLY_FUNCTION_CHANGE
 #define DEC_FONT_SIZE_KEY1_STR	"\x1b\x2d"	// Alt-'-'
 #define DEC_FONT_SIZE_KEY1_STR_LEN	2
-#define DEC_FONT_SIZE_KEY2_STR	"\x1b\x5f"	// Alt-'_'
-#define DEC_FONT_SIZE_KEY2_STR_LEN	2
-#define INC_FONT_SIZE_KEY1_STR	"\x1b\x2b"	// Alt-'+'
+#define INC_FONT_SIZE_KEY1_STR	"\x1b\x3d"	// Alt-'='
 #define INC_FONT_SIZE_KEY1_STR_LEN	2
-#define INC_FONT_SIZE_KEY2_STR	"\x1b\x3d"	// Alt-'='
-#define INC_FONT_SIZE_KEY2_STR_LEN	2
-#endif // ON_THE_FLY_FONT_CHANGE
+#define DEC_ROTATION_KEY1_STR	"\x1b\x5f"	// Alt-'_'(Shift)
+#define DEC_ROTATION_KEY1_STR_LEN	2
+#define INC_ROTATION_KEY1_STR	"\x1b\x2b"	// Alt-'+'(Shift)
+#define INC_ROTATION_KEY1_STR_LEN	2
+#endif // ON_THE_FLY_FUNCTION_CHANGE
 
 PRIVATE void check_hot_key(term_t *term, char *buf, int input_len)
 {
@@ -352,23 +353,25 @@ PRIVATE void check_hot_key(term_t *term, char *buf, int input_len)
 		 frame_buffer__.driver->get_pixel_argb32, frame_buffer__.driver->reverse_all,
 		 NULL);
 	}
-#endif // ENABLE_SCREEN_SHOT
-#ifdef ON_THE_FLY_FONT_CHANGE
-	if (((input_len == DEC_FONT_SIZE_KEY1_STR_LEN)
-	  && (strncmp(buf, DEC_FONT_SIZE_KEY1_STR, DEC_FONT_SIZE_KEY1_STR_LEN) == 0))
-	 || ((input_len == DEC_FONT_SIZE_KEY2_STR_LEN)
-	  && (strncmp(buf, DEC_FONT_SIZE_KEY2_STR, DEC_FONT_SIZE_KEY2_STR_LEN) == 0))) {
+	if ((input_len == DEC_FONT_SIZE_KEY1_STR_LEN)
+	  && (strncmp(buf, DEC_FONT_SIZE_KEY1_STR, DEC_FONT_SIZE_KEY1_STR_LEN) == 0)) {
 		// Change font size smaller
 		term_change_font_size(term, -1);
 	}
-	if (((input_len == INC_FONT_SIZE_KEY1_STR_LEN)
-	  && (strncmp(buf, INC_FONT_SIZE_KEY1_STR, INC_FONT_SIZE_KEY1_STR_LEN) == 0))
-	 || ((input_len == INC_FONT_SIZE_KEY2_STR_LEN)
-	  && (strncmp(buf, INC_FONT_SIZE_KEY2_STR, INC_FONT_SIZE_KEY2_STR_LEN) == 0))) {
+	if ((input_len == INC_FONT_SIZE_KEY1_STR_LEN)
+	  && (strncmp(buf, INC_FONT_SIZE_KEY1_STR, INC_FONT_SIZE_KEY1_STR_LEN) == 0)) {
 		// Change font size larger
 		term_change_font_size(term, +1);
 	}
-#endif // ON_THE_FLY_FONT_CHANGE
+	if ((input_len == INC_ROTATION_KEY1_STR_LEN)
+	  && (strncmp(buf, INC_ROTATION_KEY1_STR, INC_ROTATION_KEY1_STR_LEN) == 0)) {
+		term_change_rotation(term, -1);
+	}
+	if ((input_len == DEC_ROTATION_KEY1_STR_LEN)
+	  && (strncmp(buf, DEC_ROTATION_KEY1_STR, DEC_ROTATION_KEY1_STR_LEN) == 0)) {
+		term_change_rotation(term, +1);
+	}
+#endif // ON_THE_FLY_FUNCTION_CHANGE
 }
 
 PRIVATE void term_change_font_size(term_t *term, int shift)
@@ -410,6 +413,29 @@ _FLF_
 	vterm_set_window_size(&(term->vterm));
 flf_d_printf("vterm->text_lines:%2d, vterm->text_columns:%2d\n\n",
  term->vterm.text_lines, term->vterm.text_columns);
+}
+
+PRIVATE void term_change_rotation(term_t *term, int shift)
+{
+	char overlay_text[OVERLAY_TEXT_LEN+1];
+
+///	vterm->rotation = (vterm->rotation + shift) % max_rotation;
+
+	vterm_reinit(&(term->vterm),
+	 frame_buffer__.width / (cur_font->font_width * cur_font_expand_x),
+	 frame_buffer__.height / (cur_font->font_height * cur_font_expand_y));
+	vterm_clear_outside_of_view(&(term->vterm));
+
+	vterm_set_overlay(&(term->vterm), OVERLAY_IDX_0, -1, 0,
+	 COLOR_LIGHTCYAN, COLOR_LIGHTRED, "", 0, 0);
+	//											1234567890123456789012345678901234567890
+///	snprintf(overlay_text, OVERLAY_TEXT_LEN+1,
+///	 "[Screen rotation : %d Degrees]", term->vterm * 90);
+///	vterm_set_overlay(&(term->vterm), OVERLAY_IDX_0, OVERLAY_TEXT_Y, OVERLAY_TEXT_X,
+///	 COLOR_LIGHTCYAN, COLOR_LIGHTRED, overlay_text, -1, OVERLAY_TEXT_SECS);
+
+	vterm_request_repaint_all(&(term->vterm));
+	vterm_set_window_size(&(term->vterm));
 }
 
 //-----------------------------------------------------------------------------
