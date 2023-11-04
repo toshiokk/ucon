@@ -35,7 +35,8 @@ int cur_font_idx;
 int cur_font_expand_x;
 int cur_font_expand_y;
 
-///#define	SQUARE_SHAPE
+///
+#define	SQUARE_SHAPE
 #define	TALL_SHAPE
 ///
 #define	HUGE_SHAPE
@@ -134,6 +135,9 @@ font_multi_t font_multi_table[] = {
 #endif
 //-----------------------------------
 	{ 3, 16, 1, 1, },	//  8x16= 128
+#ifdef	SQUARE_SHAPE
+	{ 3, 16, 2, 1, },	// 16x16= 256
+#endif
 #ifdef	TALL_SHAPE
 	{ 3, 16, 1, 2, },	//  8x32= 256
 #endif

@@ -1,8 +1,4 @@
 kdiff3 ../old/ucon/config.h config.h ==================================================
-23c23
-< /* #undef ENABLE_DEBUG */
----
-> #define ENABLE_DEBUG 1
 kdiff3 ../old/ucon/fbbpp.h fbbpp.h ==================================================
 kdiff3 ../old/ucon/fbcommon.h fbcommon.h ==================================================
 kdiff3 ../old/ucon/font.h font.h ==================================================
@@ -320,75 +316,116 @@ kdiff3 ../old/ucon/picofont.c picofont.c =======================================
 >  u_char *pico_font, u_char *gly,
 >  int bytes_per_line, int top_space, int bytes_per_digit, int digit_space)
 kdiff3 ../old/ucon/term.cpp term.cpp ==================================================
-214c214,215
+75a76
+> PRIVATE void term_change_rotation(term_t *term, int shift);
+214c215,216
 < 	snprintf(output_buf, OUTPUT_BUF_LEN, "(((( %s - Framebuffer UTF-8 Console, Ver %s )))) Screen size : %d x %d\r",
 ---
 > 	snprintf(output_buf, OUTPUT_BUF_LEN,
 > 	 "(((( %s - Framebuffer UTF-8 Console, Ver %s )))) Screen size : %d x %d\r",
-253c254,255
+253c255,256
 < 		selected = my_select_msec(STDIN_FILENO, term->fd_pty_master, -1, -1, -1, -1, SELECT_TIMEOUT_MSEC);
 ---
 > 		selected = my_select_msec(STDIN_FILENO, term->fd_pty_master, -1, -1, -1, -1,
 > 		 SELECT_TIMEOUT_MSEC);
-331,334c333,340
+329,335c332,342
+< #define ON_THE_FLY_FONT_CHANGE
+< #ifdef ON_THE_FLY_FONT_CHANGE
 < #define DEC_FONT_SIZE_KEY_STR	"\x1b\x3d"	// Alt-'='
 < #define DEC_FONT_SIZE_KEY_STR_LEN	2
 < #define INC_FONT_SIZE_KEY_STR	"\x1b\x2b"	// Alt-'+'
 < #define INC_FONT_SIZE_KEY_STR_LEN	2
+< #endif // ON_THE_FLY_FONT_CHANGE
 ---
+> #define ON_THE_FLY_FUNCTION_CHANGE
+> #ifdef ON_THE_FLY_FUNCTION_CHANGE
 > #define DEC_FONT_SIZE_KEY1_STR	"\x1b\x2d"	// Alt-'-'
 > #define DEC_FONT_SIZE_KEY1_STR_LEN	2
-> #define DEC_FONT_SIZE_KEY2_STR	"\x1b\x5f"	// Alt-'_'
-> #define DEC_FONT_SIZE_KEY2_STR_LEN	2
-> #define INC_FONT_SIZE_KEY1_STR	"\x1b\x2b"	// Alt-'+'
+> #define INC_FONT_SIZE_KEY1_STR	"\x1b\x3d"	// Alt-'='
 > #define INC_FONT_SIZE_KEY1_STR_LEN	2
-> #define INC_FONT_SIZE_KEY2_STR	"\x1b\x3d"	// Alt-'='
-> #define INC_FONT_SIZE_KEY2_STR_LEN	2
-351,352c357,360
+> #define DEC_ROTATION_KEY1_STR	"\x1b\x5f"	// Alt-'_'(Shift)
+> #define DEC_ROTATION_KEY1_STR_LEN	2
+> #define INC_ROTATION_KEY1_STR	"\x1b\x2b"	// Alt-'+'(Shift)
+> #define INC_ROTATION_KEY1_STR_LEN	2
+> #endif // ON_THE_FLY_FUNCTION_CHANGE
+350,352c357,359
+< #ifdef ON_THE_FLY_FONT_CHANGE
 < 	if ((input_len == DEC_FONT_SIZE_KEY_STR_LEN)
 < 	  && (strncmp(buf, DEC_FONT_SIZE_KEY_STR, DEC_FONT_SIZE_KEY_STR_LEN) == 0)) {
 ---
-> 	if (((input_len == DEC_FONT_SIZE_KEY1_STR_LEN)
-> 	  && (strncmp(buf, DEC_FONT_SIZE_KEY1_STR, DEC_FONT_SIZE_KEY1_STR_LEN) == 0))
-> 	 || ((input_len == DEC_FONT_SIZE_KEY2_STR_LEN)
-> 	  && (strncmp(buf, DEC_FONT_SIZE_KEY2_STR, DEC_FONT_SIZE_KEY2_STR_LEN) == 0))) {
-356,357c364,367
+> #ifdef ON_THE_FLY_FUNCTION_CHANGE
+> 	if ((input_len == DEC_FONT_SIZE_KEY1_STR_LEN)
+> 	  && (strncmp(buf, DEC_FONT_SIZE_KEY1_STR, DEC_FONT_SIZE_KEY1_STR_LEN) == 0)) {
+356,357c363,364
 < 	if ((input_len == INC_FONT_SIZE_KEY_STR_LEN)
 < 	  && (strncmp(buf, INC_FONT_SIZE_KEY_STR, INC_FONT_SIZE_KEY_STR_LEN) == 0)) {
 ---
-> 	if (((input_len == INC_FONT_SIZE_KEY1_STR_LEN)
-> 	  && (strncmp(buf, INC_FONT_SIZE_KEY1_STR, INC_FONT_SIZE_KEY1_STR_LEN) == 0))
-> 	 || ((input_len == INC_FONT_SIZE_KEY2_STR_LEN)
-> 	  && (strncmp(buf, INC_FONT_SIZE_KEY2_STR, INC_FONT_SIZE_KEY2_STR_LEN) == 0))) {
-370c380,381
+> 	if ((input_len == INC_FONT_SIZE_KEY1_STR_LEN)
+> 	  && (strncmp(buf, INC_FONT_SIZE_KEY1_STR, INC_FONT_SIZE_KEY1_STR_LEN) == 0)) {
+361c368,376
+< #endif // ON_THE_FLY_FONT_CHANGE
+---
+> 	if ((input_len == DEC_ROTATION_KEY1_STR_LEN)
+> 	  && (strncmp(buf, DEC_ROTATION_KEY1_STR, DEC_ROTATION_KEY1_STR_LEN) == 0)) {
+> 		term_change_rotation(term, -1);
+> 	}
+> 	if ((input_len == INC_ROTATION_KEY1_STR_LEN)
+> 	  && (strncmp(buf, INC_ROTATION_KEY1_STR, INC_ROTATION_KEY1_STR_LEN) == 0)) {
+> 		term_change_rotation(term, +1);
+> 	}
+> #endif // ON_THE_FLY_FUNCTION_CHANGE
+370c385,386
 < flf_d_printf("vterm->text_lines:%2d, vterm->text_columns:%2d\n", term->vterm.text_lines, term->vterm.text_columns);
 ---
 > flf_d_printf("vterm->text_lines:%2d, vterm->text_columns:%2d\n",
 >  term->vterm.text_lines, term->vterm.text_columns);
-376c387,388
+376c392,393
 < 	cur_font = font_get_font(cur_font_multi_idx, &cur_font_idx, &cur_font_expand_x, &cur_font_expand_y);
 ---
 > 	cur_font = font_get_font(cur_font_multi_idx, &cur_font_idx,
 > 	 &cur_font_expand_x, &cur_font_expand_y);
-389c401,402
+389c406,407
 < 	snprintf(overlay_text, OVERLAY_TEXT_LEN+1, "[Screen size(%dx%d) : Font size(%dx%d)]",
 ---
 > 	snprintf(overlay_text, OVERLAY_TEXT_LEN+1,
 > 	 "[Screen size(%dx%d) : Font size(%dx%d) : Framebuffer size(%dx%d)]",
-391,392c404,405
+391,392c409,410
 < 	 cur_font->font_width * cur_font_expand_x,
 < 	 cur_font->font_height * cur_font_expand_y);
 ---
 > 	 cur_font->font_width * cur_font_expand_x, cur_font->font_height * cur_font_expand_y,
 > 	 frame_buffer__.width, frame_buffer__.height);
-398c411,412
+398c416,440
 < flf_d_printf("vterm->text_lines:%2d, vterm->text_columns:%2d\n\n", term->vterm.text_lines, term->vterm.text_columns);
 ---
 > flf_d_printf("vterm->text_lines:%2d, vterm->text_columns:%2d\n\n",
 >  term->vterm.text_lines, term->vterm.text_columns);
-444d457
+> }
+> 
+> PRIVATE void term_change_rotation(term_t *term, int shift)
+> {
+> 	char overlay_text[OVERLAY_TEXT_LEN+1];
+> 
+> ///	vterm->rotation = (vterm->rotation + shift) % max_rotation;
+> 
+> 	vterm_reinit(&(term->vterm),
+> 	 frame_buffer__.width / (cur_font->font_width * cur_font_expand_x),
+> 	 frame_buffer__.height / (cur_font->font_height * cur_font_expand_y));
+> 	vterm_clear_outside_of_view(&(term->vterm));
+> 
+> 	vterm_set_overlay(&(term->vterm), OVERLAY_IDX_0, -1, 0,
+> 	 COLOR_LIGHTCYAN, COLOR_LIGHTRED, "", 0, 0);
+> 	//											1234567890123456789012345678901234567890
+> ///	snprintf(overlay_text, OVERLAY_TEXT_LEN+1,
+> ///	 "[Screen rotation : %d Degrees]", term->vterm * 90);
+> ///	vterm_set_overlay(&(term->vterm), OVERLAY_IDX_0, OVERLAY_TEXT_Y, OVERLAY_TEXT_X,
+> ///	 COLOR_LIGHTCYAN, COLOR_LIGHTRED, overlay_text, -1, OVERLAY_TEXT_SECS);
+> 
+> 	vterm_request_repaint_all(&(term->vterm));
+> 	vterm_set_window_size(&(term->vterm));
+444d485
 < ///	term->fd_tty_vt = -1;
-486c499,500
+486c527,528
 < 	cur_font = font_get_font(cur_font_multi_idx, &cur_font_idx, &cur_font_expand_x, &cur_font_expand_y);
 ---
 > 	cur_font = font_get_font(cur_font_multi_idx, &cur_font_idx,
@@ -404,7 +441,13 @@ kdiff3 ../old/ucon/vterm.c vterm.c =============================================
 < ///dump_string(string, bytes);
 ---
 > dump_string(string, bytes);
-1148c1149
+641a643,647
+> 	case '!':			// ESC [ {n} !
+> 		vterm->esc_seq_parse_state = ESC_ST_2_CSI;
+> 		break;
+> 	case 'p':			// Linux "reset" command send ESC [ ! p
+> 		break;
+1148c1154
 < 	flf_d_printf("");
 ---
 > 	flf_d_printf("\n");

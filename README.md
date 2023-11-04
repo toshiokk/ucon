@@ -2,7 +2,7 @@
 
 ### Overview
 - UCON is Framabuffer based UTF8 Terminal.
-    - UCON render charactors onto Linux framebuffer.
+    - UCON render characters onto Linux framebuffer.
     - UTF8 support.
     - Includes 4 sizes of bitmap fonts in HEX font file format.
         - 5x10 ASCII, 10x10 Unicode font

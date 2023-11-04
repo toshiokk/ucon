@@ -353,6 +353,8 @@ PRIVATE void check_hot_key(term_t *term, char *buf, int input_len)
 		 frame_buffer__.driver->get_pixel_argb32, frame_buffer__.driver->reverse_all,
 		 NULL);
 	}
+#endif // ENABLE_SCREEN_SHOT
+#ifdef ON_THE_FLY_FUNCTION_CHANGE
 	if ((input_len == DEC_FONT_SIZE_KEY1_STR_LEN)
 	  && (strncmp(buf, DEC_FONT_SIZE_KEY1_STR, DEC_FONT_SIZE_KEY1_STR_LEN) == 0)) {
 		// Change font size smaller
@@ -363,12 +365,12 @@ PRIVATE void check_hot_key(term_t *term, char *buf, int input_len)
 		// Change font size larger
 		term_change_font_size(term, +1);
 	}
-	if ((input_len == INC_ROTATION_KEY1_STR_LEN)
-	  && (strncmp(buf, INC_ROTATION_KEY1_STR, INC_ROTATION_KEY1_STR_LEN) == 0)) {
-		term_change_rotation(term, -1);
-	}
 	if ((input_len == DEC_ROTATION_KEY1_STR_LEN)
 	  && (strncmp(buf, DEC_ROTATION_KEY1_STR, DEC_ROTATION_KEY1_STR_LEN) == 0)) {
+		term_change_rotation(term, -1);
+	}
+	if ((input_len == INC_ROTATION_KEY1_STR_LEN)
+	  && (strncmp(buf, INC_ROTATION_KEY1_STR, INC_ROTATION_KEY1_STR_LEN) == 0)) {
 		term_change_rotation(term, +1);
 	}
 #endif // ON_THE_FLY_FUNCTION_CHANGE
