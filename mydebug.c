@@ -314,7 +314,7 @@ const char *dump_string_to_static_buf(const char *string, int bytes)
 	strcpy(buffer, "");
 	for (str = string; (str - string < bytes) && *str; str++) {
 		snprintf(buf, 3+1, "%02x ", *(unsigned char *)str);
-		strlcat(buffer, buf, DUMP_STRING_BUF_LEN);
+		strlcat__(buffer, buf, DUMP_STRING_BUF_LEN);
 	}
 	return buffer;
 }

@@ -36,8 +36,8 @@ char *strcpy_blen_slen(char *buf, int buf_len, const char *str, int len);
 char *utf8strcpy_blen(char *buf, int buf_len, const char *str);
 char *strcpy_blen(char *buf, int buf_len, const char *str);
 
-char *strlcat(char *buf, const char *str, int buf_len);
-char *strlcpy(char *buf, const char *str, int buf_len);
+char *strlcat__(char *buf, const char *str, int buf_len);
+char *strlcpy__(char *buf, const char *str, int buf_len);
 char *strcpy_ol(char *dest, const char *src);
 int strlcmp(const char *str1, const char *str2);
 

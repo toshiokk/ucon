@@ -402,7 +402,7 @@ _FLF_
 
 	vterm_set_overlay(&(term->vterm), OVERLAY_IDX_0, -1, 0,
 	 COLOR_LIGHTCYAN, COLOR_LIGHTRED, "", 0, 0);
-	//											1234567890123456789012345678901234567890
+	//1234567890123456789012345678901234567890
 	snprintf(overlay_text, OVERLAY_TEXT_LEN+1,
 	 "[Screen size(%dx%d) : Font size(%dx%d) : Framebuffer size(%dx%d)]",
 	 (&(term->vterm))->text_columns, (&(term->vterm))->text_lines,
