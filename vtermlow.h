@@ -167,9 +167,11 @@ struct overlay_line {
 	time_t timet;
 	int secs;
 	// overlay line
-	text_char_t text_buf_overlay[MAX_TERM_COLS];
-	text_char_t text_buf_save[MAX_TERM_COLS];
+	text_char_t text_overlay[MAX_TERM_COLS];
+	text_char_t text_save[MAX_TERM_COLS];
 };
+
+#define MAX_ROTATION		4	// 0 -- 3
 
 typedef struct vterm_ {
 	int text_columns;		/* 1行あたり文字数 */
@@ -239,7 +241,7 @@ void vterm_unregister_vt_signals(void);
 int vterm_reply_sig_release(void);
 int vterm_reply_sig_acquire(void);
 
-void vterm_set_window_size(vterm_t *vterm);
+void vterm_send_sigwinch(vterm_t *vterm);
 
 /*---------------------------------------------------------------------------*/
 

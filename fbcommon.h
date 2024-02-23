@@ -31,8 +31,6 @@
 #if defined(__cplusplus)
 extern "C" {
 #endif // __cplusplus
-struct frame_buffer_;			// forward declaration
-typedef struct frame_buffer_ frame_buffer_t;
 
 struct frame_buffer_ {
 #define FB_DEV_NAME_LEN		16		// /dev/fb0
@@ -40,35 +38,35 @@ struct frame_buffer_ {
 	int fd_tty0;
 	int fd_fb;
 	// FB screen size
-	int width;
-	int height;
-	int bytes_per_line;
-	int bits_per_pixel;
-	int bytes_per_pixel;
+	u_short screen_size_x;		// 3840
+	u_short screen_size_y;		// 2160
+	u_short bytes_per_line;		// 3840 x 4 = 15360
+	u_char bits_per_pixel;		// 32
+	u_char bytes_per_pixel;		// 4
 	// FB image mmaped to process local
 	u_char *fb_mmapped;
-	u_int32 fb_offset;
-	u_char *fb_start;
-	u_int32 fb_view_size;
-	u_int32 fb_mem_size;
+	size_t fb_offset;
+	size_t fb_mem_size;
+	u_char *fb_start;		// fb_mmapped + fb_offset
+	size_t fb_view_size;
 	fb_driver_t *driver;	// selected FB driver
 #ifdef ENABLE_DIMMER
 	int my_vt_num;
 #endif
 };
 
-extern frame_buffer_t frame_buffer__;
+typedef struct frame_buffer_ frame_buffer_t;
+extern frame_buffer_t fb__;
 
 int fb_get_fb_dev_name(frame_buffer_t *fb);
 int fb_open(frame_buffer_t *fb);
 int fb_close(frame_buffer_t *fb);
 
-rgb15_t rgb15_from_color_idx(c_idx_t color_idx);
-rgb16_t rgb16_from_color_idx(c_idx_t color_idx);
-argb32_t argb32_from_color_idx(c_idx_t color_idx);
+rgb15_t rgb15_from_color_idx(c_idx_t clr_idx);
+rgb16_t rgb16_from_color_idx(c_idx_t clr_idx);
+argb32_t argb32_from_color_idx(c_idx_t clr_idx);
 
-void r_g_b_24_from_color_idx(c_idx_t color_idx, u_char *b0, u_char *b1, u_char *b2);
-void r_g_b_24_from_rgb15(rgb15_t rgb15, u_char *b0, u_char *b1, u_char *b2);
+void rgb24_from_rgb15(rgb15_t rgb15, rgb24_t *rgb24);
 void r_g_b_24_from_argb32(argb32_t argb32, u_char *b0, u_char *b1, u_char *b2);
 
 rgb15_t rgb15_from_r_g_b_24(u_char rr, u_char gg, u_char bb);

@@ -8,6 +8,7 @@ ucon_SOURCES = \
 		mydebug.h mydebug.c \
 		main.c main.h \
 		fbcommon.c fbcommon.h \
+		fbrotation.c fbrotation.h \
 		fbbpp.c fbbpp.h \
 		font.c font.h \
 		picofont.c picofont.h \

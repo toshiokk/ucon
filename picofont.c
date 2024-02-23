@@ -27,77 +27,77 @@
 
 #include "ucon.h"
 
-PRIVATE const u_char *font_get_undefined_glyph_bitmap__(font_t *font, wchar_t ucs21,
- u_char *pico_font, u_char *gly,
- int bytes_per_line, int top_space, int bytes_per_digit, int digit_space);
+PRIVATE const u_short *font_get_undefined_glyph_bitmap__(
+ font_t *font, wchar_t ucs21, u_short *pico_font, u_short *gly,
+ int top_space, int bytes_per_digit, int digit_space);
 
-u_char pico_font_3x6[16*3] = {
+u_short pico_font_3x6[16*3] = {
 	/* 0 */
-	0x3c,		/* ..####.. */
-	0x42,		/* .#....#. */
-	0x3c,		/* ..####.. */
+	0x3c00,		/* ..####.. */
+	0x4200,		/* .#....#. */
+	0x3c00,		/* ..####.. */
 	/* 1 */
-	0x44,		/* .#...#.. */
-	0x7e,		/* .######. */
-	0x40,		/* .#...... */
+	0x4400,		/* .#...#.. */
+	0x7e00,		/* .######. */
+	0x4000,		/* .#...... */
 	/* 2 */
-	0x62,		/* .##...#. */
-	0x52,		/* .#.#. #. */
-	0x4c,		/* .#..##.. */
+	0x6200,		/* .##...#. */
+	0x5200,		/* .#.#. #. */
+	0x4c00,		/* .#..##.. */
 	/* 3 */
-	0x4a,		/* .#..#.#. */
-	0x4a,		/* .#..#.#. */
-	0x34,		/* ..##.#.. */
+	0x4a00,		/* .#..#.#. */
+	0x4a00,		/* .#..#.#. */
+	0x3400,		/* ..##.#.. */
 	/* 4 */
-	0x18,		/* ...##... */
-	0x14,		/* ...#.#.. */
-	0x7e,		/* .######. */
+	0x1800,		/* ...##... */
+	0x1400,		/* ...#.#.. */
+	0x7e00,		/* .######. */
 	/* 5 */
-	0x4e,		/* .#..###. */
-	0x4a,		/* .#..#.#. */
-	0x32,		/* ..##..#. */
+	0x4e00,		/* .#..###. */
+	0x4a00,		/* .#..#.#. */
+	0x3200,		/* ..##..#. */
 	/* 6 */
-	0x3c,		/* ..####.. */
-	0x4a,		/* .#..#.#. */
-	0x32,		/* ..##..#. */
+	0x3c00,		/* ..####.. */
+	0x4a00,		/* .#..#.#. */
+	0x3200,		/* ..##..#. */
 	/* 7 */
-	0x06,		/* .....##. */
-	0x72,		/* .###..#. */
-	0x0e,		/* ....###. */
+	0x0600,		/* .....##. */
+	0x7200,		/* .###..#. */
+	0x0e00,		/* ....###. */
 	/* 8 */
-	0x34,		/* ..##.#.. */
-	0x4a,		/* .#..#.#. */
-	0x34,		/* ..##.#.. */
+	0x3400,		/* ..##.#.. */
+	0x4a00,		/* .#..#.#. */
+	0x3400,		/* ..##.#.. */
 	/* 9 */
-	0x4c,		/* .#..##.. */
-	0x52,		/* .#.#..#. */
-	0x3c,		/* ..####.. */
+	0x4c00,		/* .#..##.. */
+	0x5200,		/* .#.#..#. */
+	0x3c00,		/* ..####.. */
 	/* A */
-	0x7c,		/* .#####.. */
-	0x12,		/* ...#..#. */
-	0x7c,		/* .#####.. */
+	0x7c00,		/* .#####.. */
+	0x1200,		/* ...#..#. */
+	0x7c00,		/* .#####.. */
 	/* B */
-	0x7e,		/* .######. */
-	0x4a,		/* .#..#.#. */
-	0x34,		/* ..##.#.. */
+	0x7e00,		/* .######. */
+	0x4a00,		/* .#..#.#. */
+	0x3400,		/* ..##.#.. */
 	/* C */
-	0x3c,		/* ..####.. */
-	0x42,		/* .#....#. */
-	0x42,		/* .#....#. */
+	0x3c00,		/* ..####.. */
+	0x4200,		/* .#....#. */
+	0x4200,		/* .#....#. */
 	/* D */
-	0x7e,		/* .######. */
-	0x42,		/* .#....#. */
-	0x3c,		/* ..####.. */
+	0x7e00,		/* .######. */
+	0x4200,		/* .#....#. */
+	0x3c00,		/* ..####.. */
 	/* E */
-	0x7e,		/* .######. */
-	0x4a,		/* .#..#.#. */
-	0x4a,		/* .#..#.#. */
+	0x7e00,		/* .######. */
+	0x4a00,		/* .#..#.#. */
+	0x4a00,		/* .#..#.#. */
 	/* F */
-	0x7e,		/* .######. */
-	0x0a,		/* ....#.#. */
-	0x0a,		/* ....#.#. */
+	0x7e00,		/* .######. */
+	0x0a00,		/* ....#.#. */
+	0x0a00,		/* ....#.#. */
 };
-u_char pico_font_2x4[16*2] = {
+u_short pico_font_2x4[16*2] = {
 //Pico-font:
 // 0  1  2  3  4  5  6  7  8  9  A  B  C  D  E  F
 //     # ## ##  # ## ## ## ## ## #  #      # ## ##
@@ -105,53 +105,53 @@ u_char pico_font_2x4[16*2] = {
 // ##  # #   # ##  # ##  # ##  # ## ## #  ## #  ##
 // ##  # ## ##  # ## ##  # ##  # ## ## ## ## ## # 
 	/* 0 */
-	0x70,		/* .###.... */
-	0x70,		/* .###.... */
+	0x7000,		/* .###.... */
+	0x7000,		/* .###.... */
 	/* 1 */
-	0x00,		/* ........ */
-	0x78,		/* .####... */
+	0x0000,		/* ........ */
+	0x7800,		/* .####... */
 	/* 2 */
-	0x68,		/* .##.#... */
-	0x58,		/* .#.##... */
+	0x6800,		/* .##.#... */
+	0x5800,		/* .#.##... */
 	/* 3 */
-	0x48,		/* .#..#... */
-	0x78,		/* .####... */
+	0x4800,		/* .#..#... */
+	0x7800,		/* .####... */
 	/* 4 */
-	0x30,		/* ..##.... */
-	0x78,		/* .####... */
+	0x3000,		/* ..##.... */
+	0x7800,		/* .####... */
 	/* 5 */
-	0x58,		/* .#.##... */
-	0x68,		/* .##.#... */
+	0x5800,		/* .#.##... */
+	0x6800,		/* .##.#... */
 	/* 6 */
-	0x78,		/* .####... */
-	0x68,		/* .##.#... */
+	0x7800,		/* .####... */
+	0x6800,		/* .##.#... */
 	/* 7 */
-	0x08,		/* ....#... */
-	0x78,		/* .####... */
+	0x0800,		/* ....#... */
+	0x7800,		/* .####... */
 	/* 8 */
-	0x78,		/* .####... */
-	0x78,		/* .####... */
+	0x7800,		/* .####... */
+	0x7800,		/* .####... */
 	/* 9 */
-	0x58,		/* .#.##... */
-	0x78,		/* .####... */
+	0x5800,		/* .#.##... */
+	0x7800,		/* .####... */
 	/* A */
-	0x68,		/* .##.#... */
-	0x70,		/* .###.... */
+	0x6800,		/* .##.#... */
+	0x7000,		/* .###.... */
 	/* B */
-	0x78,		/* .####... */
-	0x60,		/* .##..... */
+	0x7800,		/* .####... */
+	0x6000,		/* .##..... */
 	/* C */
-	0x70,		/* .###.... */
-	0x50,		/* .#.#.... */
+	0x7000,		/* .###.... */
+	0x5000,		/* .#.#.... */
 	/* D */
-	0x60,		/* .##..... */
-	0x78,		/* .####... */
+	0x6000,		/* .##..... */
+	0x7800,		/* .####... */
 	/* E */
-	0x78,		/* .####... */
-	0x58,		/* .#.##... */
+	0x7800,		/* .####... */
+	0x5800,		/* .#.##... */
 	/* F */
-	0x78,		/* .####... */
-	0x28,		/* ..#.#... */
+	0x7800,		/* .####... */
+	0x2800,		/* ..#.#... */
 };
 
 // 0123    CDEF    
@@ -184,84 +184,75 @@ u_char pico_font_2x4[16*2] = {
 // |####..#.#
 // +---++---+
 
-const u_char *font_get_undefined_glyph_bitmap(font_t *font, wchar_t ucs21)
+const u_short *font_get_undefined_glyph_bitmap(font_t *font, wchar_t ucs21)
 {
-	static u_char gly[PICOFONT_HEIGHT*2] = {
-		0x00, 0x00,
-		0x00, 0x00,
-		0x00, 0x00,
-		0x00, 0x00,
-		0x00, 0x00,
-		0x00, 0x00,
-		0x00, 0x00,
-		0x00, 0x00,
-		0x00, 0x00,
-		0x00, 0x00,
-		0x00, 0x00,
-		0x00, 0x00,
-		0x00, 0x00,
-		0x00, 0x00,
-		0x00, 0x00,
-		0x00, 0x00,
+	static u_short gly[PICOFONT_HEIGHT] = {
+		0x0000,
+		0x0000,
+		0x0000,
+		0x0000,
+		0x0000,
+		0x0000,
+		0x0000,
+		0x0000,
+		0x0000,
+		0x0000,
+		0x0000,
+		0x0000,
+		0x0000,
+		0x0000,
+		0x0000,
+		0x0000,
 	};
 
 	switch(font_get_undefined_glyph_width(font, ucs21)) {
 	case 16:
-		font_get_undefined_glyph_bitmap__(font, ucs21, pico_font_3x6, gly, 2, 1, 3, 1);
+		font_get_undefined_glyph_bitmap__(font, ucs21, pico_font_3x6, gly, 1, 3, 1);
 		break;
 	case 14:
-		font_get_undefined_glyph_bitmap__(font, ucs21, pico_font_3x6, gly, 2, 1, 3, 0);
+		font_get_undefined_glyph_bitmap__(font, ucs21, pico_font_3x6, gly, 1, 3, 0);
 		break;
 	case 12:
-		font_get_undefined_glyph_bitmap__(font, ucs21, pico_font_2x4, gly, 2, 1, 2, 1);
+		font_get_undefined_glyph_bitmap__(font, ucs21, pico_font_2x4, gly, 1, 2, 1);
 		break;
 	case 10:
-		font_get_undefined_glyph_bitmap__(font, ucs21, pico_font_2x4, gly, 2, 1, 2, 0);
+		font_get_undefined_glyph_bitmap__(font, ucs21, pico_font_2x4, gly, 1, 2, 0);
 		break;
 	case 8:
-		font_get_undefined_glyph_bitmap__(font, ucs21, pico_font_3x6, gly, 1, 1, 3, 1);
+		font_get_undefined_glyph_bitmap__(font, ucs21, pico_font_3x6, gly, 1, 3, 1);
 		break;
 	case 7:
-		font_get_undefined_glyph_bitmap__(font, ucs21, pico_font_3x6, gly, 1, 1, 3, 0);
+		font_get_undefined_glyph_bitmap__(font, ucs21, pico_font_3x6, gly, 1, 3, 0);
 		break;
 	case 6:
-		font_get_undefined_glyph_bitmap__(font, ucs21, pico_font_2x4, gly, 1, 1, 2, 1);
+		font_get_undefined_glyph_bitmap__(font, ucs21, pico_font_2x4, gly, 1, 2, 1);
 		break;
 	case 5:
-		font_get_undefined_glyph_bitmap__(font, ucs21, pico_font_2x4, gly, 1, 1, 2, 0);
+		font_get_undefined_glyph_bitmap__(font, ucs21, pico_font_2x4, gly, 1, 2, 0);
 		break;
 	}
 	return gly;
 }
-PRIVATE const u_char *font_get_undefined_glyph_bitmap__(font_t *font, wchar_t ucs21,
- u_char *pico_font, u_char *gly,
- int bytes_per_line, int top_space, int bytes_per_digit, int digit_space)
+PRIVATE const u_short *font_get_undefined_glyph_bitmap__(
+ font_t *font, wchar_t ucs21, u_short *pico_font, u_short *gly,
+ int top_space, int bytes_per_digit, int digit_space)
 {
-	u_char *gp;
+	u_short *gp;
 	int bit;
 	int hex;
 	int off;
 
 	gp = gly;
 	if (top_space) {
-		*gp++ = 0x00;
-		if (bytes_per_line >= 2) {
-			*gp++ = 0x00;
-		}
+		*gp++ = 0x0000;
 	}
 	for (bit = 12; bit >= 0; bit -= 4) {	// 12, 8, 4, 0
-		hex = (ucs21 >> bit) & 0xf;
+		hex = (ucs21 >> bit) & 0xf;		// 0xf000, 0x0f00, 0x00f0, 0x000f
 		for (off = 0; off < bytes_per_digit; off++) {
 			*gp++ = pico_font[hex * bytes_per_digit + off];
-			if (bytes_per_line >= 2) {
-				*gp++ = 0x00;
-			}
 		}
 		if (bit > 0 && digit_space) {
-			*gp++ = 0x00;
-			if (bytes_per_line >= 2) {
-				*gp++ = 0x00;
-			}
+			*gp++ = 0x0000;
 		}
 	}
 	return gly;
@@ -271,14 +262,12 @@ int font_get_undefined_glyph_width(font_t *font, wchar_t ucs21)
 {
 	int columns;
 
-//#define UNDEFINED_FONT_WIDTH	1
-///#define UNDEFINED_FONT_WIDTH	2
 #ifdef UNDEFINED_FONT_WIDTH
 	columns = UNDEFINED_FONT_WIDTH;
 #else
 	columns = wchar_columns(ucs21);
 #endif
-	return font->font_width * columns;
+	return font->width * columns;
 }
 
 // End of picofont.c

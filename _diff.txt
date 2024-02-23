@@ -1,6 +1,22 @@
 kdiff3 config.h~ config.h
 kdiff3 fbbpp.h~ fbbpp.h
+105c105
+< 	void (*bpp_clear_all)(c_idx_t color_idx, rgb15_t rgb15);
+---
+> 	void (*bpp_clear_all)(c_idx_t clr_idx, rgb15_t rgb15);
+107c107
+< 	 c_idx_t color_idx, rgb15_t rgb15);
+---
+> 	 c_idx_t clr_idx, rgb15_t rgb15);
+109c109
+< 	 c_idx_t color_idx, rgb15_t rgb15);
+---
+> 	 c_idx_t clr_idx, rgb15_t rgb15);
 kdiff3 fbcommon.h~ fbcommon.h
+70c70
+< void r_g_b_24_from_color_idx(c_idx_t clr_idx, u_char *b0, u_char *b1, u_char *b2);
+---
+> /////void r_g_b_24_from_color_idx(c_idx_t clr_idx, u_char *b0, u_char *b1, u_char *b2);
 kdiff3 font.h~ font.h
 kdiff3 hex.h~ hex.h
 kdiff3 main.h~ main.h
@@ -10,6 +26,12 @@ kdiff3 myminmax.h~ myminmax.h
 kdiff3 myselect.h~ myselect.h
 kdiff3 mytypes.h~ mytypes.h
 kdiff3 pen.h~ pen.h
+77,78c77,78
+< void pen_set_bgc_idx(pen_t *pen, c_idx_t color_idx);
+< void pen_set_fgc_idx(pen_t *pen, c_idx_t color_idx);
+---
+> void pen_set_bgc_idx(pen_t *pen, c_idx_t clr_idx);
+> void pen_set_fgc_idx(pen_t *pen, c_idx_t clr_idx);
 kdiff3 picofont.h~ picofont.h
 kdiff3 sequence.h~ sequence.h
 kdiff3 stdincs.h~ stdincs.h
@@ -18,9 +40,28 @@ kdiff3 ucon.h~ ucon.h
 kdiff3 util.h~ util.h
 kdiff3 vterm.h~ vterm.h
 kdiff3 vtermlow.h~ vtermlow.h
+262c262
+< void vterm_invert_cursor_yxwc(vterm_t *vterm, int yy, int xx, int wide, int clr_idx);
+---
+> void vterm_invert_cursor_yxwc(vterm_t *vterm, int yy, int xx, int wide, int color_idx);
 kdiff3 fbbpp.c~ fbbpp.c
+259a260,261
+> #warning "ENABLE_8BPP"
+> /* 8 bpp */
+371c373,374
+< #if defined(ENABLE_15BPP)
+---
+> #ifdef ENABLE_15BPP
+> #warning "ENABLE_15BPP"
+406c409,410
+< #if defined(ENABLE_16BPP)
+---
+> #ifdef ENABLE_16BPP
+> #warning "ENABLE_16BPP"
 kdiff3 fbcommon.c~ fbcommon.c
 kdiff3 font.c~ font.c
+443d442
+< 	////return ((glyph_bitmap[fy] << (glyph_offset_x + fx)) & 0x8000) != 0x0000;
 kdiff3 hex.c~ hex.c
 kdiff3 main.c~ main.c
 kdiff3 message.c~ message.c
@@ -29,10 +70,8 @@ kdiff3 myselect.c~ myselect.c
 kdiff3 pen.c~ pen.c
 kdiff3 picofont.c~ picofont.c
 kdiff3 term.cpp~ term.cpp
-405c405
-< 	//											1234567890123456789012345678901234567890
----
-> 	//1234567890123456789012345678901234567890
 kdiff3 util.c~ util.c
 kdiff3 vterm.c~ vterm.c
 kdiff3 vtermlow.c~ vtermlow.c
+524d523
+< 	////font_set_inversion((get_cur_abs_msec() % 60000) >= 30000);

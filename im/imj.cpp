@@ -497,11 +497,11 @@ int imj::im_i_delete(void)
 }
 
 // Workaround for NKF
-#define ZEN_HYP			"\xef\xbc\x8d"	// Zenkaku Hyphen charactor (U+FF0D)
-#define ZEN_YEN			"\xef\xbf\xa5"	// Zenkaku Yen charactor    (U+FFE5)
-#define ZEN_CHOUON		"\xe3\x83\xbc"	// Zenkaku Chouon Kigou charactor (U+30FC)
+#define ZEN_HYP			"\xef\xbc\x8d"	// Zenkaku Hyphen character (U+FF0D)
+#define ZEN_YEN			"\xef\xbf\xa5"	// Zenkaku Yen character    (U+FFE5)
+#define ZEN_CHOUON		"\xe3\x83\xbc"	// Zenkaku Chouon Kigou character (U+30FC)
 
-// Invisible separator charactor
+// Invisible separator character
 ///#define IM_INVIS_SEP_CHR			'\x1f'
 #define IM_INVIS_SEP_CHR			'\x7f'
 
@@ -1095,7 +1095,7 @@ int imjtanbunsetsu::conv_tanbunsetsu(char *romaji, char *pronun, int len_to_matc
 // dic_match_len, hst_match_len, len_to_match);
 		}
 		if (len_to_match <= 0) {
-			// if no match, select some charactors
+			// if no match, select some characters
 			if (is_han(pronun)) {
 				// if hankaku, select whole hankaku string
 				len_to_match = skip_han(pronun) - pronun;
@@ -1184,7 +1184,7 @@ int imjdic::imjdic_open(const char *file_path)
 		file_path = DIC_FILE_NAME;
 flf_d_printf("dic-file-path:[%s]\n", file_path);
 	if ((fp_dic = fopen(file_path, "r")) == NULL) {
-		_FLF_ERR_
+		_ERR_
 		return 1;
 	}
 	imjdic_get_offsets_of_all_records();
@@ -1937,7 +1937,7 @@ int imjhst_load(const char *file_path)
 	strcpy_blen(imjhst_file_path, MAX_PATH_LEN, file_path);
 flf_d_printf("hst-file-path:[%s]\n", file_path);
 	if ((fp_cnvhst = fopen(file_path, "r")) == NULL) {
-		_FLF_ERR_
+		_ERR_
 		return 1;
 	}
 	for (entry_idx = 0; entry_idx < MAX_CONVERSION_HISTORIES; entry_idx++) {
@@ -1980,7 +1980,7 @@ int imjhst_save(const char *file_path)
 	}
 flf_d_printf("hst-file-path:[%s]\n", file_path);
 	if ((fp_cnvhst = fopen(file_path, "w")) == NULL) {
-		_FLF_ERR_
+		_ERR_
 		return 1;
 	}
 	line_idx = 0;
@@ -2764,7 +2764,7 @@ int imjatoh_load_table(char *file_path)
 	if (file_path == NULL)
 		file_path = ROM_FILE_NAME;
 	if ((fp = fopen(file_path, "r")) == NULL) {
-		_FLF_ERR_
+		_ERR_
 		return 1;
 	}
 	for (idx = 0 ; idx < MAX_ROM_TABLE_LINES; idx++) {

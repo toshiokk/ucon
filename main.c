@@ -57,14 +57,16 @@ int main(int argc, char *argv[])
 
 #if 1
 																// i386	amd64
-	msg_printf("sizeof(int): %d\n", sizeof(int));				//	4	4
-	msg_printf("sizeof(long): %d\n", sizeof(long));				//	4	8
-	msg_printf("sizeof(void *): %d\n", sizeof(void *));			//	4	8
-	msg_printf("sizeof(long long): %d\n", sizeof(long long));	//	4	8
-	msg_printf("sizeof(wchar_t): %d\n", sizeof(wchar_t));		//	4	4
+	flf_d_printf("sizeof(char): %d\n", sizeof(char));			//	1	1
+	flf_d_printf("sizeof(short): %d\n", sizeof(short));			//	2	2
+	flf_d_printf("sizeof(int): %d\n", sizeof(int));				//	4	4
+	flf_d_printf("sizeof(long): %d\n", sizeof(long));			//	4	8
+	flf_d_printf("sizeof(void *): %d\n", sizeof(void *));		//	4	8
+	flf_d_printf("sizeof(long long): %d\n", sizeof(long long));	//	4	8
+	flf_d_printf("sizeof(wchar_t): %d\n", sizeof(wchar_t));		//	4	4
 #endif
 
-///	verbose_printf("path:%s\n", argv[0]);
+///	v_printf("path:%s\n", argv[0]);
 	setenv("LANG", "ja_JP.UTF-8", 1);
 	setlocale(LC_ALL, "ja_JP.UTF-8");
 ///	setlocale(LC_CTYPE, "ja_JP.UTF-8");
@@ -73,10 +75,10 @@ int main(int argc, char *argv[])
 	util_privilege_init();
 
 #ifdef ENABLE_IMJ
-	msg_printf(start_message, PACKAGE, " with Japanese Input Method",
+	flf_d_printf(start_message, PACKAGE, " with Japanese Input Method",
 	 VERSION, __DATE__, __TIME__, PACKAGE);
 #else // ENABLE_IMJ
-	msg_printf(start_message, PACKAGE, "",
+	flf_d_printf(start_message, PACKAGE, "",
 	 VERSION, __DATE__, __TIME__, PACKAGE);
 #endif // ENABLE_IMJ
 
@@ -88,9 +90,9 @@ int main(int argc, char *argv[])
 		goto main_exit;
 	}
 
-	verbose_printf("exec_cmd: [%s]\n", app__.exec_cmd);
+	v_printf("exec_cmd: [%s]\n", app__.exec_cmd);
 	for (arg_idx = 0; arg_idx < MAX_SHELL_ARGS+1 && app__.exec_argv[arg_idx]; arg_idx++) {
-		verbose_printf("exec_argv[%d]: [%s]\n", arg_idx, app__.exec_argv[arg_idx]);
+		v_printf("exec_argv[%d]: [%s]\n", arg_idx, app__.exec_argv[arg_idx]);
 	}
 
 	if (term_start_child_and_serve(&term__) < 0) {
@@ -99,15 +101,16 @@ int main(int argc, char *argv[])
 
 main_exit:;
 	app_destroy(&app__);
-	msg_printf("Exit %s\n", PACKAGE);
+	flf_d_printf("Exit %s\n", PACKAGE);
 	exit(EXIT_SUCCESS);
 }
 
 PRIVATE void app_get_options(app_t *app, int argc, char *argv[])
 {
-	char *short_opt = "bf:x:y:wc:hlvd";
+	char *short_opt = "br:f:x:y:wc:hlvd";
 	static struct option long_opt[] = {
 		{ "bell",			0, NULL, 'b' },
+		{ "rotation",		1, NULL, 'r' },		// -r 1
 		{ "font",			1, NULL, 'f' },		// -f 12
 		{ "expand",			1, NULL, 'x' },
 		{ "expand_y",		1, NULL, 'y' },
@@ -115,7 +118,7 @@ PRIVATE void app_get_options(app_t *app, int argc, char *argv[])
 		{ "exec",			1, NULL, 'c' },		// -c "commands ..."
 		{ "help",			0, NULL, 'h' },
 		{ "highlight",		0, NULL, 'l' },
-		{ "verbose",		0, NULL, 'v' },
+		///{ "verbose",		0, NULL, 'v' },
 		{ "debug",			0, NULL, 'd' },
 		{ NULL,				0, NULL, 0   },
 	};
@@ -125,7 +128,7 @@ PRIVATE void app_get_options(app_t *app, int argc, char *argv[])
 #ifdef ENABLE_DEBUG
 _FLF_
 	for (arg_idx = 0; arg_idx < argc; arg_idx++) {
-		verbose_printf("%d: [%s]\n", arg_idx, argv[arg_idx]);
+		v_printf("%d: [%s]\n", arg_idx, argv[arg_idx]);
 	}
 #endif // ENABLE_DEBUG
 
@@ -138,8 +141,10 @@ _FLF_
 		case 'b':
 			app->no_bell = TRUE;
 			break;
+		case 'r':
+			app->contents_rotation = MIN_MAX(0, atoi(optarg), 3);
+			break;
 		case 'f':
-///			app->font_file = optarg;
 			app->font_size = MIN_MAX(10, atoi(optarg), 16) / 2 * 2;
 			break;
 		case 'x':
@@ -164,11 +169,11 @@ _FLF_
 			app->highlight = TRUE;
 			break;
 		case 'v':
-			app->verbose = TRUE;
+			///app->verbose = TRUE;
 			break;
 		case 'd':
 			app->debug = TRUE;
-			app->verbose = TRUE;	// "-d" option enables "-v" too
+			///app->verbose = TRUE;	// "-d" option enables "-v" too
 			break;
 		default:
 			break;
@@ -180,7 +185,11 @@ PRIVATE void app_init(app_t *app)
 {
 	static char shell[128+1];
 
-///	app->font_file = NULL;
+	///
+	app->contents_rotation = ROT000;
+	///	app->contents_rotation = ROT090;
+	///	app->contents_rotation = ROT180;
+	///	app->contents_rotation = ROT270;
 	app->font_size = 12;
 	app->expand_x = 1;		// 1 dots per pixels
 	app->expand_y = 1;		// 1 dots per pixels
@@ -197,10 +206,10 @@ PRIVATE void app_init(app_t *app)
 ///app->exec_cmd = "/bin/echo";
 	app->highlight = FALSE;
 	app->show_help = FALSE;
-	app->verbose = FALSE;
+	///app->verbose = FALSE;
 	app->debug = FALSE;
 #ifdef FORCE_DEBUG
-	app->verbose = TRUE;
+	///app->verbose = TRUE;
 	app->debug = TRUE;
 #endif // FORCE_DEBUG
 }
@@ -214,6 +223,7 @@ PRIVATE void app_show_help(void)
 	fprintf(stdout, "Usage: %s [options]\n", PACKAGE);
 	fprintf(stdout,
 	 "  -b --bell\n"
+	 "  -r --rotation 0/1/2/3\n"
 	 "  -f --font fontsize[10/12/14/16]\n"
 	 "  -x --expand N\n"
 	 "  -y --expand_y N\n"
@@ -221,7 +231,7 @@ PRIVATE void app_show_help(void)
 	 "  -e --exec program-name\n"
 	 "  -h --help\n"
 	 "  -l --highlight\n"
-	 "  -v --verbose\n"
+	/// "  -v --verbose\n"
 	 "  -d --debug\n"
 	);
 	fprintf(stdout,

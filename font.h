@@ -34,39 +34,43 @@ extern "C" {
 #endif // __cplusplus
 
 #define MAX_FONT_HEIGHT		16
-#define MAX_GLYPHS			65536
-struct font_;
-typedef struct font_ font_t;
-struct font_ {
-	char font_width;	// 5, 6, 7, 8
-	char font_height;	// 10, 12, 14, 16
+#define MAX_GLYPHS			65535
+
+typedef struct /*font_*/ {
+	u_char width;		// 5, 6, 7, 8
+	u_char height;		// 10, 12, 14, 16
 	// glyph bitmap
-	u_char glyph_bitmap[MAX_GLYPHS][2*MAX_FONT_HEIGHT];
+	u_short glyph_bitmap[MAX_GLYPHS][MAX_FONT_HEIGHT];
 	// glyph width in pixels
-	char glyph_width[MAX_GLYPHS];	// 0: no glyph
-	long glyphs;		// -1, 0 -- 65536
-};
+	u_char glyph_width[MAX_GLYPHS];	// 0: no glyph
+	u_short glyphs;		// 0 -- 65535
+} font_t;
 
 #define MAX_FONTS		4	// 5x10, 6x12, 7x14, 8x16
 extern font_t fonts__[MAX_FONTS];
-extern int cur_font_multi_idx;
-extern font_t *cur_font;
 extern int cur_font_idx;
-extern int cur_font_expand_x;
-extern int cur_font_expand_y;
+extern font_t *cur_font;
 
-typedef struct {
-	char font_idx;
-	char font_size;
-	char multi_x;
-	char multi_y;
-} font_multi_t;
+typedef struct /*font_mul_*/ {
+	int font_idx;
+	u_char mul_x;
+	u_char mul_y;
+} font_mul_t;
+extern int cur_font_mul_idx;
+extern font_mul_t *cur_font_mul;
 
-int font_select(int font_size, int multi_x, int multi_y);
-int font_correct_selection(int font_multi_idx);
-int font_select_next(int font_multi_idx, int shift);
-int font_check_selection(int font_multi_idx);
-font_t *font_get_font(int font_multi_idx, int *font_idx, int *multi_x, int *multi_y);
+typedef struct /*font_exp_*/ {
+	u_char width;
+	u_char height;
+} font_exp_t;
+extern font_exp_t cur_font_exp_, *cur_font_exp;
+
+//-----------------------------------------------------------------------------
+int font_select(int font_size, int mul_x, int mul_y);
+int font_correct_selection(int font_mul_idx);
+int font_select_next(int font_mul_idx, int shift);
+int font_check_selection(int font_mul_idx);
+void font_setup_metrics();
 
 void font_init_all(void);
 int font_load_all(void);
@@ -78,9 +82,12 @@ int font_is_loaded(font_t *font);
 int font_count_glyphs(font_t *font);
 int font_destroy(font_t *font);
 
-const u_char *font_get_glyph_bitmap(font_t *font, wchar_t ucs21,
- int *width_in_pixels, int *unknown);
+const u_short *font_get_glyph_bitmap(font_t *font, wchar_t ucs21,
+ int *width_in_pixels, int *found);
 const int font_get_glyph_width(font_t *font, wchar_t ucs21);
+
+const u_short *font_set_glyph(wchar_t ucs21, u_char offset_x);
+bool font_get_glyph_pixel(u_char fx, u_char fy);
 
 #if defined(__cplusplus)
 }

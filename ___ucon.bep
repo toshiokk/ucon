@@ -1,47 +1,49 @@
-  272   1217   7050 config.h
-    69    364   2646 fbbpp.h
-    96    411   3291 fbcommon.h
+   275   1246   7242 config.h
+    75    371   2726 fbbpp.h
+    96    411   3290 fbcommon.h
+    80    409   2876 fbrotation.h
     91    403   3012 font.h
     38    170   1057 hex.h
     51    285   1911 main.h
     47    272   1844 message.h
-   104    408   4189 mydebug.h
+   105    410   4213 mydebug.h
     27     89    657 myminmax.h
-    33     86    928 myselect.h
-    50    187   1775 mystring.h
+    35     86    930 myselect.h
+    52    194   1834 mystring.h
     43    245   1583 mytypes.h
     31     64    667 myutf8.h
-    98    502   3691 pen.h
+    98    502   3692 pen.h
     47    255   1770 picofont.h
     49    242   1581 screenshot.h
    257   1388   9987 sequence.h
     63    222   1619 stdincs.h
-    64    314   2204 term.h
-    36    164   1039 ucon.h
+    56    290   1993 term.h
+    39    168   1084 ucon.h
     61    299   2097 util.h
-    13     20    180 utilincs.h
-    53    307   2118 vterm.h
-   260   1038   9207 vtermlow.h
-   358   1173  13406 im/imj.h
+    11     18    159 utilincs.h
+    55    319   2240 vterm.h
+   324   1320  11156 vtermlow.h
+   367   1173  13481 im/imj.h
     17     43    334 im/imjcui.h
-   811   3093  24511 fbbpp.c
-   589   1984  18110 fbcommon.c
-   321   1198   9353 font.c
+   851   3151  24951 fbbpp.c
+   599   2013  18210 fbcommon.c
+    97    437   3500 fbrotation.c
+   416   1580  11657 font.c
    164    636   4276 hex.c
-   249    838   6311 main.c
+   248    856   6479 main.c
     63    291   1996 message.c
-   337   1012   9200 mydebug.c
+   336   1010   9179 mydebug.c
     20     76    425 myminmax.c
-   108    341   2546 myselect.c
-   187    558   4232 mystring.c
-   137    456   3372 myutf8.c
-   239    775   5652 pen.c
-   282   1136   6776 picofont.c
-   202    674   5386 screenshot.c
+   110    341   2548 myselect.c
+   192    571   4331 mystring.c
+   138    472   3476 myutf8.c
+   251    803   5838 pen.c
+   284   1136   6778 picofont.c
+   202    672   5378 screenshot.c
    105    367   2733 util.c
-   918   3207  24880 vterm.c
-   852   2609  26411 vtermlow.c
-  1019   2759  29064 term.cpp
-  3524  10268 105555 im/imj.cpp
-   441   1387  13907 im/imjcui.cpp
- 12896  43833 384539 合計
+  1160   3918  31516 vterm.c
+  1055   3242  33095 vtermlow.c
+  1004   2747  28515 term.cpp
+  3542  10284 105677 im/imj.cpp
+   444   1394  13967 im/imjcui.cpp
+ 13771  46891 409560 合計

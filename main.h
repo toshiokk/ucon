@@ -30,6 +30,7 @@
 #define ucon_main_h
 
 typedef struct app_ {
+	view_rotation_t contents_rotation;
 	char font_size;	// font height (10/12/14/16)
 	char expand_x;	// expand font x size (1/2/3/4)
 	char expand_y;	// expnad font y size (1/2/3/4)
@@ -40,7 +41,7 @@ typedef struct app_ {
 	char *exec_argv[MAX_SHELL_ARGS+1];
 	bool_t show_help;
 	bool_t highlight;
-	bool_t verbose;
+	///bool_t verbose;
 	bool_t debug;
 } app_t;
 

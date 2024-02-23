@@ -63,7 +63,7 @@ PRIVATE void vterm_clear_in_text_buf_line(vterm_t *vterm, text_char_t *text_buf,
 /*---------------------------------------------------------------------------*/
 void vterm_start_fb(vterm_t *vterm)
 {
-	vterm_set_window_size(vterm);
+	vterm_send_sigwinch(vterm);
 	vterm_register_vt_signals(vterm);
 	vterm_text_clear_all(vterm);
 	sig_acquire_handler(SIGUSR2);
@@ -89,7 +89,7 @@ void vterm_register_vt_signals(vterm_t *vterm)
 	vtm.acqsig = SIGUSR2;
 	if (util_privilege_ioctl(0, VT_SETMODE, (void *)&vtm) < 0) {
 		_ERR_
-		printf_strerror("ioctl VT_SETMODE");
+		se_printf("ioctl VT_SETMODE");
 	}
 }
 void vterm_unregister_vt_signals(void)
@@ -105,7 +105,7 @@ void vterm_unregister_vt_signals(void)
 	vtm.acqsig = 0;
 	if (util_privilege_ioctl(0, VT_SETMODE, (void *)&vtm) < 0) {
 		_ERR_
-		printf_strerror("ioctl VT_SETMODE");
+		se_printf("ioctl VT_SETMODE");
 	}
 }
 
@@ -130,7 +130,7 @@ int vterm_reply_sig_release(void)
 		vt_state_active = 0;
 		if (ioctl(0, VT_RELDISP, 1) < 0) {	// accept vt releasing
 			_ERR_
-			printf_strerror("ioctl VT_RELDISP");
+			se_printf("ioctl VT_RELDISP");
 		}
 		return 1;
 	}
@@ -142,7 +142,7 @@ int vterm_reply_sig_acquire(void)
 		sig_acquire_replyed++;
 		if (ioctl(0, VT_RELDISP, VT_ACKACQ) < 0) {	// accept vt acquisition
 			_ERR_
-			printf_strerror("ioctl VT_RELDISP");
+			se_printf("ioctl VT_RELDISP");
 		}
 		vt_state_active = 1;
 		return 1;
@@ -150,7 +150,7 @@ int vterm_reply_sig_acquire(void)
 	return 0;
 }
 /*---------------------------------------------------------------------------*/
-void vterm_set_window_size(vterm_t *vterm)
+void vterm_send_sigwinch(vterm_t *vterm)
 {
 	struct winsize winsz;
 
@@ -162,17 +162,17 @@ flf_d_printf("row:%2d, col:%2d\n", winsz.ws_row, winsz.ws_col);
 	// DNU: SIGWINCH is not sent to the client process
 	if (ioctl(term__.fd_console, TIOCSWINSZ, &winsz) < 0) {
 		_ERR_
-		printf_strerror("ioctl TIOCSWINSZ");
+		se_printf("ioctl TIOCSWINSZ");
 	}
 	// DNU: SIGWINCH is not sent to the client process
 	if (ioctl(term__.fd_pty_slave, TIOCSWINSZ, &winsz) < 0) {
 		_ERR_
-		printf_strerror("ioctl TIOCSWINSZ");
+		se_printf("ioctl TIOCSWINSZ");
 	}
 	// SIGWINCH will be sent to the client process
 	if (ioctl(term__.fd_pty_master, TIOCSWINSZ, &winsz) < 0) {
 		_ERR_
-		printf_strerror("ioctl TIOCSWINSZ");
+		se_printf("ioctl TIOCSWINSZ");
 	}
 	// SIGWINCH will be sent to the client process
 }
@@ -315,7 +315,7 @@ PRIVATE int vterm_get_cursor_blink_period(vterm_t *vterm)
 {
 	return (vterm->cursor.mode == 0) ? CURSOR_BLINK_PERIOD_NORMAL : CURSOR_BLINK_PERIOD_FAST;
 }
-// hide cursor before repainting charactor
+// hide cursor before repainting character
 PRIVATE void vterm_hide_cursor_before_paint(vterm_t *vterm, int yy, int xx, bool_t wide)
 {
 	int xx2 = xx + ((wide == 0) ? 1 : 2);
@@ -331,7 +331,6 @@ PRIVATE void vterm_hide_cursor_before_paint(vterm_t *vterm, int yy, int xx, bool
 PRIVATE void vterm_paint_cursor(vterm_t *vterm)
 {
 	if (vterm->cursor.on && vterm->cursor.shown == FALSE) {
-///mflf_d_printf("zzzz\n");
 		vterm->cursor.wide = is_column1_of_wide_char(vterm, vterm->cursor.yy, vterm->cursor.xx);
 		vterm_invert_cursor(vterm);
 		vterm->cursor.shown = TRUE;
@@ -340,7 +339,6 @@ PRIVATE void vterm_paint_cursor(vterm_t *vterm)
 PRIVATE void vterm_erase_cursor(vterm_t *vterm)
 {
 	if (vterm->cursor.shown) {
-///mflf_d_printf("zzzz\n");
 		vterm_invert_cursor(vterm);
 		vterm->cursor.shown = FALSE;
 	}
@@ -367,11 +365,8 @@ mflf_d_printf("vt_state_active == 0\n");
 ///flf_d_printf("(%d, %d)\n", yy, xx);
 	vterm_limit_screen_pos(vterm, &yy, &xx);
 ///flf_d_printf("yy:%d, xx:%d\n", yy, xx);
-///flf_d_printf("font_w:%d, font_h:%d\n", cur_font->font_width, cur_font->font_height);
-	frame_buffer__.driver->reverse_char_box(
-	 cur_font->font_width * xx, cur_font->font_height * yy,
-	 cur_font->font_width * (wide == 0 ? 1 : 2), cur_font->font_height,
-	 color_idx, rgb15_from_color_idx(color_idx));
+///flf_d_printf("font_w:%d, font_h:%d\n", cur_font->width, cur_font->height);
+	fb__.driver->bpp_reverse_char_box(xx, yy, wide, color_idx, rgb15_from_color_idx(color_idx));
 }
 /*---------------------------------------------------------------------------*/
 
@@ -387,7 +382,7 @@ void vterm_paint_screen__cursor(vterm_t *vterm)
 	vterm_set_cursor_pos(vterm, vterm_pen_get_y(vterm), vterm_pen_get_x(vterm));
 }
 
-PRIVATE void vterm_repaint_and_set_repainted(vterm_t *vterm);
+PRIVATE void vterm_paint_and_set_painted(vterm_t *vterm);
 #define COLOR_CLEAR				COLOR_DARKGRAY
 #define COLOR_UNKNOWN_GLYPH		COLOR_BLUE
 
@@ -410,24 +405,24 @@ void vterm_set_overlay(vterm_t *vterm, int overlay_idx, int yy, int xx,
 		overlay_line->secs = 0;
 		pen_off_all_attr(&(vterm->pen));
 		pen_set_bgc_fgc_idx(&(vterm->pen), bc_idx, fc_idx);
-		vterm_clear_line_in_text_buf(vterm, overlay_line->text_buf_overlay);
+		vterm_clear_line_in_text_buf(vterm, overlay_line->text_overlay);
 	} else {
 		overlay_line->yy = yy;
 		overlay_line->timet = time(NULL);
 		overlay_line->secs = secs;
 
 		// save original text
-		vterm_save_text_buf_to_paint(vterm, yy, overlay_line->text_buf_save);
+		vterm_save_text_buf_to_paint(vterm, yy, overlay_line->text_save);
 		// replace with overlay text
-		vterm_restore_text_buf_to_paint(vterm, yy, overlay_line->text_buf_overlay);
+		vterm_restore_text_buf_to_paint(vterm, yy, overlay_line->text_overlay);
 
 		// replace overlay line with overlay text
 		vterm_emulate_str_yx_bc_fc(vterm, yy, xx, bc_idx, fc_idx, text, bytes);
 
 		// save overlay text
-		vterm_save_text_buf_to_paint(vterm, yy, overlay_line->text_buf_overlay);
+		vterm_save_text_buf_to_paint(vterm, yy, overlay_line->text_overlay);
 		// restore original text
-		vterm_restore_text_buf_to_paint(vterm, yy, overlay_line->text_buf_save);
+		vterm_restore_text_buf_to_paint(vterm, yy, overlay_line->text_save);
 	}
 	vterm_restore_pen_cursor(vterm, &pen, &cursor);
 }
@@ -462,25 +457,35 @@ mflf_d_printf("vt_state_active == 0\n");
 
 	if (vterm->clear_fb_before_repaint) {
 		// clear framebuffer before redrawing all contents
-		frame_buffer__.driver->clear_all(COLOR_CLEAR, rgb15_from_color_idx(COLOR_CLEAR));
+mflf_d_printf("\n");
+		fb__.driver->bpp_clear_all(COLOR_CLEAR, rgb15_from_color_idx(COLOR_CLEAR));
+mflf_d_printf("\n");
 		vterm->clear_fb_before_repaint = 0;
 	}
+mflf_d_printf("\n");
+	// save original text and overwrite overlay text
 	for (overlay_idx = 0; overlay_idx < OVERLAY_LINES; overlay_idx++) {
 		overlay_line = &(vterm->overlay_lines[overlay_idx]);
 		 if (overlay_line->yy >= 0) {
 			// save original text
-			vterm_save_text_buf_to_paint(vterm, overlay_line->yy, overlay_line->text_buf_save);
+			vterm_save_text_buf_to_paint(vterm, overlay_line->yy,
+			 overlay_line->text_save);
 			// replace overlay text
-			vterm_restore_text_buf_to_paint(vterm, overlay_line->yy, overlay_line->text_buf_overlay);
+			vterm_restore_text_buf_to_paint(vterm, overlay_line->yy,
+			 overlay_line->text_overlay);
 		}
 	}
-	// paint
-	vterm_repaint_and_set_repainted(vterm);
+
+	// paint screen
+	vterm_paint_and_set_painted(vterm);
+
+	// restore saved original text
 	for (overlay_idx = 0; overlay_idx < OVERLAY_LINES; overlay_idx++) {
 		overlay_line = &(vterm->overlay_lines[overlay_idx]);
 		 if (overlay_line->yy >= 0) {
 			// restore original text
-			vterm_restore_text_buf_to_paint(vterm, overlay_line->yy, overlay_line->text_buf_save);
+			vterm_restore_text_buf_to_paint(vterm, overlay_line->yy,
+			 overlay_line->text_save);
 		}
 	}
 }
@@ -509,31 +514,24 @@ inline void vterm_request_repaint_char(vterm_t *vterm, int yy, int xx)
 }
 
 // paint framebuffer and set updated
-PRIVATE void vterm_repaint_and_set_repainted(vterm_t *vterm)
+PRIVATE void vterm_paint_and_set_painted(vterm_t *vterm)
 {
 	int xx, yy;
 
-	for (yy = 0; yy < vterm->text_lines; yy ++) {
-		for (xx = 0; xx < vterm->text_columns; xx ++) {
+	for (yy = 0; yy < vterm->text_lines; yy++) {
+		for (xx = 0; xx < vterm->text_columns; xx++) {
 			if (*(u_int64*)&vterm->text_buf_painted[yy][xx]
 			 != *(u_int64*)&vterm->text_buf_to_paint[yy][xx]) {
-///mflf_d_printf("%2d,%3d %016llx:%016llx\n", yy, xx,
-/// *(u_int64*)&vterm->text_buf_to_paint[yy][xx],
-/// *(u_int64*)&vterm->text_buf_painted[yy][xx]);
 				vterm_hide_cursor_before_paint(vterm, yy, xx,
 				 is_column1_of_wide_char(vterm, yy, xx));
+
 				vterm_paint_char(vterm, yy, xx);
+
 				vterm->text_buf_painted[yy][xx]
 				 = vterm->text_buf_to_paint[yy][xx];
-///mflf_d_printf("%2d,%3d %016llx:%016llx\n", yy, xx,
-/// *(u_int64*)&vterm->text_buf_to_paint[yy][xx],
-/// *(u_int64*)&vterm->text_buf_painted[yy][xx]);
 			}
 		}
 	}
-#ifdef ENABLE_DEBUG
-///	test_fill_top_of_fb();
-#endif // ENABLE_DEBUG
 }
 
 PRIVATE void vterm_paint_char(vterm_t *vterm, int yy, int xx)
@@ -544,10 +542,10 @@ PRIVATE void vterm_paint_char(vterm_t *vterm, int yy, int xx)
 	u_char flags;
 	rgb15_t bc_rgb;
 	rgb15_t fc_rgb;
-	const u_char *glyph;
-	int width = 0;
+	const u_short *glyph;
+	bool wide = 0;
 	int glyph_width_in_pixels;
-	int unknown;
+	int found;
 
 	tc_ptr = &(vterm->text_buf_to_paint[yy][xx]);
 	ucs21 = get_ucs21_from_text_char_t(tc_ptr);
@@ -556,35 +554,21 @@ PRIVATE void vterm_paint_char(vterm_t *vterm, int yy, int xx)
 	bc_rgb = tc_ptr->bc_rgb;
 	fc_rgb = tc_ptr->fc_rgb;
 	if (IS_FLAG_NARROW(flags)) {
-		// narrow charactor
-		width = 1;
+		// narrow character
+		wide = 0;
 	} else if (IS_FLAG_WIDE1(flags)) {
-		// 1st byte of wide charactor
-		width = 2;
+		// 1st byte of wide character
+		wide = 1;
 	} else {
-		// 2nd byte of wide charactor
-		// width = 0;
+		// 2nd byte of wide character
+		return;		// already painted in 1st byte
 	}
-	if (width) {
-		if (ucs21 == 0) {
-			glyph_width_in_pixels = cur_font->font_width;
-			frame_buffer__.driver->fill_char_box(
-			 cur_font->font_width * xx, cur_font->font_height * yy,
-			 glyph_width_in_pixels, cur_font->font_height,
-			 FC_FROM_BFC(bfc_idx), bc_rgb);
-		} else {
-			glyph = font_get_glyph_bitmap(cur_font, ucs21,
-			 &glyph_width_in_pixels, &unknown);
-			if (unknown) {
-				bfc_idx ^= COLOR_UNKNOWN_GLYPH;
-			}
-			frame_buffer__.driver->paint_char_box(
-			 cur_font->font_width * xx, cur_font->font_height * yy,
-			 glyph, glyph_width_in_pixels, cur_font->font_height,
-			 (glyph_width_in_pixels + (8-1)) / 8,	// [1--8]==>1, [9--16]==>2
-			 BC_FROM_BFC(bfc_idx), FC_FROM_BFC(bfc_idx), bc_rgb, fc_rgb);
-		}
+	font_get_glyph_bitmap(cur_font, ucs21, NULL, &found);
+	if (found == 0) {
+		bfc_idx ^= COLOR_UNKNOWN_GLYPH;
 	}
+	fb__.driver->bpp_paint_char_box(xx, yy, ucs21, wide,
+	 BC_FROM_BFC(bfc_idx), FC_FROM_BFC(bfc_idx), bc_rgb, fc_rgb);
 }
 
 /*---------------------------------------------------------------------------*/

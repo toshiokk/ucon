@@ -1,3 +1,4 @@
+mk_backup_file2 __error
 LANG=C
 make $1 2>&1 | tee __error
 #make -f Makefile.man $1 2>__error

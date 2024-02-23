@@ -100,7 +100,7 @@ Rotate display monitor CW 90 deg (Rotate output of image CCW 90 deg).
 
 #### Screen rotation
 | Screen<br>-rotation | Monitor<br> Rotation | Xview-size | Yview-size |
-| -------------     | -------------------- | ---------- | ---------- |
+| ------------------- | -------------------- | ---------- | ---------- |
 | rotation = 0 | no rotation 0 deg | Xvram-size | Yvram-size |
 | rotation = 1 | rotate CW  90 deg | Yvram-size | Xvram-size |
 | rotation = 2 | rotate CW 180 deg | Xvram-size | Yvram-size |
@@ -108,7 +108,7 @@ Rotate display monitor CW 90 deg (Rotate output of image CCW 90 deg).
 
 #### Coordinate conversion
 | Screen<br>-rotation | get Xvram       | get Yvram                |
-| -------------     | --------------- | ------------------------ |
+| ---------------     | --------------- | ------------------------ |
 | rotation = 0 | Xview                    | Yview                    |
 | rotation = 1 | (Yvram-size - 1) - Yview | Xview                    |
 | rotation = 2 | (Xvram-size - 1) - Xview | (Yvram-size - 1) - Yview | 
@@ -116,7 +116,7 @@ Rotate display monitor CW 90 deg (Rotate output of image CCW 90 deg).
 
 #### Text screen size
 | Screen<br>-rotation | Text X chars | Text Y chars |
-| ----------------- | ------------ | ------------ |
+| ------------------- | ------------ | ------------ |
 | rotation = 0 | Xvram-size / Xfont-size | Yvram-size / Yfont-size |
 | rotation = 1 | Yvram-size / Xfont-size | Xvram-size / Yfont-size |
 | rotation = 2 | Xvram-size / Xfont-size | Yvram-size / Yfont-size |
@@ -124,25 +124,25 @@ Rotate display monitor CW 90 deg (Rotate output of image CCW 90 deg).
 
 #### VRAM address calculation
 | Screen<br>-rotation | VRAM origin | VRAM origin axis |
-| ----------------- | ------------| ---------------- | 
+| ------------------- | ------------| ---------------- | 
 | rotation = 0 | VRAM top-left     | (0, 0)             |
 | rotation = 1 | VRAM bottom-left  | (0, Ysize-1)       | 
 | rotation = 2 | VRAM bottom-right | (Xsize-1, Ysize-1) | 
 | rotation = 3 | VRAM top-right    | (Xsize-1, 0)       | 
 
-| Screen<br>-rotation | X increment<br>fb_x_inc | Y increment<br>fb_y_inc |
-| ----------------- | ----------------------- | ----------------------- |
+| Screen<br>-rotation | X increment<br>fbr_x_inc | Y increment<br>fbr_y_inc |
+| ------------------- | ----------------------- | ----------------------- |
 | rotation = 0 | Add pixel byte size      | Add line byte size       |
 | rotation = 1 | Subtract line byte size  | Add pixel byte size      |
 | rotation = 2 | Subtract pixel byte size | Subtract line byte size  |
 | rotation = 3 | Add line byte size       | Subtract pixel byte size |
 
 | Screen<br>-rotation | Screen origin address | X increment | Y increment |
-| ----------------- | --------------------- | ----------- | ----------- |
-| rotation = 0 | fb                               | + fb_x_inc | + fb_y_inc |
-| rotation = 1 | fb + fb_y_inc * (Yvram-1)        | - fb_y_inc | + fb_x_inc |
-| rotation = 2 | fb + fb_y_inc * Yvram - fb_x_inc | - fb_x_inc | - fb_y_inc |
-| rotation = 3 | fb + fb_y_inc         - fb_x_inc | + fb_y_inc | - fb_x_inc |
+| ------------------- | --------------------- | ----------- | ----------- |
+| rotation = 0 | fb                               | + fbr_x_inc | + fbr_y_inc |
+| rotation = 1 | fb + fbr_y_inc * (Yvram-1)        | - fbr_y_inc | + fbr_x_inc |
+| rotation = 2 | fb + fbr_y_inc * Yvram - fbr_x_inc | - fbr_x_inc | - fbr_y_inc |
+| rotation = 3 | fb + fbr_y_inc         - fbr_x_inc | + fbr_y_inc | - fbr_x_inc |
 
   Xview-max = Yvram-max
   Yview-max = Xvram-max
@@ -169,8 +169,8 @@ Rotate display monitor CW 90 deg (Rotate output of image CCW 90 deg).
 
 ~~~
 enum view_rotation_t {
-	ROT0 = 0,
-	ROT90 = 1,
+	ROT000 = 0,
+	ROT090 = 1,
 	ROT180 = 2,
 	ROT270 = 3,
 	ROT360 = 4,
@@ -179,22 +179,22 @@ enum view_rotation_t {
 void *fb_begin;		// FB memory start address
 size_t fb_size;		// FB memory size
 fb_pixel_data_t = ulong;
-	ushort fb_size_x;	// pixels of X
-	ushort fb_size_y;	// pixels of Y
+	ushort fb_size_x;	// pixels of X (640 - 3840)
+	ushort fb_size_y;	// pixels of Y (480 - 1920)
 void *fb_top_left; 		// FB address of top_left
+void *fb_top_right;		// FB address of top_right
 void *fb_bottom_left;		// FB address of bottom_left
 void *fb_bottom_right;		// FB address of bottom_right
-void *fb_top_right;		// FB address of top_right
 size_t fb_pixel_bytes_x;
 size_t fb_pixel_bytes_y;
 
-	view_rotaion_t screen_rotation = 1;	// 0,1,2,3
+	view_rotation_t screen_rotation = 1;	// 0,1,2,3
 	// rotation dependent parameters
-	void *fb_origin;		// FB address of top_left
-	ushort view_size_x;
-	ushort view_size_y;
-	ssize_t fb_x_inc;
-	ssize_t fb_y_inc;
+	void *fbr_origin;	// FB address of top_left
+	ushort fbr_view_size_x;	// 640/480...3840/1920
+	ushort fbr_view_size_y;	// 480/640...1920/3840
+	ssize_t fbr_x_inc;	// 4 / 640x4
+	ssize_t fbr_y_inc;	// 640x4 / 4
 
 	// font size dependent parameters
 	ssize_t fb_font_x_inc;
@@ -221,44 +221,44 @@ void setup_rotation()
 	 + fb_pixel_bytes_y * (fb_size_y - 1) * 0;
 
 	switch (screen_rotation) {
-	case ROT0:
+	case ROT000:
 	case ROT180:
-		view_size_x = fb_size_x;
-		view_size_y = fb_size_y;
+		fbr_view_size_x = fb_size_x;
+		fbr_view_size_y = fb_size_y;
 		break;
-	case ROT90:
+	case ROT090:
 	case ROT270:
-		view_size_x = fb_size_y;
-		view_size_y = fb_size_x;
+		fbr_view_size_x = fb_size_y;
+		fbr_view_size_y = fb_size_x;
 		break;
 	}
-	text_chars_x = view_size_x / font_size_x;
-	text_chars_y = view_size_y / font_size_y;
+	text_chars_x = fbr_view_size_x / font_size_x;
+	text_chars_y = fbr_view_size_y / font_size_y;
 
 	switch (screen_rotation) {
-	case ROT0:
-		fb_origin = fb_top_left;
-		fb_x_inc = + fb_pixel_bytes_x;
-		fb_y_inc = + fb_pixel_bytes_y;
+	case ROT000:
+		fbr_origin = fb_top_left;
+		fbr_x_inc = + fb_pixel_bytes_x;
+		fbr_y_inc = + fb_pixel_bytes_y;
 		break;
 	case ROT180:
-		fb_origin = fb_bottom_left;
-		fb_x_inc = - fb_pixel_bytes_x;
-		fb_y_inc = - fb_pixel_bytes_y;
+		fbr_origin = fb_bottom_left;
+		fbr_x_inc = - fb_pixel_bytes_x;
+		fbr_y_inc = - fb_pixel_bytes_y;
 		break;
-	case ROT90:
-		fb_origin = fb_bottom_right;
-		fb_x_inc = - fb_pixel_bytes_y;
-		fb_y_inc = + fb_pixel_bytes_x;
+	case ROT090:
+		fbr_origin = fb_bottom_right;
+		fbr_x_inc = - fb_pixel_bytes_y;
+		fbr_y_inc = + fb_pixel_bytes_x;
 		break;
 	case ROT270:
-		fb_origin = fb_top_right;
-		fb_x_inc = + fb_pixel_bytes_y;
-		fb_y_inc = - fb_pixel_bytes_x;
+		fbr_origin = fb_top_right;
+		fbr_x_inc = + fb_pixel_bytes_y;
+		fbr_y_inc = - fb_pixel_bytes_x;
 		break;
 	}
-	fb_font_x_inc = fb_x_inc * font_size_x;
-	fb_font_y_inc = fb_y_inc * font_size_y;
+	fb_font_x_inc = fbr_x_inc * font_size_x;
+	fb_font_y_inc = fbr_y_inc * font_size_y;
 }
 ~~~
 
@@ -273,7 +273,7 @@ int box_paint(ushort text_x, ushort text_y, uchar font_multi_x, uchar font_multi
 	fb_pixel_data_t *fb;
 	uchar font_byte;
 	uchar font_bit;
-	fb_left = (fb_pixel_data_t *)(fb_origin
+	fb_left = (fb_pixel_data_t *)(fbr_origin
 	 + text_y * font_multi_y * fb_font_y_inc
 	 + text_x * font_multi_y * fb_font_x_inc);
 	for (uchar font_y = 0; font_y < font_size_y; font_y++) {
@@ -281,15 +281,18 @@ int box_paint(ushort text_x, ushort text_y, uchar font_multi_x, uchar font_multi
 			fb = fb_left;
 			font_byte = *font++;
 			font_bit = 0x80;
-			for (uchar font_x = 0; font_x < font_size_x; font_x++) {
-				for (uchar multi_x = 0; multi_x < font_multi_x; multi_x++) {
-					*(fb_pixel_data_t *)fb = ((font_byte & font_bit) ? fb_fgc : fb_bgc);
-					// paint
-					fb += fb_x_inc;
+			for (uchar font_x8 = 0; font_x8 < font_size_x; font_x8 += 8) {
+				for (uchar font_x = xx8; xx < xx8 + 8 && font_x < fnt_sx; font_x++) {
+					for (uchar multi_x = 0; multi_x < font_multi_x; multi_x++) {
+						// paint
+						*(fb_pixel_data_t *)fb = ((font_byte & font_bit) ? fb_fgc : fb_bgc);
+						fb += fbr_x_inc;
+					}
+					font_bit >>= 1;
 				}
 				font++;
 			}
-			fb_left += fb_y_inc;
+			fb_left += fbr_y_inc;
 		}
 	}
 }

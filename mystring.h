@@ -39,7 +39,7 @@ char *strcpy_blen(char *buf, int buf_len, const char *str);
 char *strlcat__(char *buf, const char *str, int buf_len);
 char *strlcpy__(char *buf, const char *str, int buf_len);
 char *strcpy_ol(char *dest, const char *src);
-int strlcmp(const char *str1, const char *str2);
+int strlcmp__(const char *str1, const char *str2);
 
 void *memcpy_ol(void *dest, void *src, size_t bytes);
 

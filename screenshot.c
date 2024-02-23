@@ -36,11 +36,12 @@
 PRIVATE char *screen_shot_file_name(void);
 PRIVATE int alloc_buffer(int size_x, int size_y);
 PRIVATE int free_buffer(int size_x, int size_y);
-PRIVATE int capture_fb(int size_x, int size_y, argb32_t (*get_pixel_argb32)(int xx, int yy));
+PRIVATE int capture_fb(int size_x, int size_y,
+ argb32_t (*get_pixel_argb32)(u_short xx, u_short yy));
 PRIVATE int write_png(int size_x, int size_y, const char *filename);
 
 int screen_shot(int size_x, int size_y,
- argb32_t (*get_pixel_argb32)(int xx, int yy), void (*reverse_all)(void),
+ argb32_t (*get_pixel_argb32)(u_short xx, u_short yy), void (*reverse_all)(void),
  const char *file_name)
 {
 	if (file_name == NULL) {
@@ -119,11 +120,12 @@ PRIVATE int free_buffer(int size_x, int size_y)
 	free(row_pointers);
 	return 0;
 }
-PRIVATE int capture_fb(int size_x, int size_y, argb32_t (*get_pixel_argb32)(int xx, int yy))
+PRIVATE int capture_fb(int size_x, int size_y,
+ argb32_t (*get_pixel_argb32)(u_short xx, u_short yy))
 {
 	int yy, xx;
 	u_char *buf;
-	u_int32 argb32;
+	argb32_t argb32;
 
 	for (yy = 0; yy < size_y; yy++) {
 		buf = (u_char *)row_pointers[yy];

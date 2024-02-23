@@ -1,1 +1,1 @@
-sudo apt-get install gpp g++ gpp
+sudo apt-get install gpp g++

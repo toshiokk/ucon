@@ -36,13 +36,13 @@
 extern "C" {
 #endif // __cplusplus
 
-void vterm_init(vterm_t *vterm, int columns, int lines);
-void vterm_reinit(vterm_t *vterm, int columns, int lines);
+void vterm_init(vterm_t *vterm);
+void vterm_set_metrics(vterm_t *vterm);
 void vterm_destroy(vterm_t *vterm);
 
 void vterm_emulate_str__update_screen(vterm_t *vterm, const char *string, int bytes);
-void vterm_emulate_str_yx_bc_fc(vterm_t *vterm, int yy, int xx, c_idx_t bc_idx, c_idx_t fc_idx,
- const char *string, int bytes);
+void vterm_emulate_str_yx_bc_fc(vterm_t *vterm, int yy, int xx,
+ c_idx_t bc_idx, c_idx_t fc_idx, const char *string, int bytes);
 void vterm_emulate_str(vterm_t *vterm, const char *string, int bytes);
 int vterm_emulate_char(vterm_t *vterm, u_char ch);
 

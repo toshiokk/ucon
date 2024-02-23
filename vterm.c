@@ -80,10 +80,8 @@ PRIVATE void clear_parsed_str(void);
 PRIVATE void put_parsed_str(u_char chr);
 PRIVATE void dump_parsed_str(void);
 
-void vterm_init(vterm_t *vterm, int columns, int lines)
+void vterm_init(vterm_t *vterm)
 {
-	int overlay_idx;
-
 	vterm->top_y = 0;
 	vterm->bottom_y = MAX_TERM_LINES;
 	pen_init(&(vterm->pen));
@@ -110,28 +108,23 @@ void vterm_init(vterm_t *vterm, int columns, int lines)
 
 	vterm_reset_utf8_state(vterm);
 
-	vterm_reinit(vterm, columns, lines);
+	vterm_set_metrics(vterm);
 
-	for (overlay_idx = 0; overlay_idx < OVERLAY_LINES; overlay_idx++) {
+	for (int overlay_idx = 0; overlay_idx < OVERLAY_LINES; overlay_idx++) {
 		vterm_set_overlay(vterm, overlay_idx, -1, 0, COLOR_DEF_BC, COLOR_DEF_FC, "", 0, 0);
 	}
 }
-void vterm_reinit(vterm_t *vterm, int columns, int lines)
+// determine text screen size (columns x lines)
+//  from frame buffer screen size and font size
+void vterm_set_metrics(vterm_t *vterm)
 {
-	columns = MIN_(MAX_TERM_COLS, columns);
-	lines = MIN_(MAX_TERM_LINES, lines);
-	vterm->text_columns = columns;
-	vterm->text_lines = lines;
-flf_d_printf("vterm->text_lines:%2d, vterm->text_columns:%2d\n",
- vterm->text_lines, vterm->text_columns);
+	vterm->text_columns = MIN_(MAX_TERM_COLS, fbr_chars_hx);
+	vterm->text_lines = MIN_(MAX_TERM_LINES, fbr_chars_hy);
 	vterm->text_characters = vterm->text_columns * vterm->text_lines;
-
-	verbose_printf("columns:%d, lines:%d, characters:%d\n",
-	 vterm->text_columns, vterm->text_lines, vterm->text_characters);
+flf_d_printf("text_columns:%3d, text_lines:%2d, text_characters:%4d\n",
+ vterm->text_columns, vterm->text_lines, vterm->text_characters);
 
 	vterm_init_scroll_region(vterm);
-
-	fb_set_metrics();
 _FLF_
 }
 void vterm_destroy(vterm_t *vterm)
@@ -146,8 +139,8 @@ void vterm_emulate_str__update_screen(vterm_t *vterm, const char *string, int by
 	vterm_paint_screen__cursor(vterm);
 }
 
-void vterm_emulate_str_yx_bc_fc(vterm_t *vterm, int yy, int xx, c_idx_t bc_idx, c_idx_t fc_idx,
- const char *string, int bytes)
+void vterm_emulate_str_yx_bc_fc(vterm_t *vterm, int yy, int xx,
+ c_idx_t bc_idx, c_idx_t fc_idx, const char *string, int bytes)
 {
 	vterm_pen_set_yx(vterm, yy, xx);
 	pen_set_bgc_fgc_idx(&(vterm->pen), bc_idx, fc_idx);
@@ -338,7 +331,7 @@ PRIVATE void vterm_put_ucs21_char(vterm_t *vterm, wchar_t ucs21)
 	}
 	// get font width from font
 	width_in_pixels = font_get_glyph_width(cur_font, ucs21);
-	if (width_in_pixels <= cur_font->font_width)
+	if (width_in_pixels <= cur_font->width)
 		width = 1;
 	else
 		width = 2;
@@ -360,7 +353,7 @@ _FLF_
 ///flf_d_printf("pen(%d, %d)\n", vterm->pen.xx, vterm->pen.yy);
 }
 
-// Before putting the charactor to Pen position:
+// Before putting the character to Pen position:
 // If current pen position is NOT on the last line.
 //	+--------------------------+
 //	|ABCDEFGHIJKLMNOPQRSTUVWXYZp
@@ -387,7 +380,7 @@ _FLF_
 //	|p                         |
 //	+--------------------------+
 
-// After putting a charactor to the last screen position:
+// After putting a character to the last screen position:
 // +--------------------------+
 // |                          |
 // |                          |
@@ -485,7 +478,7 @@ PRIVATE void vterm_parse_func_esc(vterm_t *vterm, u_char chr)
 		break;
 	case '/'/*ISO_G3D6*/:		/* / */
 		break;
-	case 'H':				// ESC H
+	case 'H':					/* ESC H */
 		// set horizontal tab position
 		break;
 	case 'N'/*Fe(ISO_SS2)*/:	/* N *//* 7bit single shift 2 */
@@ -944,7 +937,7 @@ PRIVATE void vterm_set_scroll_region__adjust(vterm_t *vterm, int top_y, int bott
 	if (top_y < 0 || vterm->text_lines <= top_y
 	 || bottom_y < 0 || vterm->text_lines < bottom_y
 	 || top_y >= bottom_y) {
-		msg_printf("illegal (top:%d, bottom:%d)\n", top_y, bottom_y);
+		flf_d_printf("illegal (top:%d, bottom:%d)\n", top_y, bottom_y);
 		// illegal parameter
 		return;
 	}
@@ -987,10 +980,6 @@ PRIVATE void vterm_esc_report(vterm_t *vterm, u_char mode, u_short arg)
 			break;
 		case 6:
 			// send "current cursor position"
-///			int xx = (vterm->pen.xx < vterm->text_columns - 1)
-///			 ? vterm->pen.xx : vterm->text_columns - 1;
-///			int yy = (vterm->pen.yy < vterm->bottom_y - 1)
-///			 ? vterm->pen.yy : vterm->bottom_y - 1;
 			snprintf(report, MAX_REPORT_LEN+1, "\x1b[%d;%dR",
 			 vterm_pen_get_y(vterm)+1, vterm_pen_get_x(vterm)+1);
 			break;

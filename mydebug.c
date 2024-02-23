@@ -18,10 +18,21 @@ void tflf_debug_printf(int usec, const char *file, int line, const char *func,
 	va_start(list, format);
 	tflft_vsnprintf(buffer, DEBUG_BUF_LEN, usec, file, line, func, tag, format, list);
 	va_end(list);
+	switch (usec) {
+	case LOG_VERBOSE:
+		verbose_printf("%s", buffer);
+		return;
+	case LOG_STRERR:
+		strerror_printf("%s", buffer);
+		return;
+	case LOG_STDERR:
+		stderr_printf("%s", buffer);
+		return;
+	}
 	fputs(buffer, stderr);
 	fflush(stderr);
 }
-//------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 void tflft_vsnprintf(char *buffer, int buf_len, int usec, const char *file, int line,
  const char *func, const char *tag, const char *format, va_list ap)
 {
@@ -67,12 +78,15 @@ char *get_tflft_string(char *buffer, int usec, const char *file, int line,
 		 mk_file_line_str_buf(file, line, buf));	// "File Line, "
 	}
 	switch (usec) {
+	default:	// FALLTHROUGH
 	case LOG_TIME_NONE:
 		buf_time[0] = '\0';
 		break;
-	default:
+	case LOG_TIME_YMD_HMS:
+	case LOG_TIME_YMD_HMSM:
+	case LOG_TIME_HMSU:
+	case LOG_TIME_HMSM:
 		switch (usec) {
-		default:	// FALLTHROUGH
 		case LOG_TIME_YMD_HMS:
 			get_cur_yysmmsdd_hhcmmcss(buf);		// "YY/MM/DD hh:mm:ss, "
 			break;
@@ -114,7 +128,7 @@ const char *mk_file_line_str_buf(const char *file, int line, char *buf)
 	return buf;
 }
 
-//------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 
 // 012345678901234567890123456789
 // 05-11-10 15:34:29.123
@@ -287,7 +301,7 @@ char *get_yymmdd_hhmmss(time_t abs_time, char *buf)
 	return buf;
 }
 
-//------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 
 time_t get_cur_abs_sec(void)
 {
@@ -302,7 +316,7 @@ unsigned long get_cur_abs_msec(void)
 	return tv.tv_sec * 1000 + tv.tv_usec / 1000;
 }
 
-//------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 
 const char *dump_string_to_static_buf(const char *string, int bytes)
 {
@@ -331,6 +345,36 @@ const char *dump_string(const char *string, int bytes)
 		}
 	}
 	d_printf("}\n");
+}
+
+//-----------------------------------------------------------------------------
+
+void verbose_printf(const char *format, ...)
+{
+	va_list args;
+
+	va_start(args, format);
+	vfprintf(stderr, format, args);
+	va_end(args);
+}
+
+void strerror_printf(const char *format, ...)
+{
+	va_list args;
+
+	va_start(args, format);
+	vfprintf(stderr, format, args);
+	va_end(args);
+	stderr_printf(": %s\r\n", strerror(errno));
+}
+
+void stderr_printf(const char *format, ...)
+{
+	va_list args;
+
+	va_start(args, format);
+	vfprintf(stderr, format, args);
+	va_end(args);
 }
 
 // End of mydebug.c

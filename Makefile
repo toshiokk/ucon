@@ -106,9 +106,9 @@ am__installdirs = "$(DESTDIR)$(bindir)"
 PROGRAMS = $(bin_PROGRAMS)
 am_ucon_OBJECTS = myminmax.$(OBJEXT) mystring.$(OBJEXT) \
 	myutf8.$(OBJEXT) mydebug.$(OBJEXT) main.$(OBJEXT) \
-	fbcommon.$(OBJEXT) fbbpp.$(OBJEXT) font.$(OBJEXT) \
-	picofont.$(OBJEXT) message.$(OBJEXT) hex.$(OBJEXT) \
-	pen.$(OBJEXT) util.$(OBJEXT) vterm.$(OBJEXT) \
+	fbcommon.$(OBJEXT) fbrotation.$(OBJEXT) fbbpp.$(OBJEXT) \
+	font.$(OBJEXT) picofont.$(OBJEXT) message.$(OBJEXT) \
+	hex.$(OBJEXT) pen.$(OBJEXT) util.$(OBJEXT) vterm.$(OBJEXT) \
 	vtermlow.$(OBJEXT) term.$(OBJEXT)
 ucon_OBJECTS = $(am_ucon_OBJECTS)
 ucon_LDADD = $(LDADD)
@@ -128,11 +128,11 @@ DEFAULT_INCLUDES = -I.
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__maybe_remake_depfiles = depfiles
 am__depfiles_remade = ./$(DEPDIR)/fbbpp.Po ./$(DEPDIR)/fbcommon.Po \
-	./$(DEPDIR)/font.Po ./$(DEPDIR)/hex.Po ./$(DEPDIR)/main.Po \
-	./$(DEPDIR)/message.Po ./$(DEPDIR)/mydebug.Po \
-	./$(DEPDIR)/myminmax.Po ./$(DEPDIR)/mystring.Po \
-	./$(DEPDIR)/myutf8.Po ./$(DEPDIR)/pen.Po \
-	./$(DEPDIR)/picofont.Po ./$(DEPDIR)/term.Po \
+	./$(DEPDIR)/fbrotation.Po ./$(DEPDIR)/font.Po \
+	./$(DEPDIR)/hex.Po ./$(DEPDIR)/main.Po ./$(DEPDIR)/message.Po \
+	./$(DEPDIR)/mydebug.Po ./$(DEPDIR)/myminmax.Po \
+	./$(DEPDIR)/mystring.Po ./$(DEPDIR)/myutf8.Po \
+	./$(DEPDIR)/pen.Po ./$(DEPDIR)/picofont.Po ./$(DEPDIR)/term.Po \
 	./$(DEPDIR)/util.Po ./$(DEPDIR)/vterm.Po \
 	./$(DEPDIR)/vtermlow.Po
 am__mv = mv -f
@@ -323,6 +323,7 @@ ucon_SOURCES = \
 		mydebug.h mydebug.c \
 		main.c main.h \
 		fbcommon.c fbcommon.h \
+		fbrotation.c fbrotation.h \
 		fbbpp.c fbbpp.h \
 		font.c font.h \
 		picofont.c picofont.h \
@@ -443,6 +444,7 @@ distclean-compile:
 
 include ./$(DEPDIR)/fbbpp.Po # am--include-marker
 include ./$(DEPDIR)/fbcommon.Po # am--include-marker
+include ./$(DEPDIR)/fbrotation.Po # am--include-marker
 include ./$(DEPDIR)/font.Po # am--include-marker
 include ./$(DEPDIR)/hex.Po # am--include-marker
 include ./$(DEPDIR)/main.Po # am--include-marker
@@ -767,6 +769,7 @@ distclean: distclean-am
 	-rm -f $(am__CONFIG_DISTCLEAN_FILES)
 		-rm -f ./$(DEPDIR)/fbbpp.Po
 	-rm -f ./$(DEPDIR)/fbcommon.Po
+	-rm -f ./$(DEPDIR)/fbrotation.Po
 	-rm -f ./$(DEPDIR)/font.Po
 	-rm -f ./$(DEPDIR)/hex.Po
 	-rm -f ./$(DEPDIR)/main.Po
@@ -831,6 +834,7 @@ maintainer-clean: maintainer-clean-am
 	-rm -rf $(top_srcdir)/autom4te.cache
 		-rm -f ./$(DEPDIR)/fbbpp.Po
 	-rm -f ./$(DEPDIR)/fbcommon.Po
+	-rm -f ./$(DEPDIR)/fbrotation.Po
 	-rm -f ./$(DEPDIR)/font.Po
 	-rm -f ./$(DEPDIR)/hex.Po
 	-rm -f ./$(DEPDIR)/main.Po

@@ -156,7 +156,7 @@ char *strcpy_blen(char *buf, int buf_len, const char *str)
 	return buf;
 }
 
-//------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 
 char *strlcat__(char *buf, const char *str, int buf_len)
 {
@@ -179,7 +179,7 @@ char *strcpy_ol(char *dest, const char *src)
 	memmove(dest, src, strlen(src)+1);
 	return dest;
 }
-int strlcmp(const char *str1, const char *str2)
+int strlcmp__(const char *str1, const char *str2)
 {
 	return strncmp(str1, str2, strlen(str2));
 }

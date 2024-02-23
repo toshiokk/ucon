@@ -250,8 +250,7 @@ int imcui_get_converting_line_str(int mode, char *buffer, int buf_len)
 	switch (mode) {
 	default:
 	case 0:
-		snprintf(buf, IM_INPUT_LINE_LEN, "%s",
-		 all_bunsetsu);
+		snprintf(buf, IM_INPUT_LINE_LEN, "%s", all_bunsetsu);
 		break;
 	case 1:
 		snprintf(buf, IM_INPUT_LINE_LEN, "%s%s%s",

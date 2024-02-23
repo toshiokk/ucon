@@ -9,8 +9,7 @@ extern "C" {
 
 #define DEBUG_BUF_LEN		2048
 
-///
-#define ENABLE_DEBUG
+///#define ENABLE_DEBUG
 #ifdef ENABLE_DEBUG
 
 ///#define FORCE_DEBUG
@@ -26,14 +25,18 @@ extern "C" {
 #define _FLCF_	tflf_debug_printf(LOG_TIME_NONE, __FILE__, __LINE__, __PRETTY_FUNCTION__, NULL, "\n");
 #define _FLF0_	tflf_debug_printf(LOG_TIME_HMSM, __FILE__, __LINE__, __FUNCTION__, NULL, "{\n");
 #define _FLF9_	tflf_debug_printf(LOG_TIME_HMSM, __FILE__, __LINE__, __FUNCTION__, NULL, "}\n");
-#define _FLF_ERR_	fprintf(stderr, "%s %d %s() !! ERROR !!\n", __FILE__, __LINE__, __FUNCTION__);
+#define _ERR_	fprintf(stderr, "%s %d %s() !! ERROR !!\n", __FILE__, __LINE__, __FUNCTION__);
 #define d_printf(args...)		tflf_debug_printf(LOG_TIME_NONE, NULL, 0, NULL, NULL, args)
 #define mflf_d_printf(args...)	tflf_debug_printf(LOG_TIME_HMSM, __FILE__, __LINE__, __FUNCTION__, NULL, args)
 #define flcf_d_printf(args...)	tflf_debug_printf(LOG_TIME_NONE, __FILE__, __LINE__, __PRETTY_FUNCTION__, NULL, args)
 #define flf_d_printf(args...)	tflf_debug_printf(LOG_TIME_NONE, __FILE__, __LINE__, __FUNCTION__, NULL, args)
 #define fl_d_printf(args...)	tflf_debug_printf(LOG_TIME_NONE, __FILE__, __LINE__, NULL, NULL, args)
 #define f_d_printf(args...)		tflf_debug_printf(LOG_TIME_NONE, NULL, 0, __FUNCTION__, NULL, args)
+#define _d_printf(args...)		tflf_debug_printf(LOG_TIME_NONE, NULL, 0, NULL, NULL, args)
 #define warn_printf(args...)	tflf_debug_printf(LOG_TIME_NONE, __FILE__, __LINE__, __FUNCTION__, "WARN", args)
+#define v_printf(args...)		tflf_debug_printf(LOG_VERBOSE, __FILE__, __LINE__, __FUNCTION__, NULL, args)
+#define se_printf(args...)		tflf_debug_printf(LOG_STRERR, __FILE__, __LINE__, __FUNCTION__, NULL, args)
+#define er_printf(args...)		tflf_debug_printf(LOG_STDERR, __FILE__, __LINE__, __FUNCTION__, NULL, args)
 
 #else // ENABLE_DEBUG
 
@@ -48,7 +51,7 @@ extern "C" {
 #define _FLCF_
 #define _FLF0_
 #define _FLF9_
-#define _FLF_ERR_
+#define _ERR_
 #define d_printf(args...)
 #define mflf_d_printf(args...)
 #define flcf_d_printf(args...)
@@ -56,6 +59,9 @@ extern "C" {
 #define fl_d_printf(args...)
 #define f_d_printf(args...)
 #define warn_printf(args...)
+#define v_printf(args...)
+#define se_printf(args...)
+#define er_printf(args...)
 
 #endif // ENABLE_DEBUG
 
@@ -64,6 +70,10 @@ extern "C" {
 #define LOG_TIME_YMD_HMSM	2
 #define LOG_TIME_HMSU		3
 #define LOG_TIME_HMSM		4
+
+#define LOG_VERBOSE			7
+#define LOG_STRERR			8
+#define LOG_STDERR			9
 
 void tflf_debug_printf(int usec, const char *file, int line, const char *func,
  const char *tag, const char *format, ...);
@@ -96,6 +106,10 @@ unsigned long get_cur_abs_msec(void);
 
 const char *dump_string_to_static_buf(const char *string, int bytes);
 const char *dump_string(const char *string, int bytes);
+
+void verbose_printf(const char *format, ...);
+void strerror_printf(const char *format, ...);
+void stderr_printf(const char *format, ...);
 
 #if defined(__cplusplus)
 }

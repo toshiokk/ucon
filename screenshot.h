@@ -37,7 +37,7 @@ extern "C" {
 #endif // __cplusplus
 
 int screen_shot(int size_x, int size_y,
- argb32_t (*get_pixel_argb32)(int xx, int yy), void (*reverse_all)(void),
+ argb32_t (*get_pixel_argb32)(u_short xx, u_short yy), void (*reverse_all)(void),
  const char *file_name);
 
 #if defined(__cplusplus)

@@ -29,6 +29,12 @@
 #include "stdincs.h"
 #include "util.h"
 
+long get_page_size()
+{
+	long page_size = sysconf(_SC_PAGESIZE);
+	return page_size;
+}
+
 int util_privilege_open(const char *pathname, int flags)
 {
 	int fd;
