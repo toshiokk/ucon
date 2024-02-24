@@ -349,7 +349,8 @@ PRIVATE void check_hot_key(term_t *term, char *buf, int input_len)
 	if (input_len == SCREEN_SHOT_KEY_STR_LEN
 	 && strncmp(buf, SCREEN_SHOT_KEY_STR, SCREEN_SHOT_KEY_STR_LEN) == 0) {
 		// Screen-shot key pushed
-		screen_shot(fb__.width, fb__.height,
+_FLF_
+		screen_shot(fbr_screen_size_hx, fbr_screen_size_hy,
 		 fb__.driver->get_pixel_argb32, fb__.driver->reverse_all,
 		 NULL);
 	}

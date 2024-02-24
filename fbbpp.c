@@ -336,8 +336,9 @@ PRIVATE void fb_8bpp_paint_char_box(u_short xx, u_short yy, wchar_t ucs21, bool 
 #ifdef ENABLE_SCREEN_SHOT
 PRIVATE argb32_t fb_8bpp_get_pixel_argb32(u_short xx, u_short yy)
 {
-	u_char *fb = fb_start + yy * fbb_bytes_per_line + xx * sizeof(u_char);
-	return argb32_from_color_idx(color_idx_from_pallete_idx(*fb));
+	u_char *fb = fbr_origin + fbr_bytes_inc_hy * yy + fbr_bytes_inc_hx * xx;
+	argb32_t argb32 = argb32_from_color_idx(color_idx_from_pallete_idx(*fb));	//=bpp_get_pixel
+	return argb32;
 }
 PRIVATE void fb_8bpp_reverse_all(void)
 {
@@ -500,8 +501,9 @@ PRIVATE void fb_15_16bpp_paint_char_box(u_short xx, u_short yy, wchar_t ucs21, b
 #ifdef ENABLE_SCREEN_SHOT
 PRIVATE rgb15_t fb_15_16bpp_get_pixel_rgb15(int xx, int yy)
 {
-	u_char *fb_left = fbr_origin + fbr_bytes_inc_font_hy * yy + fbr_bytes_inc_font_hx * xx;
-	return *(rgb15_t*)fb;
+	u_char *fb = fbr_origin + fbr_bytes_inc_hy * yy + fbr_bytes_inc_hx * xx;
+	rgb15_t rgb15 = *(rgb15_t*)fb;												//=bpp_get_pixel
+	return rgb15;
 }
 PRIVATE void fb_15_16bpp_reverse_all(rgb15_t rgb15)
 {
@@ -593,8 +595,8 @@ PRIVATE void fb_24bpp_paint_char_box(u_short xx, u_short yy, wchar_t ucs21, bool
 #ifdef ENABLE_SCREEN_SHOT
 PRIVATE argb32_t fb_24bpp_get_pixel_argb32(u_short xx, u_short yy)
 {
-	u_char *fb = fb_start + yy * fbr_bytes_inc_hy + xx * fbr_bytes_inc_hx;
-	argb32_t argb32 = ((argb32_t)fb[2] << 16) + ((argb32_t)fb[1] << 8) + fb[0];
+	u_char *fb = fbr_origin + fbr_bytes_inc_hy * yy + fbr_bytes_inc_hx * xx;
+	argb32_t argb32 = ((argb32_t)fb[2] << 16) + ((argb32_t)fb[1] << 8) + fb[0];	//=bpp_get_pixel
 	return argb32;		// rrrrrrrrggggggggbbbbbbbb
 }
 PRIVATE void fb_24bpp_reverse_all(void)
@@ -697,14 +699,17 @@ PRIVATE void fb_32bpp_paint_char_box(u_short xx, u_short yy, wchar_t ucs21, bool
 #ifdef ENABLE_SCREEN_SHOT
 PRIVATE argb32_t fb_32bpp_get_pixel_argb32(u_short xx, u_short yy)
 {
-	u_char *fb = fb_start + yy * fbr_bytes_inc_hy + xx * fbr_bytes_inc_hx;
-	argb32_t argb32 = *(argb32_t*)fb;
+	u_char *fb = fbr_origin + fbr_bytes_inc_hy * yy + fbr_bytes_inc_hx * xx;
+////flf_d_printf("(%d, %d):(%d, %d)\n", xx, yy,
+//// ((fb - fb_start) / fb_bytes_per_pixel) % fb__.screen_size_x,
+//// ((fb - fb_start) / fb_bytes_per_pixel) / fb__.screen_size_x);
+	argb32_t argb32 = *(argb32_t*)fb;											//=bpp_get_pixel
 	return argb32;		// 00000000rrrrrrrrggggggggbbbbbbbb
 }
 PRIVATE void fb_32bpp_reverse_all(void)
 {
 	for (u_char *fb = fb_start; fb < fb_end; fb += fb_bytes_per_pixel) {
-		*(argb32_t*)fb ^= 0x00ffffff;						//=_reverse_all
+		*(argb32_t*)fb ^= 0x00ffffff;						//=bpp_reverse_all
 	}
 }
 #endif // ENABLE_SCREEN_SHOT

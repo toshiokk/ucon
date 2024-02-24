@@ -44,10 +44,10 @@ int screen_shot(int size_x, int size_y,
  argb32_t (*get_pixel_argb32)(u_short xx, u_short yy), void (*reverse_all)(void),
  const char *file_name)
 {
+	_FLF0_
 	if (file_name == NULL) {
 		file_name = screen_shot_file_name();
 	}
-	_FLF0_
 	if (alloc_buffer(size_x, size_y)) {
 		_FLF_
 		return -1;
@@ -60,7 +60,7 @@ _MFLF_
 	reverse_all();		// flash screen
 	reverse_all();		// recover screen
 _MFLF_
-flf_d_printf("[%s]\n", file_name);
+	flf_d_printf("[%s]\n", file_name);
 	if (write_png(size_x, size_y, file_name)) {
 		_FLF_
 		return -3;
@@ -131,10 +131,11 @@ PRIVATE int capture_fb(int size_x, int size_y,
 		buf = (u_char *)row_pointers[yy];
 		for (xx = 0; xx < size_x; xx++) {
 			argb32 = get_pixel_argb32(xx, yy);
-			*buf++ = argb32 >> 16;	// red
-			*buf++ = argb32 >> 8;	// green
-			*buf++ = argb32;		// blue
-			*buf++ = argb32 >> 24;	// alpha
+			*(argb32_t*)buf = 0
+			 | ((argb32 & 0x00ff0000) >> 16)	// red
+			 |   argb32 & 0x0000ff00			// green
+			 | ((argb32 & 0x000000ff) << 16)	// blue
+			 |   argb32 & 0xff000000;			// alpha
 		}
 	}
 	return 0;
@@ -182,7 +183,8 @@ PRIVATE int write_png(int size_x, int size_y, const char *filename)
 		return -3;
 	}
 	png_init_io(png_ptr, fp);
-	png_set_compression_level(png_ptr, Z_BEST_COMPRESSION);
+	////png_set_compression_level(png_ptr, Z_BEST_COMPRESSION);
+	png_set_compression_level(png_ptr, PNG_Z_DEFAULT_COMPRESSION);
 	png_set_invert_alpha(png_ptr);
 
 	bit_depth = 8;

@@ -80,6 +80,7 @@ typedef u_int32 argb32_t;		// 00000000 rrrrrrrr gggggggg bbbbbbbb
 struct fb_driver_;		// forward declaration
 typedef struct fb_driver_ fb_driver_t;
 
+// framebuffer driver with rotation support
 struct fb_driver_ {
 	int bitsPerPixel;
 	int fbVisual;		// unused

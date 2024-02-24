@@ -1,1 +1,2 @@
-./configure --enable-screenshot
+#./configure --enable-screenshot
+./configure --enable-screenshot --enable-debug
