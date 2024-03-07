@@ -29,7 +29,7 @@
 
 PRIVATE const u_short *font_get_undefined_glyph_bitmap__(
  font_t *font, wchar_t ucs21, u_short *pico_font, u_short *gly,
- int top_space, int bytes_per_digit, int digit_space);
+ int top_space, int dots_per_digit, int digit_space);
 
 u_short pico_font_3x6[16*3] = {
 	/* 0 */
@@ -191,14 +191,17 @@ const u_short *font_get_undefined_glyph_bitmap(font_t *font, wchar_t ucs21)
 		0x0000,
 		0x0000,
 		0x0000,
+
 		0x0000,
 		0x0000,
 		0x0000,
 		0x0000,
+
 		0x0000,
 		0x0000,
 		0x0000,
 		0x0000,
+
 		0x0000,
 		0x0000,
 		0x0000,
@@ -235,25 +238,23 @@ const u_short *font_get_undefined_glyph_bitmap(font_t *font, wchar_t ucs21)
 }
 PRIVATE const u_short *font_get_undefined_glyph_bitmap__(
  font_t *font, wchar_t ucs21, u_short *pico_font, u_short *gly,
- int top_space, int bytes_per_digit, int digit_space)
+ int top_space, int dots_per_digit, int digit_space)
 {
-	u_short *gp;
-	int bit;
-	int hex;
-	int off;
-
-	gp = gly;
+	u_short *gp = gly;
 	if (top_space) {
 		*gp++ = 0x0000;
 	}
-	for (bit = 12; bit >= 0; bit -= 4) {	// 12, 8, 4, 0
-		hex = (ucs21 >> bit) & 0xf;		// 0xf000, 0x0f00, 0x00f0, 0x000f
-		for (off = 0; off < bytes_per_digit; off++) {
-			*gp++ = pico_font[hex * bytes_per_digit + off];
+	for (int shift = 12; shift >= 0; shift -= 4) {	// 12, 8, 4, 0
+		int hex = (ucs21 >> shift) & 0xf;			// 0xf000, 0x0f00, 0x00f0, 0x000f
+		for (int off = 0; off < dots_per_digit; off++) {
+			*gp++ = pico_font[hex * dots_per_digit + off];
 		}
-		if (bit > 0 && digit_space) {
+		if (shift > 0 && digit_space) {
 			*gp++ = 0x0000;
 		}
+	}
+	for ( ; gp - gly < PICOFONT_HEIGHT; ) {
+		*gp++ = 0x0000;
 	}
 	return gly;
 }

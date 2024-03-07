@@ -41,7 +41,7 @@
 #define ENABLE_IMJ 1
 
 /* description */
-#define ENABLE_SCREEN_SHOT 1
+/* #undef ENABLE_SCREEN_SHOT */
 
 /* Define to 1 if you have the `atexit' function. */
 #define HAVE_ATEXIT 1

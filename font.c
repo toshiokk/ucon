@@ -167,7 +167,7 @@ PRIVATE int comp_font_width(const void *aa, const void *bb);
 PRIVATE int calc_font_area(font_mul_t *font_multi);
 PRIVATE int calc_font_width(font_mul_t *font_multi);
 PRIVATE int calc_font_height(font_mul_t *font_multi);
-PRIVATE int font_select__(int font_size, int mul_x, int mul_y);
+PRIVATE int font_select_by_size(int font_size, int mul_x, int mul_y);
 int font_select(int font_size, int mul_x, int mul_y)
 {
 	int font_mul_idx;
@@ -179,23 +179,24 @@ int font_select(int font_size, int mul_x, int mul_y)
 	qsort(font_mul_table, FONT_MULTI_TABLE_ENTRIES, sizeof(font_mul_t), comp_font_area);
 	qsort(font_mul_table, FONT_MULTI_TABLE_ENTRIES, sizeof(font_mul_t), comp_font_width);
 #endif
-	if ((font_mul_idx = font_select__(font_size, mul_x, mul_y)) >= 0) {
+	if ((font_mul_idx = font_select_by_size(font_size, mul_x, mul_y)) >= 0) {
 		return font_mul_idx;
 	}
 	mul_y = 0;
-	if ((font_mul_idx = font_select__(font_size, mul_x, mul_y)) >= 0) {
+	if ((font_mul_idx = font_select_by_size(font_size, mul_x, mul_y)) >= 0) {
 		return font_mul_idx;
 	}
 	mul_x = 0;
-	if ((font_mul_idx = font_select__(font_size, mul_x, mul_y)) >= 0) {
+	if ((font_mul_idx = font_select_by_size(font_size, mul_x, mul_y)) >= 0) {
 		return font_mul_idx;
 	}
 	font_size = 0;
-	if ((font_mul_idx = font_select__(font_size, mul_x, mul_y)) >= 0) {
+	if ((font_mul_idx = font_select_by_size(font_size, mul_x, mul_y)) >= 0) {
 		return font_mul_idx;
 	}
 	return -1;	// no font selected
 }
+
 PRIVATE int comp_font_area(const void *aa, const void *bb)
 {
 	return calc_font_area((font_mul_t *)aa) - calc_font_area((font_mul_t *)bb);
@@ -230,7 +231,7 @@ PRIVATE int calc_font_height(font_mul_t *font_multi)
 	return font->height * font_multi->mul_y;
 }
 
-PRIVATE int font_select__(int font_size, int mul_x, int mul_y)
+PRIVATE int font_select_by_size(int font_size, int mul_x, int mul_y)
 {
 	int font_mul_idx;
 
@@ -251,15 +252,15 @@ int font_correct_selection(int font_mul_idx)
 {
 	int next_font_mul_idx;
 
-	if (font_check_selection(font_mul_idx)) {
+	if (font_check_selection_valid(font_mul_idx)) {
 		return font_mul_idx;
 	}
 	next_font_mul_idx = font_select_next(font_mul_idx, -1);
-	if (font_check_selection(next_font_mul_idx)) {
+	if (font_check_selection_valid(next_font_mul_idx)) {
 		return next_font_mul_idx;
 	}
 	next_font_mul_idx = font_select_next(font_mul_idx, +1);
-	if (font_check_selection(next_font_mul_idx)) {
+	if (font_check_selection_valid(next_font_mul_idx)) {
 		return next_font_mul_idx;
 	}
 	return 0;
@@ -277,7 +278,7 @@ int font_select_next(int font_mul_idx, int shift)
 	}
 	return prev_font_mul_idx;
 }
-int font_check_selection(int font_mul_idx)
+int font_check_selection_valid(int font_mul_idx)
 {
 	return IS_IN_RANGE(0, font_mul_idx, FONT_MULTI_TABLE_ENTRIES)
 	 && fonts__[font_mul_table[font_mul_idx].font_idx].glyphs > 0;
@@ -399,6 +400,7 @@ int font_destroy(font_t *font)
 const u_short *font_get_glyph_bitmap(font_t *font, wchar_t ucs21,
  int *width_in_pixels, int *found)
 {
+	ucs21 = LIM_MAX_(MAX_GLYPHS-1, ucs21);	// [0 -- MAX_GLYPHS-1]
 	const u_short *glyph;
 	int width = font->glyph_width[ucs21];
 	if (width) {

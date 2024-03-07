@@ -34,7 +34,8 @@ extern "C" {
 #endif // __cplusplus
 
 #define MAX_FONT_HEIGHT		16
-#define MAX_GLYPHS			65535
+////#define MAX_GLYPHS			65535
+#define MAX_GLYPHS			65536
 
 typedef struct /*font_*/ {
 	u_char width;		// 5, 6, 7, 8
@@ -69,7 +70,7 @@ extern font_exp_t cur_font_exp_, *cur_font_exp;
 int font_select(int font_size, int mul_x, int mul_y);
 int font_correct_selection(int font_mul_idx);
 int font_select_next(int font_mul_idx, int shift);
-int font_check_selection(int font_mul_idx);
+int font_check_selection_valid(int font_mul_idx);
 void font_setup_metrics();
 
 void font_init_all(void);

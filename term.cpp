@@ -73,7 +73,9 @@ PRIVATE void term_change_font_size(term_t *term, int shift);
 PRIVATE void term_change_rotation(term_t *term, int shift);
 PRIVATE void term_setup_font_and_rotation_parameters(bool font);
 
-PRIVATE void term_change_metrics(term_t *term);
+PRIVATE void term_set_metrics_n_show(term_t *term);
+PRIVATE void term_set_metrics(term_t *term);
+PRIVATE void term_show_metrics(term_t *term);
 
 PRIVATE int term_init(term_t *term);
 PRIVATE void term_destroy(term_t *term, int err);
@@ -436,7 +438,7 @@ PRIVATE int term_init(term_t *term)
 	fbr_setup_constant_parameters();
 	fbr_set_rotation(app__.contents_rotation);
 	term_setup_font_and_rotation_parameters(1);
-	term_change_metrics(term);
+	term_set_metrics_n_show(term);
 
 	vterm_init(&(term->vterm));
 
@@ -512,7 +514,7 @@ flf_d_printf("shift: %d\n", shift);
 	cur_font_mul_idx = font_select_next(cur_font_mul_idx, shift);
 
 	term_setup_font_and_rotation_parameters(1);
-	term_change_metrics(term);
+	term_set_metrics_n_show(term);
 }
 // User changed screen rotation on the fly
 PRIVATE void term_change_rotation(term_t *term, int shift)
@@ -520,8 +522,39 @@ PRIVATE void term_change_rotation(term_t *term, int shift)
 flf_d_printf("shift: %d\n", shift);
 	fbr_set_rotation(view_rotation_t((fbr_get_rotation() + shift) % ROT360));
 
+	// TODO: automatically select font that can display
+	//  the nearest screen character columns horizontally
+	u_short chars_hx = fbr_chars_hx;
 	term_setup_font_and_rotation_parameters(0);
-	term_change_metrics(term);
+	if (fbr_chars_hx < chars_hx) {
+		// columns became smaller.
+		//  select smaller font and make columns larger
+		shift = -1;
+		while (fbr_chars_hx < chars_hx) {
+			int prev_cur_font_mul_idx = cur_font_mul_idx;
+			cur_font_mul_idx = font_select_next(cur_font_mul_idx, shift);
+			if (cur_font_mul_idx == prev_cur_font_mul_idx) {
+				break;
+			}
+			term_setup_font_and_rotation_parameters(1);
+		}
+	} else {
+		// columns became bigger.
+		//  select larger font and make columns smaller
+		shift = +1;
+		while (fbr_chars_hx > chars_hx) {
+			int prev_cur_font_mul_idx = cur_font_mul_idx;
+			cur_font_mul_idx = font_select_next(cur_font_mul_idx, shift);
+			if (cur_font_mul_idx == prev_cur_font_mul_idx) {
+				break;
+			}
+			term_setup_font_and_rotation_parameters(1);
+		}
+	}
+
+	term_set_metrics(term);
+
+	term_set_metrics_n_show(term);
 }
 
 PRIVATE void term_setup_font_and_rotation_parameters(bool font)
@@ -538,12 +571,20 @@ PRIVATE void term_setup_font_and_rotation_parameters(bool font)
 }
 
 // Re-setup "terminal metrics" when font glyph or rotation is changed by user on the fly
-PRIVATE void term_change_metrics(term_t *term)
+PRIVATE void term_set_metrics_n_show(term_t *term)
+{
+	term_set_metrics(term);
+	term_show_metrics(term);
+}
+
+PRIVATE void term_set_metrics(term_t *term)
 {
 _FLF_
 	vterm_set_metrics(&(term->vterm));
+}
+PRIVATE void term_show_metrics(term_t *term)
+{
 _FLF_
-
 	// hide overlay
 	vterm_set_overlay(&(term->vterm), OVERLAY_IDX_0, -1, 0,
 	 COLOR_LIGHTCYAN, COLOR_LIGHTRED, "", 0, 0);

@@ -232,7 +232,7 @@ fb_driver_t fb_drivers[] = {
 };
 
 // Workaround for i810/815/845/855 Framebuffer bitmap corruption
-///TTT#define I810_FB_DUMMY_ACCESS
+///#define I810_FB_DUMMY_ACCESS
 
 #ifdef ENABLE_8BPP
 #warning "ENABLE_8BPP"
@@ -263,7 +263,9 @@ PRIVATE u_char color_idx_from_pallete_idx(cpal8_t cpal8)
 PRIVATE void fb_8bpp_clear_all(c_idx_t clr_idx, rgb15_t rgb15)
 {
 	cpal8_t cpal8 = pallete_idx_from_color_idx(clr_idx);	//=
+
 	memset(fb_start, cpal8, fb_view_size);					//=bpp_clear_all
+
 }
 PRIVATE void fb_8bpp_fill_char_box(u_short xx, u_short yy, bool wide,
  c_idx_t clr_idx, rgb15_t rgb15)
@@ -274,7 +276,7 @@ PRIVATE void fb_8bpp_fill_char_box(u_short xx, u_short yy, bool wide,
 	for (u_char fy = 0; fy < fb_font_exp_size_hy; fy++) {
 
 
-		memset(fb_left, cpal8, fb_font_exp_size_hx);			//=bpp_fill_char_box
+		memset(fb_left, cpal8, fb_font_exp_size_hx);		//=bpp_fill_char_box
 
 
 		fb_left += fbr_bytes_inc_hy;
@@ -427,6 +429,7 @@ PRIVATE void fb_16bpp_reverse_all(void)
 /* 15 bpp / 16 bpp */
 PRIVATE void fb_15_16bpp_clear_all(rgb15_t rgb15)
 {
+	rgb15 = rgb15;											//=
 	for (u_char *fb = fb_start; fb < fb_end; fb += fb_bytes_per_pixel) {
 		*(rgb15_t*)fb = rgb15;								//=bpp_clear_all
 	}
@@ -434,6 +437,7 @@ PRIVATE void fb_15_16bpp_clear_all(rgb15_t rgb15)
 PRIVATE void fb_15_16bpp_fill_char_box(u_short xx, u_short yy, bool wide,
  rgb15_t rgb15)
 {
+	rgb15 = rgb15;											//=
 	u_char *fb_left = fbr_origin + fbr_bytes_inc_font_hy * yy + fbr_bytes_inc_font_hx * xx;
 	u_char glyph_exp_width = fb_font_exp_size_hx * (1 + wide);
 	for (u_char fy = 0; fy < fb_font_exp_size_hy; fy++) {
@@ -689,8 +693,8 @@ PRIVATE void fb_32bpp_paint_char_box(u_short xx, u_short yy, wchar_t ucs21, bool
 // ...py: physical y
 // ...hx: human x (in human view)
 // ...hy: human y
-// chx: charactor human x (in human view)
-// chy: charactor human y
+// chx: character human x (in human view)
+// chy: character human y
 // fpx: font physical x (in physical view)
 // fpy: font physical y
 // ppx: pixel physical x (in physical view)

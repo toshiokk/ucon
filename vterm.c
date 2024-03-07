@@ -157,7 +157,7 @@ void vterm_emulate_str(vterm_t *vterm, const char *string, int bytes)
 	}
 ///d_printf("ZZZ");
 dump_string(string, bytes);
-///mflf_d_printf("%d: %s\n", bytes, dump_string_to_static_buf(string, bytes));
+mflf_d_printf("%d: %s\n", bytes, dump_string_to_static_buf(string, bytes));
 	while (bytes-- > 0) {
 		chr = *(string++);
 ///mflf_d_printf("%02x[%c]\n", chr, isgraph(chr) ? chr : '.');

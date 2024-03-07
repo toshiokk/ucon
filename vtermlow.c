@@ -476,8 +476,10 @@ mflf_d_printf("\n");
 		}
 	}
 
+_FLF_
 	// paint screen
 	vterm_paint_and_set_painted(vterm);
+_FLF_
 
 	// restore saved original text
 	for (overlay_idx = 0; overlay_idx < OVERLAY_LINES; overlay_idx++) {
@@ -488,6 +490,7 @@ mflf_d_printf("\n");
 			 overlay_line->text_save);
 		}
 	}
+_FLF_
 }
 
 void vterm_request_repaint_all(vterm_t *vterm)
@@ -563,6 +566,7 @@ PRIVATE void vterm_paint_char(vterm_t *vterm, int yy, int xx)
 		// 2nd byte of wide character
 		return;		// already painted in 1st byte
 	}
+mflf_d_printf("yy: %d, xx: %d, ucs21: %04x\n", yy, xx, ucs21);
 	font_get_glyph_bitmap(cur_font, ucs21, NULL, &found);
 	if (found == 0) {
 		bfc_idx ^= COLOR_UNKNOWN_GLYPH;
