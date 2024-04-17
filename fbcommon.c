@@ -194,7 +194,8 @@ flf_d_printf("Selected driver index: %d, bits per pixel: %d\n",
  fb_type_idx, fb_drivers[fb_type_idx].bitsPerPixel);
 	fb->driver = &fb_drivers[fb_type_idx];
 
-	/* FIX: scanline length is not necessarily the same as display width */
+	// NOTE: (line_length / bits_per_pixel) is not necessarily the same as screen_size_x
+	//       line_length may be different from (screen_size_x * bytes_per_pixel)
 	fb->screen_size_x = fb_var.xres;
 	fb->screen_size_y = fb_var.yres;
 	fb->bytes_per_line = fb_fix.line_length;

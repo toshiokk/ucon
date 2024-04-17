@@ -51,6 +51,7 @@ mk_backup_file __test_ucon.log
     ./ucon -d -f 10 -x 4 -w
   else
 #    ./ucon -d -f 12 -x 3 -y 4 -w
-    ./ucon -r 0 -d -f 12 -x 3 -y 4 -w
+#    ./ucon -r 0 -d -f 12 -x 2 -y 3
+    ./ucon -r 0 -d -f 12 -x 2 -y 3 -w
   fi
 } 2>__test_ucon.log >&2
