@@ -67,8 +67,8 @@ typedef struct /*font_exp_*/ {
 extern font_exp_t cur_font_exp_, *cur_font_exp;
 
 //-----------------------------------------------------------------------------
-int font_select(int font_size, int mul_x, int mul_y);
-int font_correct_selection(int font_mul_idx);
+int font_select_by_height_mul_xy(int font_size, int mul_x, int mul_y);
+/////int font_correct_selection(int font_mul_idx);
 int font_select_next(int font_mul_idx, int shift);
 int font_check_selection_valid(int font_mul_idx);
 void font_setup_metrics();
@@ -85,7 +85,7 @@ int font_destroy(font_t *font);
 
 const u_short *font_get_glyph_bitmap(font_t *font, wchar_t ucs21,
  int *width_in_pixels, int *found);
-const int font_get_glyph_width(font_t *font, wchar_t ucs21);
+const int font_get_glyph_width_in_pixels(font_t *font, wchar_t ucs21);
 
 const u_short *font_set_glyph(wchar_t ucs21, u_char offset_x);
 bool font_get_glyph_pixel(u_char fx, u_char fy);

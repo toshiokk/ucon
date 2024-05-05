@@ -1,34 +1,82 @@
-kdiff3 ../old/ucon/config.h config.h ==================================================
-kdiff3 ../old/ucon/fbbpp.h fbbpp.h ==================================================
-kdiff3 ../old/ucon/fbcommon.h fbcommon.h ==================================================
-kdiff3 ../old/ucon/font.h font.h ==================================================
-kdiff3 ../old/ucon/hex.h hex.h ==================================================
-kdiff3 ../old/ucon/main.h main.h ==================================================
-kdiff3 ../old/ucon/message.h message.h ==================================================
-kdiff3 ../old/ucon/mydebug.h mydebug.h ==================================================
-kdiff3 ../old/ucon/myminmax.h myminmax.h ==================================================
-kdiff3 ../old/ucon/myselect.h myselect.h ==================================================
-kdiff3 ../old/ucon/mytypes.h mytypes.h ==================================================
-kdiff3 ../old/ucon/pen.h pen.h ==================================================
-kdiff3 ../old/ucon/picofont.h picofont.h ==================================================
-kdiff3 ../old/ucon/sequence.h sequence.h ==================================================
-kdiff3 ../old/ucon/stdincs.h stdincs.h ==================================================
-kdiff3 ../old/ucon/term.h term.h ==================================================
-kdiff3 ../old/ucon/ucon.h ucon.h ==================================================
-kdiff3 ../old/ucon/util.h util.h ==================================================
-kdiff3 ../old/ucon/vterm.h vterm.h ==================================================
-kdiff3 ../old/ucon/vtermlow.h vtermlow.h ==================================================
-kdiff3 ../old/ucon/fbbpp.c fbbpp.c ==================================================
-kdiff3 ../old/ucon/fbcommon.c fbcommon.c ==================================================
-kdiff3 ../old/ucon/font.c font.c ==================================================
-kdiff3 ../old/ucon/hex.c hex.c ==================================================
-kdiff3 ../old/ucon/main.c main.c ==================================================
-kdiff3 ../old/ucon/message.c message.c ==================================================
-kdiff3 ../old/ucon/myminmax.c myminmax.c ==================================================
-kdiff3 ../old/ucon/myselect.c myselect.c ==================================================
-kdiff3 ../old/ucon/pen.c pen.c ==================================================
-kdiff3 ../old/ucon/picofont.c picofont.c ==================================================
-kdiff3 ../old/ucon/term.cpp term.cpp ==================================================
-kdiff3 ../old/ucon/util.c util.c ==================================================
-kdiff3 ../old/ucon/vterm.c vterm.c ==================================================
-kdiff3 ../old/ucon/vtermlow.c vtermlow.c ==================================================
+kdiff3 config.h~ config.h
+kdiff3 fbbpp.h~ fbbpp.h
+kdiff3 fbcommon.h~ fbcommon.h
+kdiff3 font.h~ font.h
+70,71c70,71
+< int font_select(int font_size, int mul_x, int mul_y);
+< int font_correct_selection(int font_mul_idx);
+---
+> int font_select_by_height_mul_xy(int font_size, int mul_x, int mul_y);
+> /////int font_correct_selection(int font_mul_idx);
+kdiff3 hex.h~ hex.h
+kdiff3 main.h~ main.h
+kdiff3 message.h~ message.h
+kdiff3 mydebug.h~ mydebug.h
+kdiff3 myminmax.h~ myminmax.h
+kdiff3 myselect.h~ myselect.h
+kdiff3 mytypes.h~ mytypes.h
+kdiff3 pen.h~ pen.h
+kdiff3 picofont.h~ picofont.h
+kdiff3 sequence.h~ sequence.h
+kdiff3 stdincs.h~ stdincs.h
+kdiff3 term.h~ term.h
+kdiff3 ucon.h~ ucon.h
+kdiff3 util.h~ util.h
+kdiff3 vterm.h~ vterm.h
+kdiff3 vtermlow.h~ vtermlow.h
+kdiff3 fbbpp.c~ fbbpp.c
+kdiff3 fbcommon.c~ fbcommon.c
+kdiff3 font.c~ font.c
+190,191c190,191
+< PRIVATE int font_select_by_size(int font_size, int mul_x, int mul_y);
+< int font_select(int font_size, int mul_x, int mul_y)
+---
+> PRIVATE int font_search_by_height_mul_xy(int font_size, int mul_x, int mul_y);
+> int font_select_by_height_mul_xy(int font_size, int mul_x, int mul_y)
+202c202
+< 	if ((font_mul_idx = font_select_by_size(font_size, mul_x, mul_y)) >= 0) {
+---
+> 	if ((font_mul_idx = font_search_by_height_mul_xy(font_size, mul_x, mul_y)) >= 0) {
+206c206
+< 	if ((font_mul_idx = font_select_by_size(font_size, mul_x, mul_y)) >= 0) {
+---
+> 	if ((font_mul_idx = font_search_by_height_mul_xy(font_size, mul_x, mul_y)) >= 0) {
+210c210
+< 	if ((font_mul_idx = font_select_by_size(font_size, mul_x, mul_y)) >= 0) {
+---
+> 	if ((font_mul_idx = font_search_by_height_mul_xy(font_size, mul_x, mul_y)) >= 0) {
+214c214
+< 	if ((font_mul_idx = font_select_by_size(font_size, mul_x, mul_y)) >= 0) {
+---
+> 	if ((font_mul_idx = font_search_by_height_mul_xy(font_size, mul_x, mul_y)) >= 0) {
+254c254
+< PRIVATE int font_select_by_size(int font_size, int mul_x, int mul_y)
+---
+> PRIVATE int font_search_by_height_mul_xy(int font_size, int mul_x, int mul_y)
+kdiff3 hex.c~ hex.c
+kdiff3 main.c~ main.c
+kdiff3 message.c~ message.c
+kdiff3 myminmax.c~ myminmax.c
+kdiff3 myselect.c~ myselect.c
+kdiff3 pen.c~ pen.c
+kdiff3 picofont.c~ picofont.c
+kdiff3 term.cpp~ term.cpp
+526c526
+< 	//  the nearest screen character columns horizontally
+---
+> 	//  the nearest screen character columns to before rotation
+kdiff3 util.c~ util.c
+kdiff3 vterm.c~ vterm.c
+339c339
+< 	width_in_pixels = font_get_glyph_width(cur_font, ucs21);
+---
+> 	width_in_pixels = font_get_glyph_width_in_pixels(cur_font, ucs21);
+kdiff3 vtermlow.c~ vtermlow.c
+984c984
+< 	// 00000000 000111111 11111111 11111111
+---
+> 	// 00000000 00011111 11111111 11111111
+989c989
+< 	// 00000000 1100000 00000000 00000000 ==> 00000000 00000000 00000000 11000000
+---
+> 	// 00000000 11000000 00000000 00000000 ==> 00000000 00000000 00000000 11000000

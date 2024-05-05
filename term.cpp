@@ -429,7 +429,7 @@ PRIVATE int term_init(term_t *term)
 		_ERR_
 		return INIT_ERR6;
 	}
-	cur_font_mul_idx = font_select(app__.font_size, app__.expand_x, app__.expand_y);
+	cur_font_mul_idx = font_select_by_height_mul_xy(app__.font_size, app__.expand_x, app__.expand_y);
 	if (cur_font_mul_idx < 0) {
 		_ERR_
 		return INIT_ERR7;
@@ -523,7 +523,7 @@ flf_d_printf("shift: %d\n", shift);
 	fbr_set_rotation(view_rotation_t((fbr_get_rotation() + shift) % ROT360));
 
 	// TODO: automatically select font that can display
-	//  the nearest screen character columns horizontally
+	//  the nearest screen character columns to before rotation
 	u_short chars_hx = fbr_chars_hx;
 	term_setup_font_and_rotation_parameters(0);
 	if (fbr_chars_hx < chars_hx) {

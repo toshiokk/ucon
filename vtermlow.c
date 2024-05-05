@@ -566,7 +566,7 @@ PRIVATE void vterm_paint_char(vterm_t *vterm, int yy, int xx)
 		// 2nd byte of wide character
 		return;		// already painted in 1st byte
 	}
-mflf_d_printf("yy: %d, xx: %d, ucs21: %04x\n", yy, xx, ucs21);
+/////mflf_d_printf("yy: %d, xx: %d, ucs21: %04x\n", yy, xx, ucs21);
 	font_get_glyph_bitmap(cur_font, ucs21, NULL, &found);
 	if (found == 0) {
 		bfc_idx ^= COLOR_UNKNOWN_GLYPH;
@@ -981,12 +981,12 @@ void set_flags_char_to_text_char_t(text_char_t *text_char, u_char flags, wchar_t
 
 wchar_t get_ucs21_from_text_char_t(text_char_t *text_char)
 {
-	// 00000000 000111111 11111111 11111111
+	// 00000000 00011111 11111111 11111111
 	return text_char->bfc_flags_ucs21 & TEXT_CHAR_T_UCS21;
 }
 u_char get_flags_from_text_char_t(text_char_t *text_char)
 {
-	// 00000000 1100000 00000000 00000000 ==> 00000000 00000000 00000000 11000000
+	// 00000000 11000000 00000000 00000000 ==> 00000000 00000000 00000000 11000000
 	return (text_char->bfc_flags_ucs21 & TEXT_CHAR_T_FLAGS) >> 16;
 }
 u_char get_bfc_from_text_char_t(text_char_t *text_char)

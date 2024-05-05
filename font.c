@@ -80,6 +80,11 @@ font_mul_t font_mul_table[] = {
 	{ 0, /*10,*/ 5, 5, },	// 25x50=1250
 	{ 0, /*10,*/ 5, 7, },	// 25x70=1750
 	{ 0, /*10,*/ 5, 9, },	// 25x90=2250
+	{ 0, /*10,*/ 6, 3, },	// 30x 30=900
+	{ 0, /*10,*/ 6, 4, },	// 30x 40=1200
+	{ 0, /*10,*/ 6, 6, },	// 30x 60=1800
+	{ 0, /*10,*/ 6, 9, },	// 30x 90=2700
+	{ 0, /*10,*/ 6,12, },	// 30x120=3600
 #endif
 //-----------------------------------------------------------------------------
 	{ 1, /*12,*/ 1, 1, },	//  6x12=  72
@@ -111,13 +116,18 @@ font_mul_t font_mul_table[] = {
 	{ 1, /*12,*/ 4, 8, },	// 24x96=2304
 #endif
 #endif
-//-----------------------------------------------------------------------------
 #ifdef	HUGE_SHAPE
-	{ 1, /*12,*/ 5, 3, },	// 30x36=1080
-	{ 1, /*12,*/ 5, 5, },	// 30x60=1800
-	{ 1, /*12,*/ 5, 7, },	// 30x72=2160
+	{ 1, /*12,*/ 5, 3, },	// 30x 36=1080
+	{ 1, /*12,*/ 5, 5, },	// 30x 60=1800
+	{ 1, /*12,*/ 5, 7, },	// 30x 72=2160
 	{ 1, /*12,*/ 5, 9, },	// 30x108=3240
+	{ 1, /*12,*/ 6, 3, },	// 36x 36=1296
+	{ 1, /*12,*/ 6, 4, },	// 36x 48=1728
+	{ 1, /*12,*/ 6, 6, },	// 36x 72=2592
+	{ 1, /*12,*/ 6, 9, },	// 36x108=3888
+	{ 1, /*12,*/ 6,12, },	// 36x144=5184
 #endif
+//-----------------------------------------------------------------------------
 	{ 2, /*14,*/ 1, 1, },	//  7x14=  98
 #ifdef	TALL_SHAPE
 	{ 2, /*14,*/ 1, 2, },	//  7x28= 196
@@ -130,11 +140,16 @@ font_mul_t font_mul_table[] = {
 	{ 2, /*14,*/ 3, 2, },	// 21x28= 588
 	{ 2, /*14,*/ 3, 3, },	// 21x42= 882
 #ifdef	HUGE_SHAPE
-	{ 2, /*14,*/ 3, 4, },	// 21x56=1176
-	{ 2, /*14,*/ 4, 3, },	// 28x42=1176
-	{ 2, /*14,*/ 4, 4, },	// 28x56=1568
-	{ 2, /*14,*/ 4, 6, },	// 28x84=2352
+	{ 2, /*14,*/ 3, 4, },	// 21x 56=1176
+	{ 2, /*14,*/ 4, 3, },	// 28x 42=1176
+	{ 2, /*14,*/ 4, 4, },	// 28x 56=1568
+	{ 2, /*14,*/ 4, 6, },	// 28x 84=2352
 	{ 2, /*14,*/ 4, 8, },	// 28x112=3136
+	{ 2, /*14,*/ 5, 3, },	// 35x 42=1470
+	{ 2, /*14,*/ 5, 4, },	// 35x 56=1960
+	{ 2, /*14,*/ 5, 5, },	// 35x 70=2450
+	{ 2, /*14,*/ 5, 7, },	// 35x 98=3430
+	{ 2, /*14,*/ 5,10, },	// 35x140=4900
 #endif
 //-----------------------------------------------------------------------------
 	{ 3, /*16,*/ 1, 1, },	//  8x16= 128
@@ -158,6 +173,11 @@ font_mul_t font_mul_table[] = {
 	{ 3, /*16,*/ 4, 4, },	// 32x64=2048
 	{ 3, /*16,*/ 4, 6, },	// 32x96=3072
 	{ 3, /*16,*/ 4, 8, },	// 32x128=4096
+	{ 3, /*16,*/ 5, 3, },	// 40x 48=1920
+	{ 3, /*16,*/ 5, 4, },	// 40x 64=2560
+	{ 3, /*16,*/ 5, 5, },	// 40x 80=3200
+	{ 3, /*16,*/ 5, 7, },	// 40x118=4720
+	{ 3, /*16,*/ 5,10, },	// 40x160=6400
 #endif
 };
 #define	FONT_MULTI_TABLE_ENTRIES	(sizeof(font_mul_table) / sizeof(font_mul_table[0]))
@@ -167,8 +187,8 @@ PRIVATE int comp_font_width(const void *aa, const void *bb);
 PRIVATE int calc_font_area(font_mul_t *font_multi);
 PRIVATE int calc_font_width(font_mul_t *font_multi);
 PRIVATE int calc_font_height(font_mul_t *font_multi);
-PRIVATE int font_select_by_size(int font_size, int mul_x, int mul_y);
-int font_select(int font_size, int mul_x, int mul_y)
+PRIVATE int font_search_by_height_mul_xy(int font_size, int mul_x, int mul_y);
+int font_select_by_height_mul_xy(int font_size, int mul_x, int mul_y)
 {
 	int font_mul_idx;
 
@@ -179,19 +199,19 @@ int font_select(int font_size, int mul_x, int mul_y)
 	qsort(font_mul_table, FONT_MULTI_TABLE_ENTRIES, sizeof(font_mul_t), comp_font_area);
 	qsort(font_mul_table, FONT_MULTI_TABLE_ENTRIES, sizeof(font_mul_t), comp_font_width);
 #endif
-	if ((font_mul_idx = font_select_by_size(font_size, mul_x, mul_y)) >= 0) {
+	if ((font_mul_idx = font_search_by_height_mul_xy(font_size, mul_x, mul_y)) >= 0) {
 		return font_mul_idx;
 	}
 	mul_y = 0;
-	if ((font_mul_idx = font_select_by_size(font_size, mul_x, mul_y)) >= 0) {
+	if ((font_mul_idx = font_search_by_height_mul_xy(font_size, mul_x, mul_y)) >= 0) {
 		return font_mul_idx;
 	}
 	mul_x = 0;
-	if ((font_mul_idx = font_select_by_size(font_size, mul_x, mul_y)) >= 0) {
+	if ((font_mul_idx = font_search_by_height_mul_xy(font_size, mul_x, mul_y)) >= 0) {
 		return font_mul_idx;
 	}
 	font_size = 0;
-	if ((font_mul_idx = font_select_by_size(font_size, mul_x, mul_y)) >= 0) {
+	if ((font_mul_idx = font_search_by_height_mul_xy(font_size, mul_x, mul_y)) >= 0) {
 		return font_mul_idx;
 	}
 	return -1;	// no font selected
@@ -231,7 +251,7 @@ PRIVATE int calc_font_height(font_mul_t *font_multi)
 	return font->height * font_multi->mul_y;
 }
 
-PRIVATE int font_select_by_size(int font_size, int mul_x, int mul_y)
+PRIVATE int font_search_by_height_mul_xy(int font_size, int mul_x, int mul_y)
 {
 	int font_mul_idx;
 
@@ -248,23 +268,23 @@ PRIVATE int font_select_by_size(int font_size, int mul_x, int mul_y)
 	}
 	return -1;
 }
-int font_correct_selection(int font_mul_idx)
-{
-	int next_font_mul_idx;
-
-	if (font_check_selection_valid(font_mul_idx)) {
-		return font_mul_idx;
-	}
-	next_font_mul_idx = font_select_next(font_mul_idx, -1);
-	if (font_check_selection_valid(next_font_mul_idx)) {
-		return next_font_mul_idx;
-	}
-	next_font_mul_idx = font_select_next(font_mul_idx, +1);
-	if (font_check_selection_valid(next_font_mul_idx)) {
-		return next_font_mul_idx;
-	}
-	return 0;
-}
+/////int font_correct_selection(int font_mul_idx)
+/////{
+/////	int next_font_mul_idx;
+/////
+/////	if (font_check_selection_valid(font_mul_idx)) {
+/////		return font_mul_idx;
+/////	}
+/////	next_font_mul_idx = font_select_next(font_mul_idx, -1);
+/////	if (font_check_selection_valid(next_font_mul_idx)) {
+/////		return next_font_mul_idx;
+/////	}
+/////	next_font_mul_idx = font_select_next(font_mul_idx, +1);
+/////	if (font_check_selection_valid(next_font_mul_idx)) {
+/////		return next_font_mul_idx;
+/////	}
+/////	return 0;
+/////}
 int font_select_next(int font_mul_idx, int shift)
 {
 	int prev_font_mul_idx = font_mul_idx;
@@ -402,11 +422,11 @@ const u_short *font_get_glyph_bitmap(font_t *font, wchar_t ucs21,
 {
 	ucs21 = LIM_MAX_(MAX_GLYPHS-1, ucs21);	// [0 -- MAX_GLYPHS-1]
 	const u_short *glyph;
-	int width = font->glyph_width[ucs21];
+	int width = font_get_glyph_width_in_pixels(font, ucs21);
 	if (width) {
 		glyph = font->glyph_bitmap[ucs21];
 	} else {
-		width = font_get_glyph_width(font, ucs21);
+		width = font_get_undefined_glyph_width(font, ucs21);
 		glyph = font_get_undefined_glyph_bitmap(font, ucs21);
 	}
 	if (width_in_pixels) {
@@ -417,10 +437,11 @@ const u_short *font_get_glyph_bitmap(font_t *font, wchar_t ucs21,
 	}
 	return glyph;
 }
-const int font_get_glyph_width(font_t *font, wchar_t ucs21)
+const int font_get_glyph_width_in_pixels(font_t *font, wchar_t ucs21)
 {
 	int width_in_pixels;
 
+	ucs21 = LIM_MAX_(MAX_GLYPHS-1, ucs21);	// [0 -- MAX_GLYPHS-1]
 	width_in_pixels = font->glyph_width[ucs21];
 	if (width_in_pixels == 0) {
 		width_in_pixels = font_get_undefined_glyph_width(font, ucs21);

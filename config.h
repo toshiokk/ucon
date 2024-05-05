@@ -11,7 +11,7 @@
 #define ENABLE_24BPP 1
 
 /* description */
-/* #undef ENABLE_255COLUMNS */
+#define ENABLE_255COLUMNS 1
 
 /* description */
 #define ENABLE_32BPP 1
@@ -20,7 +20,7 @@
 #define ENABLE_8BPP 1
 
 /* Define this to enable debug */
-#define ENABLE_DEBUG 1
+/* #undef ENABLE_DEBUG */
 
 /* description */
 /* #undef ENABLE_DIMMER */

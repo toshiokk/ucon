@@ -160,7 +160,7 @@ dump_string(string, bytes);
 mflf_d_printf("%d: %s\n", bytes, dump_string_to_static_buf(string, bytes));
 	while (bytes-- > 0) {
 		chr = *(string++);
-///mflf_d_printf("%02x[%c]\n", chr, isgraph(chr) ? chr : '.');
+mflf_d_printf("%02x[%c]\n", chr, isgraph(chr) ? chr : '.');
 		vterm_emulate_char(vterm, chr);
 	}
 }
@@ -290,7 +290,7 @@ PRIVATE int vterm_parse_utf8_seq(vterm_t *vterm, u_char chr)
 		// ASCII char, send ucs21
 	} else if ((chr & 0xc0) == 0x80) {	// 10xxxxxx
 		if (vterm->utf8_state == 0) {
-			warn_printf("illegal UTF-8 sequence\n");
+			warn_printf("illegal UTF-8 sequence(%02x but not in UTF8 state: %d)\n", chr, vterm->utf8_state);
 			dump_parsed_str();
 			vterm->ucs21 = chr;
 		} else {
@@ -298,24 +298,30 @@ PRIVATE int vterm_parse_utf8_seq(vterm_t *vterm, u_char chr)
 			vterm->utf8_state--;
 			// end of UTF-8 sequence, send ucs21
 		}
-	} else if ((chr & 0xe0) == 0xc0) {	// 110xxxxx 10xxxxxx
-		vterm->utf8_state = 1;
-		vterm->ucs21 = (chr & 0x1f);
-	} else if ((chr & 0xf0) == 0xe0) {	// 1110xxxx 10xxxxxx 10xxxxxx
-		vterm->utf8_state = 2;
-		vterm->ucs21 = (chr & 0x0f);
-	} else if ((chr & 0xf8) == 0xf0) {	// 11110xxx 10xxxxxx 10xxxxxx 10xxxxxx
-		vterm->utf8_state = 3;
-		vterm->ucs21 = (chr & 0x07);
-	} else if ((chr & 0xfc) == 0xf8) {	// 111110xx 10xxxxxx 10xxxxxx 10xxxxxx 10xxxxxx
-		vterm->utf8_state = 4;
-		vterm->ucs21 = (chr & 0x03);
-	} else if ((chr & 0xfe) == 0xfc) {	// 1111110x 10xxxxxx 10xxxxxx 10xxxxxx 10xxxxxx 10xxxxxx
-		vterm->utf8_state = 5;
-		vterm->ucs21 = (chr & 0x01);
-	} else {							// 1111111x
-		vterm_reset_utf8_state(vterm);
-		vterm->ucs21 = chr;				// [0xfe, 0xff]
+	} else if ((chr & 0xc0) == 0xc0) {	// 11xxxxxx
+		if (vterm->utf8_state) {
+			warn_printf("illegal UTF-8 sequence(%02x but already in UTF8 state: %d)\n", chr, vterm->utf8_state);
+			dump_parsed_str();
+		}
+		if ((chr & 0xe0) == 0xc0) {	// 110xxxxx 10xxxxxx
+			vterm->utf8_state = 1;
+			vterm->ucs21 = (chr & 0x1f);
+		} else if ((chr & 0xf0) == 0xe0) {	// 1110xxxx 10xxxxxx 10xxxxxx
+			vterm->utf8_state = 2;
+			vterm->ucs21 = (chr & 0x0f);
+		} else if ((chr & 0xf8) == 0xf0) {	// 11110xxx 10xxxxxx 10xxxxxx 10xxxxxx
+			vterm->utf8_state = 3;
+			vterm->ucs21 = (chr & 0x07);
+		} else if ((chr & 0xfc) == 0xf8) {	// 111110xx 10xxxxxx 10xxxxxx 10xxxxxx 10xxxxxx
+			vterm->utf8_state = 4;
+			vterm->ucs21 = (chr & 0x03);
+		} else if ((chr & 0xfe) == 0xfc) {	// 1111110x 10xxxxxx 10xxxxxx 10xxxxxx 10xxxxxx 10xxxxxx
+			vterm->utf8_state = 5;
+			vterm->ucs21 = (chr & 0x01);
+		} else {							// 1111111x
+			vterm_reset_utf8_state(vterm);
+			vterm->ucs21 = chr;				// [0xfe, 0xff]
+		}
 	}
 	return vterm->utf8_state;
 }
@@ -330,7 +336,7 @@ PRIVATE void vterm_put_ucs21_char(vterm_t *vterm, wchar_t ucs21)
 		ucs21 = subst_dec_sp_gr_char(ucs21);
 	}
 	// get font width from font
-	width_in_pixels = font_get_glyph_width(cur_font, ucs21);
+	width_in_pixels = font_get_glyph_width_in_pixels(cur_font, ucs21);
 	if (width_in_pixels <= cur_font->width)
 		width = 1;
 	else
