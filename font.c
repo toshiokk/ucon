@@ -298,11 +298,11 @@ int font_select_next(int font_mul_idx, int shift)
 	}
 	return prev_font_mul_idx;
 }
-int font_check_selection_valid(int font_mul_idx)
-{
-	return IS_IN_RANGE(0, font_mul_idx, FONT_MULTI_TABLE_ENTRIES)
-	 && fonts__[font_mul_table[font_mul_idx].font_idx].glyphs > 0;
-}
+/////int font_check_selection_valid(int font_mul_idx)
+/////{
+/////	return IS_IN_RANGE(0, font_mul_idx, FONT_MULTI_TABLE_ENTRIES)
+/////	 && fonts__[font_mul_table[font_mul_idx].font_idx].glyphs > 0;
+/////}
 // setup font metrics
 void font_setup_metrics()
 {

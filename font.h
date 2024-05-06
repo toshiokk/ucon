@@ -70,7 +70,7 @@ extern font_exp_t cur_font_exp_, *cur_font_exp;
 int font_select_by_height_mul_xy(int font_size, int mul_x, int mul_y);
 /////int font_correct_selection(int font_mul_idx);
 int font_select_next(int font_mul_idx, int shift);
-int font_check_selection_valid(int font_mul_idx);
+/////int font_check_selection_valid(int font_mul_idx);
 void font_setup_metrics();
 
 void font_init_all(void);
