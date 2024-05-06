@@ -689,16 +689,11 @@ PRIVATE void fb_32bpp_paint_char_box(u_short xx, u_short yy, wchar_t ucs21, bool
 	}
 }
 
-// ...px: physical x (in physical view)
-// ...py: physical y
-// ...hx: human x (in human view)
-// ...hy: human y
-// chx: character human x (in human view)
-// chy: character human y
-// fpx: font physical x (in physical view)
-// fpy: font physical y
-// ppx: pixel physical x (in physical view)
-// ppy: pixel physical y
+// Meaning of ...px, ...py, ...hx, ...hy
+// px: x in Physical view
+// py: y in Physical view
+// hx: x in Human view
+// hy: y in Human view
 
 #ifdef ENABLE_SCREEN_SHOT
 PRIVATE argb32_t fb_32bpp_get_pixel_argb32(u_short xx, u_short yy)
@@ -718,13 +713,6 @@ PRIVATE void fb_32bpp_reverse_all(void)
 }
 #endif // ENABLE_SCREEN_SHOT
 #endif // ENABLE_32BPP
-
-// chx: Charactor x in Human view
-// chy: Charactor y in Human view
-// px: x in Physical view
-// py: y in Physical view
-// hx: x in Human view
-// hy: y in Human view
 
 // glyph_rotation: 0      1        2      3
 //           *---+  *-----+  *---+  *-----+

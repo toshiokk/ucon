@@ -71,6 +71,7 @@ PRIVATE void call_interval_timer_process(vterm_t *vterm);
 PRIVATE void check_hot_key(term_t *term, char *buf, int input_len);
 PRIVATE void term_change_font_size(term_t *term, int shift);
 PRIVATE void term_change_rotation(term_t *term, int shift);
+PRIVATE void term_select_font_by_columns(int columns);
 PRIVATE void term_setup_font_and_rotation_parameters(bool font);
 
 PRIVATE void term_set_metrics_n_show(term_t *term);
@@ -438,6 +439,9 @@ PRIVATE int term_init(term_t *term)
 	fbr_setup_constant_parameters();
 	fbr_set_rotation(app__.contents_rotation);
 	term_setup_font_and_rotation_parameters(1);
+	if (app__.columns > 0) {
+		term_select_font_by_columns(app__.columns);
+	}
 	term_set_metrics_n_show(term);
 
 	vterm_init(&(term->vterm));
@@ -522,15 +526,21 @@ PRIVATE void term_change_rotation(term_t *term, int shift)
 flf_d_printf("shift: %d\n", shift);
 	fbr_set_rotation(view_rotation_t((fbr_get_rotation() + shift) % ROT360));
 
-	// TODO: automatically select font that can display
-	//  the nearest screen character columns to before rotation
-	u_short chars_hx = fbr_chars_hx;
+	int columns = fbr_chars_hx;
 	term_setup_font_and_rotation_parameters(0);
-	if (fbr_chars_hx < chars_hx) {
+	term_select_font_by_columns(columns);
+	term_set_metrics_n_show(term);
+}
+
+// TODO: automatically select font that can display
+//  the nearest screen character columns to before changing rotation
+PRIVATE void term_select_font_by_columns(int columns)
+{
+	if (fbr_chars_hx < columns) {
 		// columns became smaller.
 		//  select smaller font and make columns larger
-		shift = -1;
-		while (fbr_chars_hx < chars_hx) {
+		int shift = -1;
+		while (fbr_chars_hx < columns) {
 			int prev_cur_font_mul_idx = cur_font_mul_idx;
 			cur_font_mul_idx = font_select_next(cur_font_mul_idx, shift);
 			if (cur_font_mul_idx == prev_cur_font_mul_idx) {
@@ -541,8 +551,8 @@ flf_d_printf("shift: %d\n", shift);
 	} else {
 		// columns became bigger.
 		//  select larger font and make columns smaller
-		shift = +1;
-		while (fbr_chars_hx > chars_hx) {
+		int shift = +1;
+		while (fbr_chars_hx > columns) {
 			int prev_cur_font_mul_idx = cur_font_mul_idx;
 			cur_font_mul_idx = font_select_next(cur_font_mul_idx, shift);
 			if (cur_font_mul_idx == prev_cur_font_mul_idx) {
@@ -551,22 +561,20 @@ flf_d_printf("shift: %d\n", shift);
 			term_setup_font_and_rotation_parameters(1);
 		}
 	}
-
-	term_set_metrics(term);
-
-	term_set_metrics_n_show(term);
 }
 
 PRIVATE void term_setup_font_and_rotation_parameters(bool font)
 {
-	// setup font-size and screen-rotation dependent parts
+	// setup font-size dependent parts
 	if (font) {
 		font_setup_metrics();
 		fbr_copy_font_size_into_driver();
 	}
 
+	// setup screen-rotation dependent parts
 	fbr_setup_rotation_dependent_parameters();
 
+	// setup font-size and screen-rotation dependent parts
 	fbr_set_text_metrics();
 }
 

@@ -3,4 +3,4 @@
 ## [v]240505 240502 crash when "cat some.bin"
 ## [v] 240302 4K support in Rotation
 ## [v] automatically select font size equivalent to previous columns when screen rotated
-## [] specify screen size by horizontal and vertical size (ex. 80x25) not by font size.
+## [v] specify screen size by horizontal and vertical size (ex. 80x25) not by font size in command line option

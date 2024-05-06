@@ -155,12 +155,11 @@ void vterm_emulate_str(vterm_t *vterm, const char *string, int bytes)
 	if (bytes < 0) {
 		bytes = strlen(string);
 	}
-///d_printf("ZZZ");
-dump_string(string, bytes);
-mflf_d_printf("%d: %s\n", bytes, dump_string_to_static_buf(string, bytes));
+///dump_string(string, bytes);
+///mflf_d_printf("%d: %s\n", bytes, dump_string_to_static_buf(string, bytes));
 	while (bytes-- > 0) {
 		chr = *(string++);
-mflf_d_printf("%02x[%c]\n", chr, isgraph(chr) ? chr : '.');
+///mflf_d_printf("%02x[%c]\n", chr, isgraph(chr) ? chr : '.');
 		vterm_emulate_char(vterm, chr);
 	}
 }

@@ -303,6 +303,7 @@ int font_check_selection_valid(int font_mul_idx)
 	return IS_IN_RANGE(0, font_mul_idx, FONT_MULTI_TABLE_ENTRIES)
 	 && fonts__[font_mul_table[font_mul_idx].font_idx].glyphs > 0;
 }
+// setup font metrics
 void font_setup_metrics()
 {
 	cur_font_mul = &(font_mul_table[cur_font_mul_idx]);
@@ -443,9 +444,9 @@ const int font_get_glyph_width_in_pixels(font_t *font, wchar_t ucs21)
 
 	ucs21 = LIM_MAX_(MAX_GLYPHS-1, ucs21);	// [0 -- MAX_GLYPHS-1]
 	width_in_pixels = font->glyph_width[ucs21];
-	if (width_in_pixels == 0) {
-		width_in_pixels = font_get_undefined_glyph_width(font, ucs21);
-	}
+	/////if (width_in_pixels == 0) {
+	/////	width_in_pixels = font_get_undefined_glyph_width(font, ucs21);
+	/////}
 	return width_in_pixels;
 }
 

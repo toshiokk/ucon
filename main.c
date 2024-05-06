@@ -107,11 +107,12 @@ main_exit:;
 
 PRIVATE void app_get_options(app_t *app, int argc, char *argv[])
 {
-	char *short_opt = "br:f:x:y:wc:hlvd";
+	char *short_opt = "br:f:o:x:y:wc:hlvd";
 	static struct option long_opt[] = {
 		{ "bell",			0, NULL, 'b' },
 		{ "rotation",		1, NULL, 'r' },		// -r 1
 		{ "font",			1, NULL, 'f' },		// -f 12
+		{ "columns",		1, NULL, 'o' },
 		{ "expand",			1, NULL, 'x' },
 		{ "expand_y",		1, NULL, 'y' },
 		{ "use_whole_buf",	0, NULL, 'w' },
@@ -147,12 +148,15 @@ _FLF_
 		case 'f':
 			app->font_size = MIN_MAX(10, atoi(optarg), 16) / 2 * 2;
 			break;
+		case 'o':
+			app->columns = MIN_MAX(40, atoi(optarg), 512);
+			break;
 		case 'x':
-			app->expand_x = MIN_MAX(1, atoi(optarg), 4);
+			app->expand_x = MIN_MAX(1, atoi(optarg), 6);
 			app->expand_y = app->expand_x;
 			break;
 		case 'y':
-			app->expand_y = MIN_MAX(1, atoi(optarg), 4);
+			app->expand_y = MIN_MAX(1, atoi(optarg), 12);
 			break;
 		case 'w':
 			app->use_whole_buf = TRUE;
@@ -179,6 +183,7 @@ _FLF_
 			break;
 		}
 	}
+	flf_d_printf("font_size: %d, columns: %d, expand_x: %d, expand_y: %d\n", app->font_size, app->columns, app->expand_x, app->expand_y);
 }
 
 PRIVATE void app_init(app_t *app)
@@ -191,8 +196,9 @@ PRIVATE void app_init(app_t *app)
 	///	app->contents_rotation = ROT180;
 	///	app->contents_rotation = ROT270;
 	app->font_size = 12;
-	app->expand_x = 1;		// 1 dots per pixels
-	app->expand_y = 1;		// 1 dots per pixels
+	app->columns = 0;		// columns
+	app->expand_x = 1;		// 1 dots per horizontal pixels
+	app->expand_y = 1;		// 1 dots per vertical pixels
 	app->no_bell = FALSE;
 	app->use_whole_buf = FALSE;
 	if (getenv("SHELL")) {
