@@ -1,6 +1,7 @@
 ## Rotate Left/Right,180Deg.
 
-## [v]240505 240502 crash when "cat some.bin"
-## [v] 240302 4K support in Rotation
-## [v] automatically select font size equivalent to previous columns when screen rotated
-## [v] specify screen size by horizontal and vertical size (ex. 80x25) not by font size in command line option
+[v]240505 240502 crash when "cat some.bin"
+[v]240302 4K support in Rotation
+[v]240503 automatically select font size equivalent to previous columns when screen rotated
+[v]240506 specify screen size by horizontal size (ex. 80x25) not by font size in command line option
+[ ] select font expansion which has equal expansion multi in horizontal and vertical

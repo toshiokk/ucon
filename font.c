@@ -39,102 +39,106 @@ font_mul_t *cur_font_mul;
 font_exp_t cur_font_exp_, *cur_font_exp = &cur_font_exp_;
 
 ///
-#define	SQUARE_SHAPE
-#define	TALL_SHAPE
+#define SQUARE_SHAPE
+#define TALL_SHAPE
 ///
-#define	HUGE_SHAPE
+#define HUGE_SHAPE
 
 font_mul_t font_mul_table[] = {
 	{ 0, /*10,*/ 1, 1, },	//  5x10=  50
-#ifdef	TALL_SHAPE
+#ifdef TALL_SHAPE
 	{ 0, /*10,*/ 1, 2, },	//  5x20= 100
-#endif
-#ifdef	SQUARE_SHAPE
+#endif // TALL_SHAPE
+#ifdef SQUARE_SHAPE
 	{ 0, /*10,*/ 2, 1, },	// 10x10= 100
-#endif
+#endif // SQUARE_SHAPE
 	{ 0, /*10,*/ 2, 2, },	// 10x20= 200
 	{ 0, /*10,*/ 2, 3, },	// 10x30= 300
-#ifdef	TALL_SHAPE
+#ifdef TALL_SHAPE
 	{ 0, /*10,*/ 2, 4, },	// 10x40= 400
-#endif
+#endif // TALL_SHAPE
 	{ 0, /*10,*/ 3, 2, },	// 15x20= 300
 	{ 0, /*10,*/ 3, 3, },	// 15x30= 450
 	{ 0, /*10,*/ 3, 4, },	// 15x40= 600
 	{ 0, /*10,*/ 3, 5, },	// 15x50= 750
-#ifdef	TALL_SHAPE
+#ifdef TALL_SHAPE
 	{ 0, /*10,*/ 3, 6, },	// 15x60= 900
-#endif
-#ifdef	SQUARE_SHAPE
+#endif // TALL_SHAPE
+#ifdef SQUARE_SHAPE
 	{ 0, /*10,*/ 4, 2, },	// 20x20= 400
-#endif
+#endif // SQUARE_SHAPE
 	{ 0, /*10,*/ 4, 3, },	// 20x30= 600
 	{ 0, /*10,*/ 4, 4, },	// 20x40= 800
-#ifdef	HUGE_SHAPE
+#ifdef HUGE_SHAPE
 	{ 0, /*10,*/ 4, 6, },	// 20x60=1200
-#ifdef	TALL_SHAPE
+#ifdef TALL_SHAPE
 	{ 0, /*10,*/ 4, 8, },	// 20x80=1600
-#endif
-#endif
+#endif // TALL_SHAPE
+#endif // HUGE_SHAPE
 	{ 0, /*10,*/ 5, 3, },	// 25x30= 750
-#ifdef	HUGE_SHAPE
+#ifdef HUGE_SHAPE
 	{ 0, /*10,*/ 5, 5, },	// 25x50=1250
 	{ 0, /*10,*/ 5, 7, },	// 25x70=1750
+#ifdef TALL_SHAPE
 	{ 0, /*10,*/ 5, 9, },	// 25x90=2250
-	{ 0, /*10,*/ 6, 3, },	// 30x 30=900
+#endif // TALL_SHAPE
 	{ 0, /*10,*/ 6, 4, },	// 30x 40=1200
 	{ 0, /*10,*/ 6, 6, },	// 30x 60=1800
 	{ 0, /*10,*/ 6, 9, },	// 30x 90=2700
+#ifdef TALL_SHAPE
 	{ 0, /*10,*/ 6,12, },	// 30x120=3600
-#endif
+#endif // TALL_SHAPE
+#endif // HUGE_SHAPE
 //-----------------------------------------------------------------------------
 	{ 1, /*12,*/ 1, 1, },	//  6x12=  72
-#ifdef	TALL_SHAPE
+#ifdef TALL_SHAPE
 	{ 1, /*12,*/ 1, 2, },	//  6x24= 144
-#endif
-#ifdef	SQUARE_SHAPE
+#endif // TALL_SHAPE
+#ifdef SQUARE_SHAPE
 	{ 1, /*12,*/ 2, 1, },	// 12x12= 144
-#endif
+#endif // SQUARE_SHAPE
 	{ 1, /*12,*/ 2, 2, },	// 12x24= 288
 	{ 1, /*12,*/ 2, 3, },	// 12x36= 432
-#ifdef	TALL_SHAPE
+#ifdef TALL_SHAPE
 	{ 1, /*12,*/ 2, 4, },	// 12x48= 576
-#endif
+#endif // TALL_SHAPE
 	{ 1, /*12,*/ 3, 2, },	// 18x24= 432
 	{ 1, /*12,*/ 3, 3, },	// 18x36= 648
 	{ 1, /*12,*/ 3, 4, },	// 18x48= 864
-#ifdef	HUGE_SHAPE
+#ifdef HUGE_SHAPE
 	{ 1, /*12,*/ 3, 5, },	// 18x60=1080
-#ifdef	TALL_SHAPE
+#ifdef TALL_SHAPE
 	{ 1, /*12,*/ 3, 6, },	// 18x72=1296
-#endif
-#endif
+#endif // TALL_SHAPE
+#endif // HUGE_SHAPE
 	{ 1, /*12,*/ 4, 3, },	// 24x36= 864
-#ifdef	HUGE_SHAPE
+#ifdef HUGE_SHAPE
 	{ 1, /*12,*/ 4, 4, },	// 24x48=1152
 	{ 1, /*12,*/ 4, 6, },	// 24x72=1728
-#ifdef	TALL_SHAPE
+#ifdef TALL_SHAPE
 	{ 1, /*12,*/ 4, 8, },	// 24x96=2304
-#endif
-#endif
-#ifdef	HUGE_SHAPE
+#endif // TALL_SHAPE
 	{ 1, /*12,*/ 5, 3, },	// 30x 36=1080
 	{ 1, /*12,*/ 5, 5, },	// 30x 60=1800
 	{ 1, /*12,*/ 5, 7, },	// 30x 72=2160
+#ifdef TALL_SHAPE
 	{ 1, /*12,*/ 5, 9, },	// 30x108=3240
-	{ 1, /*12,*/ 6, 3, },	// 36x 36=1296
+#endif // TALL_SHAPE
 	{ 1, /*12,*/ 6, 4, },	// 36x 48=1728
 	{ 1, /*12,*/ 6, 6, },	// 36x 72=2592
 	{ 1, /*12,*/ 6, 9, },	// 36x108=3888
+#ifdef TALL_SHAPE
 	{ 1, /*12,*/ 6,12, },	// 36x144=5184
-#endif
+#endif // TALL_SHAPE
+#endif // HUGE_SHAPE
 //-----------------------------------------------------------------------------
 	{ 2, /*14,*/ 1, 1, },	//  7x14=  98
 #ifdef	TALL_SHAPE
 	{ 2, /*14,*/ 1, 2, },	//  7x28= 196
-#endif
+#endif // TALL_SHAPE
 #ifdef	SQUARE_SHAPE
 	{ 2, /*14,*/ 2, 1, },	// 14x14= 196
-#endif
+#endif // SQUARE_SHAPE
 	{ 2, /*14,*/ 2, 2, },	// 14x28= 392
 	{ 2, /*14,*/ 2, 3, },	// 14x42= 588
 	{ 2, /*14,*/ 3, 2, },	// 21x28= 588
@@ -144,41 +148,53 @@ font_mul_t font_mul_table[] = {
 	{ 2, /*14,*/ 4, 3, },	// 28x 42=1176
 	{ 2, /*14,*/ 4, 4, },	// 28x 56=1568
 	{ 2, /*14,*/ 4, 6, },	// 28x 84=2352
+#ifdef	TALL_SHAPE
 	{ 2, /*14,*/ 4, 8, },	// 28x112=3136
+#endif // TALL_SHAPE
 	{ 2, /*14,*/ 5, 3, },	// 35x 42=1470
 	{ 2, /*14,*/ 5, 4, },	// 35x 56=1960
 	{ 2, /*14,*/ 5, 5, },	// 35x 70=2450
 	{ 2, /*14,*/ 5, 7, },	// 35x 98=3430
+#ifdef	TALL_SHAPE
 	{ 2, /*14,*/ 5,10, },	// 35x140=4900
-#endif
+#endif // TALL_SHAPE
+#endif // HUGE_SHAPE
 //-----------------------------------------------------------------------------
 	{ 3, /*16,*/ 1, 1, },	//  8x16= 128
-#ifdef	SQUARE_SHAPE
-	{ 3, /*16,*/ 2, 1, },	// 16x16= 256
-#endif
-#ifdef	TALL_SHAPE
+#ifdef TALL_SHAPE
 	{ 3, /*16,*/ 1, 2, },	//  8x32= 256
-#endif
+#endif // TALL_SHAPE
+#ifdef SQUARE_SHAPE
+	{ 3, /*16,*/ 2, 1, },	// 16x16= 256
+#endif // SQUARE_SHAPE
 	{ 3, /*16,*/ 2, 2, },	// 16x32= 512
 	{ 3, /*16,*/ 2, 3, },	// 16x48= 768
-#ifdef	TALL_SHAPE
+#ifdef HUGE_SHAPE
+#ifdef TALL_SHAPE
 	{ 3, /*16,*/ 2, 4, },	// 16x64=1024
-#endif
-#ifdef	HUGE_SHAPE
+#endif // TALL_SHAPE
+#endif // HUGE_SHAPE
 	{ 3, /*16,*/ 3, 2, },	// 24x32= 768
+#ifdef HUGE_SHAPE
 	{ 3, /*16,*/ 3, 3, },	// 24x48=1152
 	{ 3, /*16,*/ 3, 4, },	// 24x64=1536
+#ifdef TALL_SHAPE
 	{ 3, /*16,*/ 3, 6, },	// 24x96=2304
+#endif // TALL_SHAPE
 	{ 3, /*16,*/ 4, 3, },	// 32x48=1536
 	{ 3, /*16,*/ 4, 4, },	// 32x64=2048
 	{ 3, /*16,*/ 4, 6, },	// 32x96=3072
+#ifdef TALL_SHAPE
 	{ 3, /*16,*/ 4, 8, },	// 32x128=4096
+#endif // TALL_SHAPE
 	{ 3, /*16,*/ 5, 3, },	// 40x 48=1920
 	{ 3, /*16,*/ 5, 4, },	// 40x 64=2560
 	{ 3, /*16,*/ 5, 5, },	// 40x 80=3200
 	{ 3, /*16,*/ 5, 7, },	// 40x118=4720
+#ifdef TALL_SHAPE
 	{ 3, /*16,*/ 5,10, },	// 40x160=6400
-#endif
+#endif // TALL_SHAPE
+#endif // HUGE_SHAPE
 };
 #define	FONT_MULTI_TABLE_ENTRIES	(sizeof(font_mul_table) / sizeof(font_mul_table[0]))
 
