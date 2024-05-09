@@ -430,7 +430,8 @@ PRIVATE int term_init(term_t *term)
 		_ERR_
 		return INIT_ERR6;
 	}
-	cur_font_mul_idx = font_select_by_height_mul_xy(app__.font_size, app__.expand_x, app__.expand_y);
+	cur_font_mul_idx = font_select_by_height_mul_xy(app__.font_size,
+	 app__.expand_x, app__.expand_y);
 	if (cur_font_mul_idx < 0) {
 		_ERR_
 		return INIT_ERR7;
@@ -538,9 +539,9 @@ PRIVATE void term_select_font_by_columns(int columns)
 {
 	if (fbr_chars_hx < columns) {
 		// columns became smaller.
-		//  select smaller font and make columns larger
+		//  select smaller(mul_x == mul_y) font and make columns larger
 		int shift = -1;
-		while (fbr_chars_hx < columns) {
+		while (fbr_chars_hx < columns || (cur_font_mul->mul_x != cur_font_mul->mul_y)) {
 			int prev_cur_font_mul_idx = cur_font_mul_idx;
 			cur_font_mul_idx = font_select_next(cur_font_mul_idx, shift);
 			if (cur_font_mul_idx == prev_cur_font_mul_idx) {
@@ -550,9 +551,9 @@ PRIVATE void term_select_font_by_columns(int columns)
 		}
 	} else {
 		// columns became bigger.
-		//  select larger font and make columns smaller
+		//  select larger(mul_x == mul_y) font and make columns smaller
 		int shift = +1;
-		while (fbr_chars_hx > columns) {
+		while (fbr_chars_hx > columns || (cur_font_mul->mul_x != cur_font_mul->mul_y)) {
 			int prev_cur_font_mul_idx = cur_font_mul_idx;
 			cur_font_mul_idx = font_select_next(cur_font_mul_idx, shift);
 			if (cur_font_mul_idx == prev_cur_font_mul_idx) {
