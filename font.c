@@ -284,23 +284,6 @@ PRIVATE int font_search_by_height_mul_xy(int font_size, int mul_x, int mul_y)
 	}
 	return -1;
 }
-/////int font_correct_selection(int font_mul_idx)
-/////{
-/////	int next_font_mul_idx;
-/////
-/////	if (font_check_selection_valid(font_mul_idx)) {
-/////		return font_mul_idx;
-/////	}
-/////	next_font_mul_idx = font_select_next(font_mul_idx, -1);
-/////	if (font_check_selection_valid(next_font_mul_idx)) {
-/////		return next_font_mul_idx;
-/////	}
-/////	next_font_mul_idx = font_select_next(font_mul_idx, +1);
-/////	if (font_check_selection_valid(next_font_mul_idx)) {
-/////		return next_font_mul_idx;
-/////	}
-/////	return 0;
-/////}
 int font_select_next(int font_mul_idx, int shift)
 {
 	int prev_font_mul_idx = font_mul_idx;
@@ -314,11 +297,6 @@ int font_select_next(int font_mul_idx, int shift)
 	}
 	return prev_font_mul_idx;
 }
-/////int font_check_selection_valid(int font_mul_idx)
-/////{
-/////	return IS_IN_RANGE(0, font_mul_idx, FONT_MULTI_TABLE_ENTRIES)
-/////	 && fonts__[font_mul_table[font_mul_idx].font_idx].glyphs > 0;
-/////}
 // setup font metrics
 void font_setup_metrics()
 {

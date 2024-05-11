@@ -2,7 +2,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ(2.59)
-AC_INIT(ucon, 240506, www.sourceforge.net)
+AC_INIT(ucon, 240511, www.sourceforge.net)
 AC_CONFIG_SRCDIR([main.c])
 AC_CONFIG_HEADER([config.h])
 

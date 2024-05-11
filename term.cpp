@@ -441,7 +441,8 @@ PRIVATE int term_init(term_t *term)
 	fbr_set_rotation(app__.contents_rotation);
 	term_setup_font_and_rotation_parameters(1);
 	if (app__.columns > 0) {
-		term_select_font_by_columns(app__.columns);
+		term_select_font_by_columns(app__.columns);	// search font from small to larger one
+		term_select_font_by_columns(app__.columns);	// search font from larger to smaller one
 	}
 	term_set_metrics_n_show(term);
 
