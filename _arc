@@ -1,4 +1,4 @@
 rm_bak
-make clean
+_dist_clean
 cd ..
 tar czvf ucon`yymmdd-hhmm`.tgz ucon/*

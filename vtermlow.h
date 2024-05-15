@@ -219,7 +219,7 @@ typedef struct vterm_ {
 	} esc_seq_parse_state;
 
 	char utf8_state;		// [0, 5]
-	wchar_t ucs21;
+	wchar_t ucs32;			// 32 bits full Unicode
 
 	/* virtual text buffer */
 	text_char_t text_buf_to_paint[MAX_TERM_LINES][MAX_TERM_COLS];
@@ -286,8 +286,8 @@ void vterm_text_clear_all(vterm_t *vterm);
 void vterm_text_clear_columns(vterm_t *vterm, u_char columns);
 void vterm_clear_in_line_mode(vterm_t *vterm, char mode);
 void vterm_clear_in_screen_mode(vterm_t *vterm, char mode);
-void vterm_put_to_buf_narrow(vterm_t *vterm, wchar_t ucs21);
-void vterm_put_to_buf_wide(vterm_t *vterm, wchar_t ucs21);
+void vterm_put_to_buf_narrow(vterm_t *vterm, wchar_t ucs32);
+void vterm_put_to_buf_wide(vterm_t *vterm, wchar_t ucs32);
 
 void vterm_text_scroll_up(vterm_t *vterm, int lines);
 void vterm_text_scroll_up_region(vterm_t *vterm, int yy1, int yy2, int lines);
@@ -306,7 +306,7 @@ int vterm_check_screen_pos(vterm_t *vterm, int *yy, int *xx);
 void vterm_save_text_buf_to_paint(vterm_t *vterm, int yy, text_char_t *text_buf);
 void vterm_restore_text_buf_to_paint(vterm_t *vterm, int yy, text_char_t *text_buf);
 
-void set_text_char_t(text_char_t *text_char, wchar_t ucs21, pen_t *pen, u_char flags);
+void set_text_char_t(text_char_t *text_char, wchar_t ucs32, pen_t *pen, u_char flags);
 void set_flags_to_text_char_t(text_char_t *text_char, u_char flags);
 void set_flags_char_to_text_char_t(text_char_t *text_char, u_char flags, wchar_t ucs21);
 

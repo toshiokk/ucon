@@ -578,7 +578,7 @@ PRIVATE void vterm_paint_char(vterm_t *vterm, int yy, int xx)
 /*---------------------------------------------------------------------------*/
 
 // 1 column (narrow) character
-void vterm_put_to_buf_narrow(vterm_t *vterm, wchar_t ucs21)
+void vterm_put_to_buf_narrow(vterm_t *vterm, wchar_t ucs32)
 {
 	int yy = vterm_pen_get_y(vterm);
 	int xx = vterm_pen_get_x(vterm);
@@ -605,11 +605,11 @@ void vterm_put_to_buf_narrow(vterm_t *vterm, wchar_t ucs21)
 		 FLAG_NARROW_CHAR, UCS21_SPACE);
 	}
 #endif // CHECK_AND_CORRECT_INCONSISTENCY
-	set_text_char_t(&(vterm->text_buf_to_paint[yy][xx]), ucs21, &(vterm->pen), FLAG_NARROW_CHAR);
+	set_text_char_t(&(vterm->text_buf_to_paint[yy][xx]), ucs32, &(vterm->pen), FLAG_NARROW_CHAR);
 }
 
 // 2 columns (wide) character
-void vterm_put_to_buf_wide(vterm_t *vterm, wchar_t ucs21)
+void vterm_put_to_buf_wide(vterm_t *vterm, wchar_t ucs32)
 {
 	int yy = vterm_pen_get_y(vterm);
 	int xx = vterm_pen_get_x(vterm);
@@ -634,8 +634,8 @@ void vterm_put_to_buf_wide(vterm_t *vterm, wchar_t ucs21)
 		 FLAG_NARROW_CHAR, UCS21_SPACE);
 	}
 #endif // CHECK_AND_CORRECT_INCONSISTENCY
-	set_text_char_t(&(vterm->text_buf_to_paint[yy][xx+0]), ucs21, &(vterm->pen), FLAG_WIDE_CHAR_1);
-	set_text_char_t(&(vterm->text_buf_to_paint[yy][xx+1]), ucs21, &(vterm->pen), FLAG_WIDE_CHAR_2);
+	set_text_char_t(&(vterm->text_buf_to_paint[yy][xx+0]), ucs32, &(vterm->pen), FLAG_WIDE_CHAR_1);
+	set_text_char_t(&(vterm->text_buf_to_paint[yy][xx+1]), ucs32, &(vterm->pen), FLAG_WIDE_CHAR_2);
 }
 
 /**
@@ -959,11 +959,11 @@ PRIVATE void vterm_copy_text_buf_line(text_char_t *dest, text_char_t *src)
 	memmove(dest, src, sizeof(text_char_t) * MAX_TERM_COLS);
 }
 //-----------------------------------------------------------------------------
-void set_text_char_t(text_char_t *text_char, wchar_t ucs21, pen_t *pen, u_char flags)
+void set_text_char_t(text_char_t *text_char, wchar_t ucs32, pen_t *pen, u_char flags)
 {
 	text_char->bfc_flags_ucs21 =
 	 ((BFC_FROM_BC_FC(pen_get_bgc_idx(pen), pen_get_fgc_idx(pen)) << 24)  & TEXT_CHAR_T_BFC)
-	  | ((flags << 16) & TEXT_CHAR_T_FLAGS) | (ucs21 & TEXT_CHAR_T_UCS21);
+	  | ((flags << 16) & TEXT_CHAR_T_FLAGS) | MIN_MAX(0x000000, ucs32, TEXT_CHAR_T_UCS21);
 	text_char->bc_rgb = pen_get_bc_rgb(pen);
 	text_char->fc_rgb = pen_get_fc_rgb(pen);
 }

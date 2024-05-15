@@ -34,7 +34,7 @@
 PRIVATE int vterm_iso_C0_set(vterm_t *vterm, u_char chr);
 PRIVATE void vterm_reset_utf8_state(vterm_t *vterm);
 PRIVATE int vterm_parse_utf8_seq(vterm_t *vterm, u_char chr);
-PRIVATE void vterm_put_ucs21_char(vterm_t *vterm, wchar_t ucs21);
+PRIVATE void vterm_put_ucs32_char(vterm_t *vterm, wchar_t ucs32);
 PRIVATE void vterm_wrap_pen_pos(vterm_t *vterm, int width);
 
 PRIVATE void vterm_parse_func_esc(vterm_t *vterm, u_char chr);
@@ -70,7 +70,7 @@ PRIVATE int get_csi_arg_idx(void);
 PRIVATE int parse_csi_args(vterm_t *vterm, u_char chr);
 PRIVATE int get_csi_arg(int arg_idx);
 
-PRIVATE wchar_t subst_dec_sp_gr_char(wchar_t ucs21);
+PRIVATE wchar_t subst_dec_sp_gr_ucs32(wchar_t ucs21);
 
 #ifdef ENABLE_DEBUG
 PRIVATE void dump_csi_args(char chr);
@@ -176,7 +176,7 @@ int vterm_emulate_char(vterm_t *vterm, u_char chr)
 			vterm_reset_utf8_state(vterm);
 		} else {
 			if (vterm_parse_utf8_seq(vterm, chr) == 0) {
-				vterm_put_ucs21_char(vterm, vterm->ucs21);
+				vterm_put_ucs32_char(vterm, vterm->ucs32);
 			}
 		}
 		break;
@@ -275,7 +275,7 @@ PRIVATE int vterm_iso_C0_set(vterm_t *vterm, u_char chr)
 PRIVATE void vterm_reset_utf8_state(vterm_t *vterm)
 {
 	vterm->utf8_state = 0;
-	vterm->ucs21 = 0x0000;
+	vterm->ucs32 = 0x0000;
 }
 PRIVATE int vterm_parse_utf8_seq(vterm_t *vterm, u_char chr)
 {
@@ -285,17 +285,17 @@ PRIVATE int vterm_parse_utf8_seq(vterm_t *vterm, u_char chr)
 			dump_parsed_str();
 			vterm_reset_utf8_state(vterm);
 		}
-		vterm->ucs21 = chr;
-		// ASCII char, send ucs21
+		vterm->ucs32 = chr;
+		// ASCII char, send ucs32
 	} else if ((chr & 0xc0) == 0x80) {	// 10xxxxxx
 		if (vterm->utf8_state == 0) {
 			warn_printf("illegal UTF-8 sequence(%02x but not in UTF8 state: %d)\n", chr, vterm->utf8_state);
 			dump_parsed_str();
-			vterm->ucs21 = chr;
+			vterm->ucs32 = chr;
 		} else {
-			vterm->ucs21 = (vterm->ucs21 << 6) | (chr & 0x3f);
+			vterm->ucs32 = (vterm->ucs32 << 6) | (chr & 0x3f);
 			vterm->utf8_state--;
-			// end of UTF-8 sequence, send ucs21
+			// end of UTF-8 sequence, send ucs32
 		}
 	} else if ((chr & 0xc0) == 0xc0) {	// 11xxxxxx
 		if (vterm->utf8_state) {
@@ -304,38 +304,38 @@ PRIVATE int vterm_parse_utf8_seq(vterm_t *vterm, u_char chr)
 		}
 		if ((chr & 0xe0) == 0xc0) {	// 110xxxxx 10xxxxxx
 			vterm->utf8_state = 1;
-			vterm->ucs21 = (chr & 0x1f);
+			vterm->ucs32 = (chr & 0x1f);
 		} else if ((chr & 0xf0) == 0xe0) {	// 1110xxxx 10xxxxxx 10xxxxxx
 			vterm->utf8_state = 2;
-			vterm->ucs21 = (chr & 0x0f);
+			vterm->ucs32 = (chr & 0x0f);
 		} else if ((chr & 0xf8) == 0xf0) {	// 11110xxx 10xxxxxx 10xxxxxx 10xxxxxx
 			vterm->utf8_state = 3;
-			vterm->ucs21 = (chr & 0x07);
+			vterm->ucs32 = (chr & 0x07);
 		} else if ((chr & 0xfc) == 0xf8) {	// 111110xx 10xxxxxx 10xxxxxx 10xxxxxx 10xxxxxx
 			vterm->utf8_state = 4;
-			vterm->ucs21 = (chr & 0x03);
+			vterm->ucs32 = (chr & 0x03);
 		} else if ((chr & 0xfe) == 0xfc) {	// 1111110x 10xxxxxx 10xxxxxx 10xxxxxx 10xxxxxx 10xxxxxx
 			vterm->utf8_state = 5;
-			vterm->ucs21 = (chr & 0x01);
+			vterm->ucs32 = (chr & 0x01);
 		} else {							// 1111111x
 			vterm_reset_utf8_state(vterm);
-			vterm->ucs21 = chr;				// [0xfe, 0xff]
+			vterm->ucs32 = chr;				// [0xfe, 0xff]
 		}
 	}
 	return vterm->utf8_state;
 }
 
-PRIVATE void vterm_put_ucs21_char(vterm_t *vterm, wchar_t ucs21)
+PRIVATE void vterm_put_ucs32_char(vterm_t *vterm, wchar_t ucs32)
 {
 	int width_in_pixels;
 	int width;
 
 	if (vterm->dec_sp_gr) {
 		// substitute to graphic character
-		ucs21 = subst_dec_sp_gr_char(ucs21);
+		ucs32 = subst_dec_sp_gr_ucs32(ucs32);
 	}
 	// get font width from font
-	width_in_pixels = font_get_glyph_width_in_pixels(cur_font, ucs21);
+	width_in_pixels = font_get_glyph_width_in_pixels(cur_font, ucs32);
 	if (width_in_pixels <= cur_font->width)
 		width = 1;
 	else
@@ -350,9 +350,9 @@ _FLF_
 		vterm_insert_n_columns(vterm, width);
 	}
 	if (width == 1) {
-		vterm_put_to_buf_narrow(vterm, ucs21);
+		vterm_put_to_buf_narrow(vterm, ucs32);
 	} else {
-		vterm_put_to_buf_wide(vterm, ucs21);
+		vterm_put_to_buf_wide(vterm, ucs32);
 	}
 	vterm_pen_move_yx(vterm, 0, width);
 ///flf_d_printf("pen(%d, %d)\n", vterm->pen.xx, vterm->pen.yy);
@@ -1083,29 +1083,29 @@ char *dec_sp_gr_utf8[DEC_SP_GR_CHARS] = {
 	"£", //  }
 	"·", //  ~
 };
-wchar_t dec_sp_gr_ucs21[DEC_SP_GR_CHARS];
+wchar_t dec_sp_gr_ucs32[DEC_SP_GR_CHARS];
 
-PRIVATE void make_ucs21_tbl_for_dec_sp_gr(void)
+PRIVATE void make_ucs32_tbl_for_dec_sp_gr(void)
 {
 	static char converted = 0;
-	wchar_t ucs21;
+	wchar_t ucs32;
 
 	if (converted == 0) {
 		for (int idx = 0; idx < DEC_SP_GR_CHARS; idx++) {
 #define MAX_UTF8C_BYTES			4
-			mbtowc(&ucs21, dec_sp_gr_utf8[idx], MAX_UTF8C_BYTES);
-			dec_sp_gr_ucs21[idx] = ucs21;
+			mbtowc(&ucs32, dec_sp_gr_utf8[idx], MAX_UTF8C_BYTES);
+			dec_sp_gr_ucs32[idx] = ucs32;
 		}
 	}
 	converted = 1;
 }
-PRIVATE wchar_t subst_dec_sp_gr_char(wchar_t ucs21)
+PRIVATE wchar_t subst_dec_sp_gr_ucs32(wchar_t ucs32)
 {
-	make_ucs21_tbl_for_dec_sp_gr();
-	if (DEC_SP_GR_CHAR_BEGIN <= ucs21 && ucs21 <= DEC_SP_GR_CHAR_END) {
-		return dec_sp_gr_ucs21[ucs21 - DEC_SP_GR_CHAR_BEGIN];
+	make_ucs32_tbl_for_dec_sp_gr();
+	if (DEC_SP_GR_CHAR_BEGIN <= ucs32 && ucs32 <= DEC_SP_GR_CHAR_END) {
+		return dec_sp_gr_ucs32[ucs32 - DEC_SP_GR_CHAR_BEGIN];
 	}
-	return ucs21;	// No substitution
+	return ucs32;	// No substitution
 }
 //-----------------------------------------------------------------------------
 
