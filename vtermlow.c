@@ -570,6 +570,7 @@ PRIVATE void vterm_paint_char(vterm_t *vterm, int yy, int xx)
 	font_get_glyph_bitmap(cur_font, ucs21, NULL, &found);
 	if (found == 0) {
 		bfc_idx ^= COLOR_UNKNOWN_GLYPH;
+		fc_rgb = rgb15_from_color_idx(COLOR_UNKNOWN_GLYPH);
 	}
 	fb__.driver->bpp_paint_char_box(xx, yy, ucs21, wide,
 	 BC_FROM_BFC(bfc_idx), FC_FROM_BFC(bfc_idx), bc_rgb, fc_rgb);

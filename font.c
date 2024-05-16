@@ -413,22 +413,24 @@ int font_destroy(font_t *font)
 }
 
 const u_short *font_get_glyph_bitmap(font_t *font, wchar_t ucs21,
- int *width_in_pixels, int *found)
+ int *width_in_pixels, int *found_)
 {
 	ucs21 = LIM_MAX_(MAX_GLYPHS-1, ucs21);	// [0 -- MAX_GLYPHS-1]
 	const u_short *glyph;
+	int found = 1;
 	int width = font_get_glyph_width_in_pixels(font, ucs21);
 	if (width) {
 		glyph = font->glyph_bitmap[ucs21];
 	} else {
 		width = font_get_undefined_glyph_width(font, ucs21);
 		glyph = font_get_undefined_glyph_bitmap(font, ucs21);
+		found = 0;
 	}
 	if (width_in_pixels) {
 		*width_in_pixels = width;
 	}
-	if (found) {
-		*found = width;
+	if (found_) {
+		*found_ = found;
 	}
 	return glyph;
 }

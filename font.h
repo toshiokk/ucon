@@ -82,7 +82,7 @@ int font_count_glyphs(font_t *font);
 int font_destroy(font_t *font);
 
 const u_short *font_get_glyph_bitmap(font_t *font, wchar_t ucs21,
- int *width_in_pixels, int *found);
+ int *width_in_pixels, int *found_);
 const int font_get_glyph_width_in_pixels(font_t *font, wchar_t ucs21);
 
 const u_short *font_set_glyph(wchar_t ucs21, u_char offset_x);
