@@ -1,5 +1,7 @@
 # UCON TODO list
 
+[v]240622 reintroduce fonts (contain wide signs and shogi fonts)
+[v]240621 get unknown character's width from adjacent characters from (ucs & 0xffe0) to (ucs | 0x001f)
 [v]240517 fix to be shown unknown glyph in BLUE
 [v]240515 handle properly UCS32 larger than 0xffff(limit UCS21 larger than or equal to 0x10000 to 0xffff)
 [v]240505 240502 crash when "cat some.bin"

@@ -209,12 +209,12 @@ distuninstallcheck_listfiles = find . -type f -print
 am__distuninstallcheck_listfiles = $(distuninstallcheck_listfiles) \
   | sed 's|^\./|$(prefix)/|' | grep -v '$(infodir)/dir$$'
 distcleancheck_listfiles = find . -type f -print
-ACLOCAL = ${SHELL} '/home/user/tools/ucon/ucon/missing' aclocal-1.16
+ACLOCAL = ${SHELL} '/media/user/c58b22f5-f5e4-401b-8420-5caa33606a10/home/user/tools/ucon/ucon/missing' aclocal-1.16
 AMTAR = $${TAR-tar}
 AM_DEFAULT_VERBOSITY = 1
-AUTOCONF = ${SHELL} '/home/user/tools/ucon/ucon/missing' autoconf
-AUTOHEADER = ${SHELL} '/home/user/tools/ucon/ucon/missing' autoheader
-AUTOMAKE = ${SHELL} '/home/user/tools/ucon/ucon/missing' automake-1.16
+AUTOCONF = ${SHELL} '/media/user/c58b22f5-f5e4-401b-8420-5caa33606a10/home/user/tools/ucon/ucon/missing' autoconf
+AUTOHEADER = ${SHELL} '/media/user/c58b22f5-f5e4-401b-8420-5caa33606a10/home/user/tools/ucon/ucon/missing' autoheader
+AUTOMAKE = ${SHELL} '/media/user/c58b22f5-f5e4-401b-8420-5caa33606a10/home/user/tools/ucon/ucon/missing' automake-1.16
 AWK = mawk
 CC = gcc
 CCDEPMODE = depmode=gcc3
@@ -246,7 +246,7 @@ LIBOBJS =
 LIBS = -lutil 
 LN_S = ln -s
 LTLIBOBJS = 
-MAKEINFO = ${SHELL} '/home/user/tools/ucon/ucon/missing' makeinfo
+MAKEINFO = ${SHELL} '/media/user/c58b22f5-f5e4-401b-8420-5caa33606a10/home/user/tools/ucon/ucon/missing' makeinfo
 MKDIR_P = /usr/bin/mkdir -p
 OBJEXT = o
 PACKAGE = ucon
@@ -262,10 +262,10 @@ SET_MAKE =
 SHELL = /bin/bash
 STRIP = 
 VERSION = 240511
-abs_builddir = /home/user/tools/ucon/ucon
-abs_srcdir = /home/user/tools/ucon/ucon
-abs_top_builddir = /home/user/tools/ucon/ucon
-abs_top_srcdir = /home/user/tools/ucon/ucon
+abs_builddir = /media/user/c58b22f5-f5e4-401b-8420-5caa33606a10/home/user/tools/ucon/ucon
+abs_srcdir = /media/user/c58b22f5-f5e4-401b-8420-5caa33606a10/home/user/tools/ucon/ucon
+abs_top_builddir = /media/user/c58b22f5-f5e4-401b-8420-5caa33606a10/home/user/tools/ucon/ucon
+abs_top_srcdir = /media/user/c58b22f5-f5e4-401b-8420-5caa33606a10/home/user/tools/ucon/ucon
 ac_ct_CC = gcc
 ac_ct_CXX = g++
 am__include = include
@@ -293,7 +293,7 @@ host_vendor = pc
 htmldir = ${docdir}
 includedir = ${prefix}/include
 infodir = ${datarootdir}/info
-install_sh = ${SHELL} /home/user/tools/ucon/ucon/install-sh
+install_sh = ${SHELL} /media/user/c58b22f5-f5e4-401b-8420-5caa33606a10/home/user/tools/ucon/ucon/install-sh
 libdir = ${exec_prefix}/lib
 libexecdir = ${exec_prefix}/libexec
 localedir = ${datarootdir}/locale
@@ -924,6 +924,8 @@ install-data-local:
 	$(INSTALL_DATA) $(srcdir)/fonts/ucon12.hex.gz $(DESTDIR)$(bindir)
 	$(INSTALL_DATA) $(srcdir)/fonts/ucon14.hex.gz $(DESTDIR)$(bindir)
 	$(INSTALL_DATA) $(srcdir)/fonts/ucon16.hex.gz $(DESTDIR)$(bindir)
+
+install-dic:
 	mkdir -p $(HOME)/.imj
 	$(INSTALL_DATA) im/imj.dic $(HOME)/.imj
 	echo "USER: $(USER)"

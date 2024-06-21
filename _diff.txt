@@ -1,93 +1,53 @@
-meld ../../be/be/myutf8.h ../../ucon/ucon/myutf8.h
-22,27d21
+kdiff3 ../old/ucon/config.h config.h #==================================================
+kdiff3 ../old/ucon/fbbpp.h fbbpp.h #==================================================
+kdiff3 ../old/ucon/fbcommon.h fbcommon.h #==================================================
+kdiff3 ../old/ucon/font.h font.h #==================================================
+kdiff3 ../old/ucon/hex.h hex.h #==================================================
+kdiff3 ../old/ucon/main.h main.h #==================================================
+kdiff3 ../old/ucon/message.h message.h #==================================================
+kdiff3 ../old/ucon/mydebug.h mydebug.h #==================================================
+kdiff3 ../old/ucon/myminmax.h myminmax.h #==================================================
+kdiff3 ../old/ucon/myselect.h myselect.h #==================================================
+kdiff3 ../old/ucon/mytypes.h mytypes.h #==================================================
+kdiff3 ../old/ucon/pen.h pen.h #==================================================
+kdiff3 ../old/ucon/picofont.h picofont.h #==================================================
+kdiff3 ../old/ucon/sequence.h sequence.h #==================================================
+kdiff3 ../old/ucon/stdincs.h stdincs.h #==================================================
+kdiff3 ../old/ucon/term.h term.h #==================================================
+kdiff3 ../old/ucon/ucon.h ucon.h #==================================================
+kdiff3 ../old/ucon/util.h util.h #==================================================
+kdiff3 ../old/ucon/vterm.h vterm.h #==================================================
+kdiff3 ../old/ucon/vtermlow.h vtermlow.h #==================================================
+kdiff3 ../old/ucon/fbbpp.c fbbpp.c #==================================================
+kdiff3 ../old/ucon/fbcommon.c fbcommon.c #==================================================
+kdiff3 ../old/ucon/font.c font.c #==================================================
+kdiff3 ../old/ucon/hex.c hex.c #==================================================
+kdiff3 ../old/ucon/main.c main.c #==================================================
+kdiff3 ../old/ucon/message.c message.c #==================================================
+kdiff3 ../old/ucon/myminmax.c myminmax.c #==================================================
+kdiff3 ../old/ucon/myselect.c myselect.c #==================================================
+kdiff3 ../old/ucon/pen.c pen.c #==================================================
+kdiff3 ../old/ucon/picofont.c picofont.c #==================================================
+kdiff3 ../old/ucon/term.cpp term.cpp #==================================================
+kdiff3 ../old/ucon/util.c util.c #==================================================
+kdiff3 ../old/ucon/vterm.c vterm.c #==================================================
+153,154d152
+< 	u_char chr;
 < 
-< #define VAGUE_WIDE_CHR	// treat characters which width(narrow/wide) is vague as to be wide
-< #ifdef VAGUE_WIDE_CHR
-< int is_vague_wide_chr(wchar_t wc);
-< #endif // VAGUE_WIDE_CHR
-< 
-meld ../../be/be/myutf8.c ../../ucon/ucon/myutf8.c
-8c8
-< #define WIDE_CHARS		(20 + 12 + 14 + 1)
+159c157,160
+< ///mflf_d_printf("%d: %s\n", bytes, dump_string_to_static_buf(string, bytes));
 ---
-> #define	WIDE_CHARS		(12 + 20 + 14 + 1)
-9a10
->  "■", "□", "◆", "◇", "○", "◎", "●", "★", "☆", "☐", "☑", "☒",
-12d12
-<  "■", "□", "◆", "◇", "○", "◎", "●", "★", "☆", "☐", "☑", "☒",
-48d47
-< #ifndef VAGUE_WIDE_CHR
-50,53d48
-< #else // VAGUE_WIDE_CHR
-< 	wchar_t wc = my_mbtowc(utf8c, max_len);
-< 	return is_vague_wide_chr(wc) ? 2 : my_wcwidth(wc);
-< #endif // VAGUE_WIDE_CHR
-62a58,60
-> ///	if (wc == 0x0000) {		// U+0000
-> ///		return 0;
-> ///	}
-75,87d72
-< #ifdef VAGUE_WIDE_CHR
-< int is_vague_wide_chr(wchar_t wc)
-< {
-< 	return 0
-< 	// WIDE_CHAR_LIST
-< 	 || (0x2000 <= wc && wc < 0x2800)
-< 	 || (0x2900 <= wc && wc < 0x33e0)
-< 	 || (0xa000 <= wc && wc < 0xac00)
-< 	 || (0xe000 <= wc && wc < 0xf900)
-< 	;
-< }
-< #endif // VAGUE_WIDE_CHR
-< 
-108a94,96
-> #if 0
-> 	return mbtowc(pwc, utf8c, max_len);
-> #else
-114,115c102,103
-< 	if ((utf8c[0] & 0x80) == 0x00) {	// 0xxxxxxx
-< 		wc = utf8c[0] & 0x7f;			// 0xxxxxxx
+> #ifdef ENABLE_DEBUG
+> ///
+> mflf_d_printf("%d:\n %s\n", bytes, dump_string_to_static_buf(string, bytes));
+> #endif // ENABLE_DEBUG
+161,162c162,166
+< 		chr = *(string++);
+< ///mflf_d_printf("%02x[%c]\n", chr, isgraph(chr) ? chr : '.');
 ---
-> 	if ((utf8c[0] & 0x80) == 0x00) {		// 0xxxxxxx
-> 		wc = utf8c[0] & 0x7f;				// 0xxxxxxx
-118,119c106,107
-< 	if ((utf8c[0] & 0xe0) == 0xc0) {	// 110xxxxx-10xxxxxx
-< 		wc = utf8c[0] & 0x1f;			// 110xxxxx
----
-> 	if ((utf8c[0] & 0xe0) == 0xc0) {		// 110xxxxx-10xxxxxx
-> 		wc = utf8c[0] & 0x1f;				// 110xxxxx
-122,123c110,111
-< 	if ((utf8c[0] & 0xf0) == 0xe0) {	// 1110xxxx-10xxxxxx-10xxxxxx
-< 		wc = utf8c[0] & 0x0f;			// 1110xxxx
----
-> 	if ((utf8c[0] & 0xf0) == 0xe0) {		// 1110xxxx-10xxxxxx-10xxxxxx
-> 		wc = utf8c[0] & 0x0f;				// 1110xxxx
-126,127c114,115
-< 	if ((utf8c[0] & 0xf8) == 0xf0) {	// 11110xxx-10xxxxxx-10xxxxxx-10xxxxxx
-< 		wc = utf8c[0] & 0x07;			// 11110xxx
----
-> 	if ((utf8c[0] & 0xf8) == 0xf0) {		// 11110xxx-10xxxxxx-10xxxxxx-10xxxxxx
-> 		wc = utf8c[0] & 0x07;				// 11110xxx
-130,131c118,119
-< 	if ((utf8c[0] & 0xfc) == 0xf8) {	// 111110xx-10xxxxxx-10xxxxxx-10xxxxxx-10xxxxxx
-< 		wc = utf8c[0] & 0x03;			// 111110xx
----
-> 	if ((utf8c[0] & 0xfc) == 0xf8) {		// 111110xx-10xxxxxx-10xxxxxx-10xxxxxx-10xxxxxx
-> 		wc = utf8c[0] & 0x03;				// 111110xx
-134,135c122,123
-< 	if ((utf8c[0] & 0xfe) == 0xfc) {	// 1111110x-10xxxxxx-10xxxxxx-10xxxxxx-10xxxxxx-10xxxxxx
-< 		wc = utf8c[0] & 0x01;			// 1111110x
----
-> 	if ((utf8c[0] & 0xfe) == 0xfc) {		// 1111110x-10xxxxxx-10xxxxxx-10xxxxxx-10xxxxxx-10xxxxxx
-> 		wc = utf8c[0] & 0x01;				// 1111110x
-142c130
-< 			break;		// UTF8 sequence trancated !!
----
-> 			break;
-145d132
-< 	len = idx;
-147c134,135
-< 	return len;		// return length
----
-> 	return len;
-> #endif
+> 		u_char chr = *(string++);
+> #ifdef ENABLE_DEBUG
+> ///
+> mflf_d_printf("(%d, %d)%02x[%c]\n", vterm_pen_get_y(vterm), vterm_pen_get_x(vterm), chr, isgraph(chr) ? chr : '.');
+> #endif // ENABLE_DEBUG
+kdiff3 ../old/ucon/vtermlow.c vtermlow.c #==================================================

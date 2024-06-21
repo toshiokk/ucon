@@ -263,6 +263,7 @@ int font_get_undefined_glyph_width(font_t *font, wchar_t ucs21)
 {
 	int columns;
 
+#define UNDEFINED_FONT_WIDTH	2
 #ifdef UNDEFINED_FONT_WIDTH
 	columns = UNDEFINED_FONT_WIDTH;
 #else

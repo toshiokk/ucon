@@ -1,0 +1,810 @@
+/*
+ * UCON -
+ * Copyright (C) 1999 Noritoshi Masuichi (nmasu@ma3.justnet.ne.jp)
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions
+ * are met:
+ * 1. Redistributions of source code must retain the above copyright
+ *      notice, this list of conditions and the following disclaimer.
+ * 2. Redistributions in binary form must reproduce the above copyright
+ *      notice, this list of conditions and the following disclaimer in the
+ *      documentation and/or other materials provided with the distribution.
+ *
+ * THIS SOFTWARE IS PROVIDED BY NORITOSHI MASUICHI ``AS IS'' AND ANY
+ * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED.  IN NO EVENT SHALL NORITOSHI MASUICHI BE LIABLE
+ * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+ * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
+ * OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+ * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+ * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
+ * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+ * SUCH DAMAGE.
+ *
+ */
+
+#include "ucon.h"
+
+// global variables for speed reasons =========================================
+
+u_char *fb_start;
+u_int32 fb_mem_size;
+u_char *fb_end;
+
+u_char fb_bytes_per_pixel;
+u_char *fb_top_left; 		// FB address of top_left  (Ex. 0, 0)
+u_char *fb_top_right;		// FB address of top_right (Ex. 639, 0)
+u_char *fb_bottom_left;		// FB address of bottom_left  (Ex. 479, 0)
+u_char *fb_bottom_right;	// FB address of bottom_right (Ex. 479, 639)
+ssize_t fb_bytes_inc_px;
+ssize_t fb_bytes_inc_py;
+
+ushort fbr_screen_size_hx;		// 640/480...3840/1920
+ushort fbr_screen_size_hy;		// 480/640...1920/3840
+
+ssize_t fbr_bytes_inc_dot_px;
+ssize_t fbr_bytes_inc_dot_py;
+// Example when FontX:6, FontX:12, Multi-X: 2, Multi-Y: 3
+u_char fb_font_size_hx;			// 6
+u_char fb_font_size_hy;			// 12
+u_char fb_font_mul_hx;			// 2
+u_char fb_font_mul_hy;			// 3
+u_char fb_font_exp_size_hx;		// 12 (6 x 2)
+u_char fb_font_exp_size_hy;		// 36 (12 x 3)
+
+// Example when Depth: 32bits, X:640, Y:480, FontX:6, FontX:12, Multi-X: 2, Multi-Y: 3
+u_char fbr_font_mul_px;			// 2|3
+u_char fbr_font_mul_py;			// 3|2
+u_char fbr_font_size_px;		// 2|3
+u_char fbr_font_size_py;		// 3|2
+u_char fbr_font_exp_size_px;	// 2|3
+u_char fbr_font_exp_size_py;	// 3|2
+u_short fbr_chars_hx;			// 80 / 60
+u_short fbr_chars_hy;			// 25 / 40
+
+u_char *fbr_origin;				// FB address of view origin
+ssize_t fbr_bytes_inc_hx;		// 4 | 2560
+ssize_t fbr_bytes_inc_hy;		// 2560 | 4
+// font size and rotation dependent parameters (updated on change of rotation)
+ssize_t fbr_bytes_inc_dot_hx;	// 4 | 8 | 12 | 2560|5120|10240
+ssize_t fbr_bytes_inc_dot_hy;	// 2560|5120|10240 | 4|8|12
+ssize_t fbr_bytes_inc_font_hx;	// 4 | 0 | 2560 | 0
+ssize_t fbr_bytes_inc_font_hy;	// 0 | 4 | 0 | 2560
+// parameters for fast FB address calculation
+ssize_t fbr_bytes_per_char_hx;	// 32 | -2560 | -32 | 2560
+u_short fbr_char_off_hx;		// 0 | (60-1) | (80-1) | 0
+ssize_t fbr_bytes_per_char_hy;	// 2560 | 64 | -2560 | -64
+u_short fbr_char_off_hy;		// 0 | 0 | (25-1) | (40-1)
+// parameters for glyph x-y conversion
+char fbr_fx_from_px;				// 1 | 0
+char fbr_fx_from_py;				// 0 | 1
+u_char fbr_fx_offset;				// 0 | 7
+char fbr_fy_from_px;				// 0 | 1
+char fbr_fy_from_py;				// 1 | 0
+u_char fbr_fy_offset;				// 0 | 15
+
+//-----------------------------------------------------------------------------
+#ifdef ENABLE_8BPP
+PRIVATE void fb_8bpp_clear_all(c_idx_t color_idx, rgb15_t rgb15);
+PRIVATE void fb_8bpp_fill_char_box(u_short xx, u_short yy, u_char chr_width_1_2,
+ c_idx_t color_idx, rgb15_t rgb15);
+PRIVATE void fb_8bpp_reverse_char_box(u_short xx, u_short yy, u_char chr_width_1_2,
+ c_idx_t color_idx, rgb15_t rgb15);
+PRIVATE void fb_8bpp_paint_char_box(u_short xx, u_short yy, u_char chr_width_1_2,
+ const u_short *font, c_idx_t bc_idx, c_idx_t fc_idx, rgb15_t bc_rgb15, rgb15_t fc_rgb15);
+#ifdef ENABLE_SCREEN_SHOT
+PRIVATE argb32_t fb_8bpp_get_pixel_argb32(u_short xx, u_short yy);
+PRIVATE void fb_8bpp_reverse_all(void);
+#endif // ENABLE_SCREEN_SHOT
+#endif // ENABLE_8BPP
+
+#ifdef ENABLE_15BPP
+PRIVATE void fb_15bpp_clear_all(c_idx_t color_idx, rgb15_t rgb15);
+PRIVATE void fb_15bpp_fill_char_box(u_short xx, u_short yy, u_char chr_width_1_2,
+ c_idx_t color_idx, rgb15_t rgb15);
+PRIVATE void fb_15bpp_reverse_char_box(u_short xx, u_short yy, u_char chr_width_1_2,
+ c_idx_t color_idx, rgb15_t rgb15);
+PRIVATE void fb_15bpp_paint_char_box(u_short xx, u_short yy, u_char chr_width_1_2,
+ const u_short *font, c_idx_t bc_idx, c_idx_t fc_idx, rgb15_t bc_rgb15, rgb15_t fc_rgb15);
+#ifdef ENABLE_SCREEN_SHOT
+PRIVATE argb32_t fb_15bpp_get_pixel_argb32(u_short xx, u_short yy);
+PRIVATE void fb_15bpp_reverse_all(void);
+#endif // ENABLE_SCREEN_SHOT
+#endif // ENABLE_15BPP
+
+#ifdef ENABLE_16BPP
+PRIVATE void fb_16bpp_clear_all(c_idx_t color_idx, rgb15_t rgb15);
+PRIVATE void fb_16bpp_fill_char_box(u_short xx, u_short yy, u_char chr_width_1_2,
+ c_idx_t color_idx, rgb15_t rgb15);
+PRIVATE void fb_16bpp_reverse_char_box(u_short xx, u_short yy, u_char chr_width_1_2,
+ c_idx_t color_idx, rgb15_t rgb15);
+PRIVATE void fb_16bpp_paint_char_box(u_short xx, u_short yy, u_char chr_width_1_2,
+ const u_short *font, c_idx_t bc_idx, c_idx_t fc_idx, rgb15_t bc_rgb15, rgb15_t fc_rgb15);
+#ifdef ENABLE_SCREEN_SHOT
+PRIVATE argb32_t fb_16bpp_get_pixel_argb32(u_short xx, u_short yy);
+PRIVATE void fb_16bpp_reverse_all(void);
+#endif // ENABLE_SCREEN_SHOT
+#endif // ENABLE_16BPP
+
+#if defined(ENABLE_15BPP) || defined(ENABLE_16BPP)
+PRIVATE void fb_15_16bpp_clear_all(u_short rgb);
+PRIVATE void fb_15_16bpp_fill_char_box(u_short xx, u_short yy, u_char chr_width_1_2,
+ rgb16_t rgb16);
+PRIVATE void fb_15_16bpp_reverse_char_box(u_short xx, u_short yy, u_char chr_width_1_2,
+ rgb16_t rgb16);
+PRIVATE void fb_15_16bpp_paint_char_box(u_short xx, u_short yy, u_char chr_width_1_2,
+ const u_short *font, rgb16_t bc_rgb16, rgb16_t fc_rgb16);
+#ifdef ENABLE_SCREEN_SHOT
+PRIVATE u_short fb_15_16bpp_get_pixel_rgb16(int xx, int yy);
+PRIVATE void fb_15_16bpp_reverse_all(rgb16_t rgb16);
+#endif // ENABLE_SCREEN_SHOT
+#endif /* defined(ENABLE_15BPP) || defined(ENABLE_16BPP) */
+
+#ifdef ENABLE_24BPP
+PRIVATE void fb_24bpp_clear_all(c_idx_t color_idx, rgb15_t rgb15);
+PRIVATE void fb_24bpp_fill_char_box(u_short xx, u_short yy, u_char chr_width_1_2,
+ c_idx_t color_idx, rgb15_t rgb15);
+PRIVATE void fb_24bpp_reverse_char_box(u_short xx, u_short yy, u_char chr_width_1_2,
+ c_idx_t color_idx, rgb15_t rgb15);
+PRIVATE void fb_24bpp_paint_char_box(u_short xx, u_short yy, u_char chr_width_1_2,
+ const u_short *font, c_idx_t bc_idx, c_idx_t fc_idx, rgb15_t bc_rgb15, rgb15_t fc_rgb15);
+#ifdef ENABLE_SCREEN_SHOT
+PRIVATE argb32_t fb_24bpp_get_pixel_argb32(u_short xx, u_short yy);
+PRIVATE void fb_24bpp_reverse_all(void);
+#endif // ENABLE_SCREEN_SHOT
+#endif // ENABLE_24BPP
+
+#ifdef ENABLE_32BPP
+PRIVATE void fb_32bpp_clear_all(c_idx_t color_idx, rgb15_t rgb15);
+PRIVATE void fb_32bpp_fill_char_box(u_short xx, u_short yy, u_char chr_width_1_2,
+ c_idx_t color_idx, rgb15_t rgb15);
+PRIVATE void fb_32bpp_reverse_char_box(u_short xx, u_short yy, u_char chr_width_1_2,
+ c_idx_t color_idx, rgb15_t rgb15);
+PRIVATE void fb_32bpp_paint_char_box(u_short cx, u_short cy, wchar_t ucs21, bool wide,
+ c_idx_t bc_idx, c_idx_t fc_idx, rgb15_t bc_rgb15, rgb15_t fc_rgb15);
+PRIVATE void fb_32bpp_paint_char(u_short cx, u_short cy, wchar_t ucs21, bool wide,
+ c_idx_t bc_idx, c_idx_t fc_idx, rgb15_t bc_rgb15, rgb15_t fc_rgb15);
+PRIVATE u_char *calc_fba_of_char_top_left(u_short cx, u_short cy);
+
+#ifdef ENABLE_SCREEN_SHOT
+PRIVATE argb32_t fb_32bpp_get_pixel_argb32(u_short xx, u_short yy);
+PRIVATE void fb_32bpp_reverse_all(void);
+#endif // ENABLE_SCREEN_SHOT
+#endif // ENABLE_32BPP
+
+//-----------------------------------------------------------------------------
+
+fb_driver_t fb_drivers[] = {
+#if defined(ENABLE_8BPP)
+	{
+		8, FB_VISUAL_PSEUDOCOLOR,
+		fb_8bpp_clear_all,
+		fb_8bpp_fill_char_box,
+		fb_8bpp_reverse_char_box,
+		fb_8bpp_paint_char_box,
+#ifdef ENABLE_SCREEN_SHOT
+		fb_8bpp_get_pixel_argb32,
+		fb_8bpp_reverse_all,
+#endif // ENABLE_SCREEN_SHOT
+	},
+#endif // ENABLE_8BPP
+#if defined(ENABLE_15BPP)
+	{
+		15, FB_VISUAL_TRUECOLOR,
+		fb_15bpp_clear_all,
+		fb_15bpp_fill_char_box,
+		fb_15bpp_reverse_char_box,
+		fb_15bpp_paint_char_box,
+#ifdef ENABLE_SCREEN_SHOT
+		fb_15bpp_get_pixel_argb32,
+		fb_15bpp_reverse_all,
+#endif // ENABLE_SCREEN_SHOT
+	},
+#endif // ENABLE_15BPP
+#if defined(ENABLE_16BPP)
+	{
+		16, FB_VISUAL_DIRECTCOLOR,
+		fb_16bpp_clear_all,
+		fb_16bpp_fill_char_box,
+		fb_16bpp_reverse_char_box,
+		fb_16bpp_paint_char_box,
+#ifdef ENABLE_SCREEN_SHOT
+		fb_16bpp_get_pixel_argb32,
+		fb_16bpp_reverse_all,
+#endif // ENABLE_SCREEN_SHOT
+	},
+#endif // ENABLE_16BPP
+#if defined(ENABLE_24BPP)
+	{
+		24, FB_VISUAL_TRUECOLOR,
+		fb_24bpp_clear_all,
+		fb_24bpp_fill_char_box,
+		fb_24bpp_reverse_char_box,
+		fb_24bpp_paint_char_box,
+#ifdef ENABLE_SCREEN_SHOT
+		fb_24bpp_get_pixel_argb32,
+		fb_24bpp_reverse_all,
+#endif // ENABLE_SCREEN_SHOT
+	},
+#endif // ENABLE_24BPP
+#if defined(ENABLE_32BPP)
+	{
+		32, FB_VISUAL_TRUECOLOR,
+		fb_32bpp_clear_all,
+		fb_32bpp_fill_char_box,
+		fb_32bpp_reverse_char_box,
+		fb_32bpp_paint_char_box,
+#ifdef ENABLE_SCREEN_SHOT
+		fb_32bpp_get_pixel_argb32,
+		fb_32bpp_reverse_all,
+#endif // ENABLE_SCREEN_SHOT
+	},
+#endif // ENABLE_32BPP
+	{
+		0, 0,		// end mark
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+	}
+};
+
+// Workaround for i810/815/845/855 Framebuffer bitmap corruption
+///TTT#define I810_FB_DUMMY_ACCESS
+
+#ifdef ENABLE_8BPP
+PRIVATE cpal8_t pallete_idx_from_color_idx(u_char color_idx)
+{
+	cpal8_t cpal8;
+
+	// swap bit 2 and 0
+	cpal8 = (color_idx & 0x0a)
+	 | ((color_idx & 0x01) << 2)	// bit 0 ==> bit 2
+	 | ((color_idx & 0x04) >> 2);	// bit 2 ==> bit 0
+	return cpal8;
+}
+#ifdef ENABLE_SCREEN_SHOT
+PRIVATE u_char color_idx_from_pallete_idx(cpal8_t cpal8)
+{
+	u_char color_idx;
+
+	// swap bit 2 and 0
+	color_idx = (cpal8 & 0x0a)
+	 | ((cpal8 & 0x01) << 2)	// bit 0 ==> bit 2
+	 | ((cpal8 & 0x04) >> 2);	// bit 2 ==> bit 0
+	return color_idx;
+}
+#endif // ENABLE_SCREEN_SHOT
+/* 8 bpp */
+PRIVATE void fb_8bpp_clear_all(c_idx_t color_idx, rgb15_t rgb15)
+{
+	cpal8_t cpal8 = pallete_idx_from_color_idx(color_idx);	//=
+	memset(fb_start, cpal8, fb_mem_size);					//=bpp_clear_all
+}
+PRIVATE void fb_8bpp_fill_char_box(u_short xx, u_short yy, u_char chr_width_1_2,
+ c_idx_t color_idx, rgb15_t rgb15)
+{
+	cpal8_t cpal8 = pallete_idx_from_color_idx(color_idx);	//=
+
+	u_char *fb_left = fbr_origin + fbr_bytes_inc_font_hy * yy + fbr_bytes_inc_font_hx * xx;
+	u_char glyph_exp_width = fb_font_exp_size_hx * chr_width_1_2;
+	for (u_char fy = 0; fy < fb_font_exp_size_hy; fy++) {
+
+
+		memset(fb_left, cpal8, fb_font_exp_size_hx);			//=bpp_fill_char_box
+
+
+		fb_left += fbr_bytes_inc_hy;
+	}
+}
+PRIVATE void fb_8bpp_reverse_char_box(u_short xx, u_short yy, u_char chr_width_1_2,
+ c_idx_t color_idx, rgb15_t rgb15)
+{
+	cpal8_t cpal8 = pallete_idx_from_color_idx(color_idx);	//=
+
+	u_char *fb_left = fbr_origin + fbr_bytes_inc_font_hy * yy + fbr_bytes_inc_font_hx * xx;
+	u_char glyph_exp_width = fb_font_exp_size_hx * chr_width_1_2;
+	for (u_char fy = 0; fy < fb_font_exp_size_hy; fy++) {
+		u_char *fb = fb_left;
+		for (u_char fx = 0; fx < glyph_exp_width; fx++) {
+			*(cpal8_t*)fb ^= cpal8;										//=bpp_reverse_char_box
+			fb += fbr_bytes_inc_hx;
+		}
+		fb_left += fbr_bytes_inc_hy;
+	}
+#ifdef I810_FB_DUMMY_ACCESS
+	fb_left = fbr_origin + fbr_bytes_inc_font_hy * yy + fbr_bytes_inc_font_hx * xx;
+	for (u_char fy = 0; fy < fb_font_exp_size_hy; fy++) {
+		*(volatile cpal8_t*)fb_left = *(volatile cpal8_t*)fb_left;		//=
+		fb_left += fbr_bytes_inc_hy;
+	}
+#endif // I810_FB_DUMMY_ACCESS
+}
+PRIVATE void fb_8bpp_paint_char_box(u_short xx, u_short yy, u_char chr_width_1_2,
+ const u_short *font, c_idx_t bc_idx, c_idx_t fc_idx, rgb15_t bc_rgb15, rgb15_t fc_rgb15)
+{
+	cpal8_t bcpal8 = pallete_idx_from_color_idx(bc_idx);	//=
+	cpal8_t fcpal8 = pallete_idx_from_color_idx(fc_idx);	//=
+
+	u_char *fb_y_in_chr = fbr_origin + fbr_bytes_inc_font_hy * yy + fbr_bytes_inc_font_hx * xx;
+	u_char glyph_width = fb_font_size_hx * chr_width_1_2;
+	for (u_char fy = 0; fy < fb_font_size_hy; fy++) {
+		u_char *fb_x_in_chr = fb_y_in_chr;
+		u_char f_byte = 0xff;
+		u_char f_bit = 0x80;
+		for (u_char fx = 0; fx < glyph_width; fx++) {
+			u_char *fb_y_in_dot = fb_x_in_chr;
+			if ((fx % 8) == 0) {
+				f_byte = *font++;
+				f_bit = 0x80;
+			}
+			cpal8_t cpal8 = (f_byte & f_bit) ? fcpal8 : bcpal8;								//=
+			for (u_char mul_y = 0; mul_y < fb_font_mul_hy; mul_y++) {
+				u_char *fb = fb_y_in_dot;
+				for (u_char mul_x = 0; mul_x < fb_font_mul_hx; mul_x++) {
+					*(cpal8_t *)fb = cpal8;				//=bpp_paint_char_box
+					fb += fbr_bytes_inc_hx;
+				}
+				fb_y_in_dot += fbr_bytes_inc_hy;
+			}
+			f_bit >>= 1;
+			fb_x_in_chr += fbr_bytes_inc_dot_hx;
+		}
+		fb_y_in_chr += fbr_bytes_inc_dot_hy;
+	}
+}
+
+#ifdef ENABLE_SCREEN_SHOT
+PRIVATE argb32_t fb_8bpp_get_pixel_argb32(u_short xx, u_short yy)
+{
+	u_char *fb = fb_start + yy * fbb_bytes_per_line + xx * sizeof(u_char);
+	return argb32_from_color_idx(color_idx_from_pallete_idx(*fb));
+}
+PRIVATE void fb_8bpp_reverse_all(void)
+{
+	for (u_char *fb = fb_start; fb < fb_end; fb += fb_bytes_per_pixel) {
+		*fb = *fb ^ 0x0f;									//=_reverse_all
+	}
+}
+#endif // ENABLE_SCREEN_SHOT
+#endif // ENABLE_8BPP
+
+#if defined(ENABLE_15BPP)
+/* 15 bpp */
+PRIVATE void fb_15bpp_clear_all(c_idx_t color_idx, rgb15_t rgb15)
+{
+	fb_15_16bpp_clear_all(rgb15);
+}
+PRIVATE void fb_15bpp_fill_char_box(u_short xx, u_short yy, u_char chr_width_1_2,
+ c_idx_t color_idx, rgb15_t rgb15)
+{
+	fb_15_16bpp_fill_char_box(xx, yy, chr_width_1_2, rgb15);
+}
+PRIVATE void fb_15bpp_reverse_char_box(u_short xx, u_short yy, u_char chr_width_1_2,
+ c_idx_t color_idx, rgb15_t rgb15)
+{
+	fb_15_16bpp_reverse_char_box(xx, yy, chr_width_1_2, rgb15);
+}
+PRIVATE void fb_15bpp_paint_char_box(u_short xx, u_short yy, u_char chr_width_1_2,
+ const u_short *font, c_idx_t bc_idx, c_idx_t fc_idx, rgb15_t bc_rgb15, rgb15_t fc_rgb15)
+{
+	fb_15_16bpp_paint_char_box(xx, yy, chr_width_1_2, font, bc_rgb15, fc_rgb15);
+}
+
+#ifdef ENABLE_SCREEN_SHOT
+PRIVATE argb32_t fb_15bpp_get_pixel_argb32(u_short xx, u_short yy)
+{
+	rgb15_t rgb15 = fb_15_16bpp_get_pixel_rgb16(xx, yy);
+	return argb32_from_rgb15(rgb15);
+}
+PRIVATE void fb_15bpp_reverse_all(void)
+{
+	fb_15_16bpp_reverse_all(0x7fff);	// 0rrrrrgggggbbbbb
+}
+#endif // ENABLE_SCREEN_SHOT
+#endif // ENABLE_15BPP
+
+#if defined(ENABLE_16BPP)
+/* 16 bpp */
+PRIVATE void fb_16bpp_clear_all(c_idx_t color_idx, rgb15_t rgb15)
+{
+	fb_15_16bpp_clear_all(rgb16_from_rgb15(rgb15));
+}
+PRIVATE void fb_16bpp_fill_char_box(u_short xx, u_short yy, u_char chr_width_1_2,
+ c_idx_t color_idx, rgb15_t rgb15)
+{
+	fb_15_16bpp_fill_char_box(xx, yy, chr_width_1_2, rgb16_from_rgb15(rgb15));
+}
+PRIVATE void fb_16bpp_reverse_char_box(u_short xx, u_short yy, u_char chr_width_1_2,
+ c_idx_t color_idx, rgb15_t rgb15)
+{
+	fb_15_16bpp_reverse_char_box(xx, yy, chr_width_1_2, rgb16_from_rgb15(rgb15));
+}
+PRIVATE void fb_16bpp_paint_char_box(u_short xx, u_short yy, u_char chr_width_1_2,
+ const u_short *font, c_idx_t bc_idx, c_idx_t fc_idx, rgb15_t bc_rgb15, rgb15_t fc_rgb15)
+{
+	rgb16_t bc_rgb16 = rgb16_from_rgb15(bc_rgb15);
+	rgb16_t fc_rgb16 = rgb16_from_rgb15(fc_rgb15);
+	fb_15_16bpp_paint_char_box(xx, yy, chr_width_1_2, font, bc_rgb16, fc_rgb16);
+}
+
+#ifdef ENABLE_SCREEN_SHOT
+PRIVATE argb32_t fb_16bpp_get_pixel_argb32(u_short xx, u_short yy)
+{
+	rgb16_t rgb16 = fb_15_16bpp_get_pixel_rgb16(xx, yy);
+	return argb32_from_rgb16(rgb16);
+}
+PRIVATE void fb_16bpp_reverse_all(void)
+{
+	fb_15_16bpp_reverse_all(0xffff);	// rrrrrggggggbbbbb
+}
+#endif // ENABLE_SCREEN_SHOT
+#endif // ENABLE_16BPP
+
+#if defined(ENABLE_15BPP) || defined(ENABLE_16BPP)
+/* 15 bpp / 16 bpp */
+PRIVATE void fb_15_16bpp_clear_all(rgb16_t rgb16)
+{
+	for (u_char *fb = fb_start; fb < fb_end; fb += fb_bytes_per_pixel) {
+		*(rgb16_t*)fb = rgb16;								//=bpp_clear_all
+	}
+}
+PRIVATE void fb_15_16bpp_fill_char_box(u_short xx, u_short yy, u_char chr_width_1_2,
+ rgb16_t rgb16)
+{
+	u_char *fb_left = fbr_origin + fbr_bytes_inc_font_hy * yy + fbr_bytes_inc_font_hx * xx;
+	u_char glyph_exp_width = fb_font_exp_size_hx * chr_width_1_2;
+	for (u_char fy = 0; fy < fb_font_exp_size_hy; fy++) {
+		u_char *fb = fb_left;
+		for (u_char fx = 0; fx < glyph_exp_width; fx++) {
+			*(rgb16_t*)fb = rgb16;							//=bpp_fill_char_box
+			fb += fbr_bytes_inc_hx;
+		}
+		fb_left += fbr_bytes_inc_hy;
+	}
+}
+PRIVATE void fb_15_16bpp_reverse_char_box(u_short xx, u_short yy, u_char chr_width_1_2,
+ rgb16_t rgb16)
+{
+	u_char *fb_left = fbr_origin + fbr_bytes_inc_font_hy * yy + fbr_bytes_inc_font_hx * xx;
+	u_char glyph_exp_width = fb_font_exp_size_hx * chr_width_1_2;
+	for (u_char fy = 0; fy < fb_font_exp_size_hy; fy++) {
+		u_char *fb = fb_left;
+		for (u_char fx = 0; fx < glyph_exp_width; fx++) {
+			*(rgb16_t*)fb ^= rgb16;										//=bpp_reverse_char_box
+			fb += fbr_bytes_inc_hx;
+		}
+		fb_left += fbr_bytes_inc_hy;
+	}
+#ifdef I810_FB_DUMMY_ACCESS
+	fb_left = fbr_origin + fbr_bytes_inc_font_hy * yy + fbr_bytes_inc_font_hx * xx;
+	for (u_char fy = 0; fy < fb_font_exp_size_hy; fy++) {
+		*(volatile rgb16_t*)fb_left = *(volatile rgb16_t*)fb_left;		//=
+		fb_left += fbr_bytes_inc_hy;
+	}
+#endif // I810_FB_DUMMY_ACCESS
+}
+PRIVATE void fb_15_16bpp_paint_char_box(u_short xx, u_short yy, u_char chr_width_1_2,
+ const u_short *font, rgb16_t bc_rgb16, rgb16_t fc_rgb16)
+{
+	u_char *fb_y_in_chr = fbr_origin + fbr_bytes_inc_font_hy * yy + fbr_bytes_inc_font_hx * xx;
+	u_char glyph_width = fb_font_size_hx * chr_width_1_2;
+	for (u_char fy = 0; fy < fb_font_size_hy; fy++) {
+		u_char *fb_x_in_chr = fb_y_in_chr;
+		u_char f_byte = 0xff;
+		u_char f_bit = 0x80;
+		for (u_char fx = 0; fx < glyph_width; fx++) {
+			u_char *fb_y_in_dot = fb_x_in_chr;
+			if ((fx % 8) == 0) {
+				f_byte = *font++;
+				f_bit = 0x80;
+			}
+			rgb16_t rgb16 = (f_byte & f_bit) ? fc_rgb16 : bc_rgb16;							//=
+			for (u_char mul_y = 0; mul_y < fb_font_mul_hy; mul_y++) {
+				u_char *fb = fb_y_in_dot;
+				for (u_char mul_x = 0; mul_x < fb_font_mul_hx; mul_x++) {
+					*(rgb16_t*)fb = rgb16;				//=bpp_paint_char_box
+					fb += fbr_bytes_inc_hx;
+				}
+				fb_y_in_dot += fbr_bytes_inc_hy;
+			}
+			f_bit >>= 1;
+			fb_x_in_chr += fbr_bytes_inc_dot_hx;
+		}
+		fb_y_in_chr += fbr_bytes_inc_dot_hy;
+	}
+}
+
+#ifdef ENABLE_SCREEN_SHOT
+PRIVATE u_short fb_15_16bpp_get_pixel_rgb16(int xx, int yy)
+{
+	u_char *fb_left = fbr_origin + fbr_bytes_inc_font_hy * yy + fbr_bytes_inc_font_hx * xx;
+	u_short rgb16 = *(rgb16_t*)fb;
+	return (((rgb16 >> 10) & 0x1f) << 16) + (((rgb16 >> 5) & 0x1f) << 8) + rgb16 & 0x1f;
+}
+PRIVATE void fb_15_16bpp_reverse_all(rgb16_t rgb16)
+{
+	for (u_char *fb = fb_start; fb < fb_end; fb += fb_bytes_per_pixel) {
+		*(rgb16_t*)fb ^= rgb16;								//=_reverse_all
+	}
+}
+#endif // ENABLE_SCREEN_SHOT
+#endif /* defined(ENABLE_15BPP) || defined(ENABLE_16BPP) */
+
+#ifdef ENABLE_24BPP
+#warning "ENABLE_24BPP"
+/* 24 bpp */
+PRIVATE void fb_24bpp_clear_all(c_idx_t color_idx, rgb15_t rgb15)
+{
+	rgb24_t rgb24;  rgb24_from_rgb15(rgb15, &rgb24);		//=
+
+	for (u_char *fb = fb_start; fb < fb_end; fb += fb_bytes_per_pixel) {
+		memcpy(fb, &rgb24, sizeof(rgb24_t));				//=bpp_clear_all
+	}
+}
+PRIVATE void fb_24bpp_fill_char_box(u_short xx, u_short yy, u_char chr_width_1_2,
+ c_idx_t color_idx, rgb15_t rgb15)
+{
+	rgb24_t rgb24;  rgb24_from_rgb15(rgb15, &rgb24);		//=
+
+	u_char *fb_left = fbr_origin + fbr_bytes_inc_font_hy * yy + fbr_bytes_inc_font_hx * xx;
+	u_char glyph_exp_width = fb_font_exp_size_hx * chr_width_1_2;
+	for (u_char fy = 0; fy < fb_font_exp_size_hy; fy++) {
+		u_char *fb = fb_left;
+		for (u_char fx = 0; fx < glyph_exp_width; fx++) {
+			memcpy(fb, &rgb24, sizeof(rgb24_t));			//=bpp_fill_char_box
+			fb += fbr_bytes_inc_hx;
+		}
+		fb_left += fbr_bytes_inc_hy;
+	}
+}
+PRIVATE void fb_24bpp_reverse_char_box(u_short xx, u_short yy, u_char chr_width_1_2,
+ c_idx_t color_idx, rgb15_t rgb15)
+{
+	rgb24_t rgb24;  rgb24_from_rgb15(rgb15, &rgb24);		//=
+
+	u_char *fb_left = fbr_origin + fbr_bytes_inc_font_hy * yy + fbr_bytes_inc_font_hx * xx;
+	u_char glyph_exp_width = fb_font_exp_size_hx * chr_width_1_2;
+	for (u_char fy = 0; fy < fb_font_exp_size_hy; fy++) {
+		u_char *fb = fb_left;
+		for (u_char fx = 0; fx < glyph_exp_width; fx++) {
+			fb[0] ^= rgb24[0];  fb[1] ^= rgb24[1];  fb[2] ^= rgb24[2];	//=bpp_reverse_char_box
+			fb += fbr_bytes_inc_hx;
+		}
+		fb_left += fbr_bytes_inc_hy;
+	}
+#ifdef I810_FB_DUMMY_ACCESS
+	fb_left = fbr_origin + fbr_bytes_inc_font_hy * yy + fbr_bytes_inc_font_hx * xx;
+	for (u_char fy = 0; fy < fb_font_exp_size_hy; fy++) {
+		memcpy(fb_left, fb_left, sizeof(rgb24_t));						//=
+		fb_left += fbr_bytes_inc_hy;
+	}
+#endif // I810_FB_DUMMY_ACCESS
+}
+PRIVATE void fb_24bpp_paint_char_box(u_short xx, u_short yy, u_char chr_width_1_2,
+ const u_short *font, c_idx_t bc_idx, c_idx_t fc_idx, rgb15_t bc_rgb15, rgb15_t fc_rgb15)
+{
+	rgb24_t bc24;  rgb24_from_rgb15(bc_rgb15, &bc24);		//=
+	rgb24_t fc24;  rgb24_from_rgb15(fc_rgb15, &fc24);		//=
+
+	u_char *fb_y_in_chr = fbr_origin + fbr_bytes_inc_font_hy * yy + fbr_bytes_inc_font_hx * xx;
+	u_char glyph_width = fb_font_size_hx * chr_width_1_2;
+	for (u_char fy = 0; fy < fb_font_size_hy; fy++) {
+		u_char *fb_x_in_chr = fb_y_in_chr;
+		u_char f_byte = 0xff;
+		u_char f_bit = 0x80;
+		for (u_char fx = 0; fx < glyph_width; fx++) {
+			u_char *fb_y_in_dot = fb_x_in_chr;
+			if ((fx % 8) == 0) {
+				f_byte = *font++;
+				f_bit = 0x80;
+			}
+			rgb24_t c24; memcpy(&c24, (f_byte & f_bit) ? &fc24 : &bc24, sizeof(rgb24_t));	//=
+			for (u_char mul_y = 0; mul_y < fb_font_mul_hy; mul_y++) {
+				u_char *fb = fb_y_in_dot;
+				for (u_char mul_x = 0; mul_x < fb_font_mul_hx; mul_x++) {
+					memcpy(fb, &c24, sizeof(rgb24_t));	//=bpp_paint_char_box
+					fb += fbr_bytes_inc_hx;
+				}
+				fb_y_in_dot += fbr_bytes_inc_hy;
+			}
+			f_bit >>= 1;
+			fb_x_in_chr += fbr_bytes_inc_dot_hx;
+		}
+		fb_y_in_chr += fbr_bytes_inc_dot_hy;
+	}
+}
+
+#ifdef ENABLE_SCREEN_SHOT
+PRIVATE argb32_t fb_24bpp_get_pixel_argb32(u_short xx, u_short yy)
+{
+	u_char *fb = fb_start + yy * fbr_bytes_inc_hy + xx * fbr_bytes_inc_hx;
+	argb32_t argb32 = ((argb32_t)fb[2] << 16) + ((argb32_t)fb[1] << 8) + fb[0];
+	return argb32;		// rrrrrrrrggggggggbbbbbbbb
+}
+PRIVATE void fb_24bpp_reverse_all(void)
+{
+	for (u_char *fb = fb_start; fb < fb_end; fb += fb_bytes_per_pixel) {
+		fb[0] = ~fb[0];  fb[1] = ~fb[1];  fb[2] = ~fb[2];	//=_reverse_all
+	}
+}
+#endif // ENABLE_SCREEN_SHOT
+#endif // ENABLE_24BPP
+
+#ifdef ENABLE_32BPP
+/* 32 bpp */
+PRIVATE void fb_32bpp_clear_all(c_idx_t color_idx, rgb15_t rgb15)
+{
+flf_d_printf("%p - %p = %d\n", fb_start, fb_end, fb_end - fb_start);
+	argb32_t argb32 = argb32_from_rgb15(rgb15);				//=
+
+	///PPP
+	for (u_char *fb = fb_start; fb < fb_end; fb += fb_bytes_per_pixel) {
+	///DDD	for (u_char *fb = fb_end - fb_bytes_per_pixel; fb >= fb_start; fb -= fb_bytes_per_pixel) {
+		*(argb32_t*)fb = argb32;							//=bpp_clear_all
+	}
+flf_d_printf("%p - %p\n", fb_start, fb_end);
+}
+PRIVATE void fb_32bpp_fill_char_box(u_short xx, u_short yy, u_char chr_width_1_2,
+ c_idx_t color_idx, rgb15_t rgb15)
+{
+	argb32_t argb32 = argb32_from_rgb15(rgb15);				//=
+
+	u_char *fb_left = fbr_origin + fbr_bytes_inc_font_hy * yy + fbr_bytes_inc_font_hx * xx;
+	u_char glyph_exp_width = fb_font_exp_size_hx * chr_width_1_2;
+	for (u_char fy = 0; fy < fb_font_exp_size_hy; fy++) {
+		u_char *fb = fb_left;
+		for (u_char fx = 0; fx < glyph_exp_width; fx++) {
+			*(argb32_t*)fb = argb32;						//=bpp_fill_char_box
+			fb += fbr_bytes_inc_hx;
+		}
+		fb_left += fbr_bytes_inc_hy;
+	}
+}
+PRIVATE void fb_32bpp_reverse_char_box(u_short xx, u_short yy, u_char chr_width_1_2,
+ c_idx_t color_idx, rgb15_t rgb15)
+{
+	argb32_t argb32 = argb32_from_rgb15(rgb15);				//=
+
+	u_char *fb_left = fbr_origin + fbr_bytes_inc_font_hy * yy + fbr_bytes_inc_font_hx * xx;
+	u_char glyph_exp_width = fb_font_exp_size_hx * chr_width_1_2;
+	for (u_char fy = 0; fy < fb_font_exp_size_hy; fy++) {
+		u_char *fb = fb_left;
+		for (u_char fx = 0; fx < glyph_exp_width; fx++) {
+			*(argb32_t*)fb ^= argb32;									//=bpp_reverse_char_box
+			fb += fbr_bytes_inc_hx;
+		}
+		fb_left += fbr_bytes_inc_hy;
+	}
+#ifdef I810_FB_DUMMY_ACCESS
+	fb_left = fbr_origin + fbr_bytes_inc_font_hy * yy + fbr_bytes_inc_font_hx * xx;
+	for (u_char fy = 0; fy < fb_font_exp_size_hy; fy++) {
+		*(volatile argb32_t*)fb_left = *(volatile argb32_t*)fb_left;	//=
+		fb_left += fbr_bytes_inc_hy;
+	}
+#endif // I810_FB_DUMMY_ACCESS
+}
+PRIVATE void fb_32bpp_paint_char_box(u_short cx, u_short cy, wchar_t ucs21, bool wide,
+ c_idx_t bc_idx, c_idx_t fc_idx, rgb15_t bc_rgb15, rgb15_t fc_rgb15)
+{
+	if (ucs21 == 0x0000) {
+		return;
+	}
+	fb_32bpp_paint_char(cx, cy, ucs21, 0, bc_idx, fc_idx, bc_rgb15, fc_rgb15);
+	if (wide) {
+		fb_32bpp_paint_char(cx+1, cy, ucs21, 1, bc_idx, fc_idx, bc_rgb15, fc_rgb15);
+	}
+}
+
+// chx: charactor human x
+// chy: charactor human y
+// fpx: font physical x
+// fpx: font physical y
+// ppx: pixel physical y
+// ppx: pixel physical y
+
+PRIVATE void fb_32bpp_paint_char(u_short chx, u_short chy, wchar_t ucs21, bool wide,
+ c_idx_t bc_idx, c_idx_t fc_idx, rgb15_t bc_rgb15, rgb15_t fc_rgb15)
+{
+	font_set_glyph(ucs21, fb_font_size_hx * wide);
+	argb32_t bc_argb32 = argb32_from_rgb15(bc_rgb15);		//=
+	argb32_t fc_argb32 = argb32_from_rgb15(fc_rgb15);		//=
+
+	// paint character in address order
+	u_char *fba_chr_y = calc_fba_of_char_top_left(chx, chy);
+/////int pix = (fba_chr_y - fb_start) / fb__.bytes_per_pixel;
+/////flf_d_printf("pix%d: y%d, x%d, %d,%d\n", pix, pix / fb__.screen_size_x, pix % fb__.screen_size_x,
+///// (pix / fb__.screen_size_x) % cur_font_mul->mul_y, (pix % fb__.screen_size_x) % cur_font_mul->mul_x);
+	for (u_char fpy = 0; fpy < fbr_font_size_py; fpy++) {
+		u_char *fba_chr_x = fba_chr_y;
+		for (u_char fpx = 0; fpx < fbr_font_size_px; fpx++) {
+			u_char fx = fbr_fx_from_px * (fpx - fbr_fx_offset)
+			 + fbr_fx_from_py * (fpy - fbr_fx_offset);
+			u_char fy = fbr_fy_from_px * (fpx - fbr_fy_offset)
+			 + fbr_fy_from_py * (fpy - fbr_fy_offset);
+/////flf_d_printf("pfy %2d, pfx %2d,  fy %2d, fx %2d\n", fpy, fpx, fy, fx);
+			argb32_t argb32 = font_get_glyph_pixel(fx, fy) ? fc_argb32 : bc_argb32;	//=
+			u_char *fba_dot_y = fba_chr_x;
+			for (int ppy = 0; ppy < fbr_font_mul_py; ppy++) {
+				u_char *fba_dot_x = fba_dot_y;
+				for (int ppx = 0; ppx < fbr_font_mul_px; ppx++) {
+/////int pix = (fba_dot_x - fb_start) / fb__.bytes_per_pixel;
+/////flf_d_printf("pix%d: y%d, x%d, %d,%d\n", pix, pix / fb__.screen_size_x, pix % fb__.screen_size_x,
+///// (pix / fb__.screen_size_x) % cur_font_mul->mul_y, (pix % fb__.screen_size_x) % cur_font_mul->mul_x);
+					*(argb32_t*)fba_dot_x = argb32;			//=bpp_paint_char_box
+					fba_dot_x += fb_bytes_inc_px;
+				}
+				fba_dot_y += fb_bytes_inc_py;
+			}
+			fba_chr_x += fbr_bytes_inc_dot_px;
+		}
+		fba_chr_y += fbr_bytes_inc_dot_py;
+	}
+}
+
+void test_calc_fba_of_char_top_left()
+{
+flf_d_printf("fbr_bytes_per_char_hx: %d\n", fbr_bytes_per_char_hx);
+flf_d_printf("fbr_char_off_hx: %d\n", fbr_char_off_hx);
+flf_d_printf("fbr_bytes_per_char_hy: %d\n", fbr_bytes_per_char_hy);
+flf_d_printf("fbr_char_off_hy: %d\n", fbr_char_off_hy);
+	flf_d_printf("%d\n", fb_mem_size);
+
+	u_char *fba;
+	u_short chx = 0; u_short chy = 0;
+	fba = calc_fba_of_char_top_left(chx, chy);
+	flf_d_printf("[%d, %d], %d\n", chx, chy, fba - fb_start);
+	chx = 0; chy = fbr_chars_hy-1;
+	fba = calc_fba_of_char_top_left(chx, chy);
+	flf_d_printf("[%d, %d], %d\n", chx, chy, fba - fb_start);
+	chx = fbr_chars_hx-1; chy = 0;
+	fba = calc_fba_of_char_top_left(chx, chy);
+	flf_d_printf("[%d, %d], %d\n", chx, chy, fba - fb_start);
+	chx = fbr_chars_hx-1; chy = fbr_chars_hy-1;
+	fba = calc_fba_of_char_top_left(chx, chy);
+	flf_d_printf("[%d, %d], %d\n", chx, chy, fba - fb_start);
+}
+// calculate FB address of top-left of character
+PRIVATE u_char *calc_fba_of_char_top_left(u_short chx, u_short chy)
+{
+	return fb_start
+	 + fbr_bytes_per_char_hx * (chx - fbr_char_off_hx)
+	 + fbr_bytes_per_char_hy * (chy - fbr_char_off_hy)
+	;
+}
+
+#ifdef ENABLE_SCREEN_SHOT
+PRIVATE argb32_t fb_32bpp_get_pixel_argb32(u_short xx, u_short yy)
+{
+	u_char *fb = fb_start + yy * fbr_bytes_inc_hy + xx * fbr_bytes_inc_hx;
+	argb32_t argb32 = *(argb32_t*)fb;
+	return argb32;		// 00000000rrrrrrrrggggggggbbbbbbbb
+}
+PRIVATE void fb_32bpp_reverse_all(void)
+{
+	for (u_char *fb = fb_start; fb < fb_end; fb += fb_bytes_per_pixel) {
+		*(argb32_t*)fb ^= 0x00ffffff;						//=_reverse_all
+	}
+}
+#endif // ENABLE_SCREEN_SHOT
+#endif // ENABLE_32BPP
+
+// chx: Charactor x in Human view
+// chy: Charactor y in Human view
+// px: x in Physical view
+// py: y in Physical view
+// hx: x in Human view
+// hy: y in Human view
+
+// glyph_rotation: 0      1        2      3
+//           *---+  *-----+  *---+  *-----+
+//           | # |  | ####|  |# #|  |#### |
+//           |# #|  |# #  |  |# #|  |  # #|
+//           |###|  | ####|  |###|  |#### |
+//           |# #|  +-----+  |# #|  +-----+
+//           |# #|           | # |         
+//           +---+           +---+         
+
+// End of fbbpp.c

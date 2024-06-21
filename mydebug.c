@@ -320,12 +320,17 @@ unsigned long get_cur_abs_msec(void)
 
 const char *dump_string_to_static_buf(const char *string, int bytes)
 {
-#define	DUMP_STRING_BUF_LEN		(256*3)
+#define	DUMP_STRING_BUF_LEN		(2*256*3)
 	static char buffer[DUMP_STRING_BUF_LEN+1];
 	const char *str;
 	char buf[3+1];
 
 	strcpy(buffer, "");
+	for (str = string; (str - string < bytes) && *str; str++) {
+		snprintf(buf, 3+1, "%c  ", isprint(*(unsigned char *)str) ? *(unsigned char *)str : '~');
+		strlcat__(buffer, buf, DUMP_STRING_BUF_LEN);
+	}
+	strlcat__(buffer, "\n", DUMP_STRING_BUF_LEN);
 	for (str = string; (str - string < bytes) && *str; str++) {
 		snprintf(buf, 3+1, "%02x ", *(unsigned char *)str);
 		strlcat__(buffer, buf, DUMP_STRING_BUF_LEN);

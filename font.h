@@ -84,6 +84,10 @@ int font_destroy(font_t *font);
 const u_short *font_get_glyph_bitmap(font_t *font, wchar_t ucs21,
  int *width_in_pixels, int *found_);
 const int font_get_glyph_width_in_pixels(font_t *font, wchar_t ucs21);
+#define GET_ADJACENT_FONT_WIDTH
+#ifdef GET_ADJACENT_FONT_WIDTH
+const int font_get_adjacent_glyph_width_in_pixels(font_t *font, wchar_t ucs21);
+#endif // GET_ADJACENT_FONT_WIDTH
 
 const u_short *font_set_glyph(wchar_t ucs21, u_char offset_x);
 bool font_get_glyph_pixel(u_char fx, u_char fy);

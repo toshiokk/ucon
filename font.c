@@ -418,13 +418,20 @@ const u_short *font_get_glyph_bitmap(font_t *font, wchar_t ucs21,
 	ucs21 = LIM_MAX_(MAX_GLYPHS-1, ucs21);	// [0 -- MAX_GLYPHS-1]
 	const u_short *glyph;
 	int found = 1;
-	int width = font_get_glyph_width_in_pixels(font, ucs21);
+	int width = font->glyph_width[ucs21];
 	if (width) {
 		glyph = font->glyph_bitmap[ucs21];
 	} else {
-		width = font_get_undefined_glyph_width(font, ucs21);
-		glyph = font_get_undefined_glyph_bitmap(font, ucs21);
 		found = 0;
+#ifdef GET_ADJACENT_FONT_WIDTH
+		width = font_get_adjacent_glyph_width_in_pixels(font, ucs21);
+		glyph = font_get_undefined_glyph_bitmap(font, ucs21);
+		if (width == 0) {
+#endif // GET_ADJACENT_FONT_WIDTH
+			width = font_get_undefined_glyph_width(font, ucs21);
+#ifdef GET_ADJACENT_FONT_WIDTH
+		}
+#endif // GET_ADJACENT_FONT_WIDTH
 	}
 	if (width_in_pixels) {
 		*width_in_pixels = width;
@@ -436,15 +443,27 @@ const u_short *font_get_glyph_bitmap(font_t *font, wchar_t ucs21,
 }
 const int font_get_glyph_width_in_pixels(font_t *font, wchar_t ucs21)
 {
-	int width_in_pixels;
-
 	ucs21 = LIM_MAX_(MAX_GLYPHS-1, ucs21);	// [0 -- MAX_GLYPHS-1]
-	width_in_pixels = font->glyph_width[ucs21];
-	/////if (width_in_pixels == 0) {
-	/////	width_in_pixels = font_get_undefined_glyph_width(font, ucs21);
-	/////}
+	int width_in_pixels = font->glyph_width[ucs21];
+	if (width_in_pixels == 0) {
+		width_in_pixels = font_get_adjacent_glyph_width_in_pixels(font, ucs21);
+	}
 	return width_in_pixels;
 }
+#ifdef GET_ADJACENT_FONT_WIDTH
+const int font_get_adjacent_glyph_width_in_pixels(font_t *font, wchar_t ucs21)
+{
+	int width_in_pixels = 0;
+
+	ucs21 = LIM_MAX_(MAX_GLYPHS-1, ucs21);	// [0 -- MAX_GLYPHS-1]
+	if (width_in_pixels == 0) {
+		for (wchar_t ucs = (ucs21 & 0xffe0); ucs < (ucs21 | 0x001f); ucs++) {
+			width_in_pixels = MAX_(width_in_pixels, font->glyph_width[ucs]);
+		}
+	}
+	return width_in_pixels;
+}
+#endif // GET_ADJACENT_FONT_WIDTH
 
 //-----------------------------------------------------------------------------
 static const u_short *glyph_bitmap;

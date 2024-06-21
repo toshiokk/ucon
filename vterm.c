@@ -150,16 +150,20 @@ void vterm_emulate_str_yx_bc_fc(vterm_t *vterm, int yy, int xx,
 // emulate VT-100 terminal
 void vterm_emulate_str(vterm_t *vterm, const char *string, int bytes)
 {
-	u_char chr;
-
 	if (bytes < 0) {
 		bytes = strlen(string);
 	}
 ///dump_string(string, bytes);
-///mflf_d_printf("%d: %s\n", bytes, dump_string_to_static_buf(string, bytes));
+#ifdef ENABLE_DEBUG
+///
+mflf_d_printf("%d:\n %s\n", bytes, dump_string_to_static_buf(string, bytes));
+#endif // ENABLE_DEBUG
 	while (bytes-- > 0) {
-		chr = *(string++);
-///mflf_d_printf("%02x[%c]\n", chr, isgraph(chr) ? chr : '.');
+		u_char chr = *(string++);
+#ifdef ENABLE_DEBUG
+///
+mflf_d_printf("(%d, %d)%02x[%c]\n", vterm_pen_get_y(vterm), vterm_pen_get_x(vterm), chr, isgraph(chr) ? chr : '.');
+#endif // ENABLE_DEBUG
 		vterm_emulate_char(vterm, chr);
 	}
 }

@@ -58,6 +58,8 @@ install-data-local:
 	$(INSTALL_DATA) $(srcdir)/fonts/ucon12.hex.gz $(DESTDIR)$(bindir)
 	$(INSTALL_DATA) $(srcdir)/fonts/ucon14.hex.gz $(DESTDIR)$(bindir)
 	$(INSTALL_DATA) $(srcdir)/fonts/ucon16.hex.gz $(DESTDIR)$(bindir)
+
+install-dic:
 	mkdir -p $(HOME)/.imj
 	$(INSTALL_DATA) im/imj.dic $(HOME)/.imj
 	echo "USER: $(USER)"
