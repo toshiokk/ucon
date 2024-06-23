@@ -12,9 +12,7 @@ extern "C" {
 #define MAX_UTF8C_BYTES			4
 
 #ifdef ENABLE_DEBUG
-#ifdef ENABLE_UTF8
 void test_my_mbwidth(void);
-#endif // ENABLE_UTF8
 #endif // ENABLE_DEBUG
 
 int my_mbwidth(const char *utf8c, int max_len);

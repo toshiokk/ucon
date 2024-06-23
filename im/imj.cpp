@@ -1989,7 +1989,7 @@ flf_d_printf("hst-file-path:[%s]\n", file_path);
 			pronun_conversion = imjhst_history[entry_idx].pronun_conversion;
 			if (hist_type == 0 ? IS_IHST(pronun_conversion) : IS_CHST(pronun_conversion)) {
 ///flf_d_printf("%d:%d:[%s]\n", line_idx, entry_idx, pronun_conversion);
-				snprintf(line, MAX_HISTORY_BUF_LEN+1, "%s\n", pronun_conversion);
+				snprintf_(line, MAX_HISTORY_BUF_LEN+1, "%s\n", pronun_conversion);
 				if (fputs(line, fp_cnvhst) < 0) {
 					break;
 				}

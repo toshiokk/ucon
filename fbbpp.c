@@ -30,7 +30,7 @@
 // global variables for speed reasons =========================================
 
 u_char *fb_start;
-size_t fb_view_size;
+size_t fb_size;
 u_char *fb_end;
 
 u_char fb_bytes_per_pixel;
@@ -264,7 +264,7 @@ PRIVATE void fb_8bpp_clear_all(c_idx_t clr_idx, rgb15_t rgb15)
 {
 	cpal8_t cpal8 = pallete_idx_from_color_idx(clr_idx);	//=
 
-	memset(fb_start, cpal8, fb_view_size);					//=bpp_clear_all
+	memset(fb_start, cpal8, fb_size);					//=bpp_clear_all
 
 }
 PRIVATE void fb_8bpp_fill_char_box(u_short xx, u_short yy, bool wide,

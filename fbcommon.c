@@ -136,8 +136,6 @@ flf_d_printf("FB device name: [%s]\n", fb->fb_dev_name);
 int fb_open(frame_buffer_t *fb)
 {
 	struct stat st;
-	struct fb_var_screeninfo fb_var;
-	struct fb_fix_screeninfo fb_fix;
 	int fb_type_idx;
 
 	if ((fb->fd_fb = util_privilege_open(fb->fb_dev_name, O_RDWR)) == -1) {
@@ -156,35 +154,43 @@ int fb_open(frame_buffer_t *fb)
 		return -1;
 	}
 
-	if (fb_get_var_screen_info(fb->fd_fb, &fb_var) < 0) {
+	if (fb_get_var_screen_info(fb->fd_fb, &(fb->fb_var)) < 0) {
 		_ERR_
 		return -1;
 	}
-	if (fb_var.yres_virtual != fb_var.yres) {
-		memcpy_ol((void*)&save_fb_var, (void*)&fb_var, sizeof(save_fb_var));
-		fb_var.yres_virtual = fb_var.yres;
-		fb_var.yoffset = 0;
-		fb_var.activate = FB_ACTIVATE_NOW;
+	if (fb->fb_var.yres_virtual != fb->fb_var.yres) {
+		memcpy_ol((void*)&save_fb_var, (void*)&(fb->fb_var), sizeof(save_fb_var));
+		fb->fb_var.yres_virtual = fb->fb_var.yres;
+		fb->fb_var.yoffset = 0;
+		fb->fb_var.activate = FB_ACTIVATE_NOW;
 		var_screen_info_modified = TRUE;
-		if (fb_set_var_screen_info(fb->fd_fb, &fb_var) < 0) {
+		if (fb_set_var_screen_info(fb->fd_fb, &(fb->fb_var)) < 0) {
 			_ERR_
 			return -1;
 		}
 	}
-	fb_get_fix_screen_info(fb->fd_fb, &fb_fix);
+	fb_get_fix_screen_info(fb->fd_fb, &(fb->fb_fix));
 
-	if (fb_fix.visual == FB_VISUAL_DIRECTCOLOR
-	 || fb_fix.visual == FB_VISUAL_PSEUDOCOLOR) {
+	// informations gotten from FB driver
+	//   fb_fix.smem_start
+	//   fb_fix.smem_len
+	//   fb_fix.line_length
+	//   fb_var.bits_per_pixel
+	//   fb_var.xres
+	//   fb_var.yres
+
+	if (fb->fb_fix.visual == FB_VISUAL_DIRECTCOLOR
+	 || fb->fb_fix.visual == FB_VISUAL_PSEUDOCOLOR) {
 		fb_get_cmap(fb->fd_fb, &save_color_map);
 		color_map_saved = TRUE;
 	}
 
 #ifdef ENABLE_DEBUG
 	if (app__.debug) {
-		fb_show_screeninfo(fb, &fb_var, &fb_fix);
+		fb_show_screeninfo(fb, &(fb->fb_var), &(fb->fb_fix));
 	}
 #endif // ENABLE_DEBUG
-	fb_type_idx = fb_select_driver(fb, &fb_var, &fb_fix);
+	fb_type_idx = fb_select_driver(fb, &(fb->fb_var), &(fb->fb_fix));
 	if (fb_type_idx < 0) {
 		_ERR_
 		er_printf("Oops: Unknown framebuffer ???\n");
@@ -196,60 +202,62 @@ flf_d_printf("Selected driver index: %d, bits per pixel: %d\n",
 
 	// NOTE: (line_length / bits_per_pixel) is not necessarily the same as screen_size_x
 	//       line_length may be different from (screen_size_x * bytes_per_pixel)
-	fb->screen_size_x = fb_var.xres;
-	fb->screen_size_y = fb_var.yres;
-	fb->bytes_per_line = fb_fix.line_length;
-	fb->bits_per_pixel = fb_var.bits_per_pixel;
-	fb->bytes_per_pixel = (fb_var.bits_per_pixel + (8-1)) / 8;
+	fb->screen_size_x = fb->fb_var.xres;
+	fb->screen_size_y = fb->fb_var.yres;
+	fb->bytes_per_line = fb->fb_fix.line_length;
+	fb->bits_per_pixel = fb->fb_var.bits_per_pixel;
+	fb->bytes_per_pixel = (fb->fb_var.bits_per_pixel + (8-1)) / 8;
+
 	v_printf("screen_size_x:%d, screen_size_y:%d, bits/pixel:%d, bytes/pixel:%d, bytes/line:%d\n",
 	 fb->screen_size_x, fb->screen_size_y, fb->bits_per_pixel, fb->bytes_per_pixel, fb->bytes_per_line);
 	v_printf("smem_start: 0x%08lx, smem_len: 0x%08lx(%d)\n",
-	 fb_fix.smem_start, fb_fix.smem_len, fb_fix.smem_len);
+	 fb->fb_fix.smem_start, fb->fb_fix.smem_len, fb->fb_fix.smem_len);
 
 flf_d_printf("page_size: %d\n", get_page_size());
 	size_t page_size = get_page_size();	// may be 0x1000
 	size_t page_mask = ~(page_size-1);	// may be 0xffffffffffff0000
+
 	// mmap Buffer Memory
-	fb->fb_offset = (size_t)(fb_fix.smem_start) & page_mask;
-	fb->fb_mem_size = (fb_fix.smem_len + fb->fb_offset + (page_size-1)) & page_mask;
-	fb->fb_mmapped = (u_char *)mmap(NULL, fb->fb_mem_size, PROT_READ|PROT_WRITE,
+	fb->fb_offset_in_mmap = ((size_t)fb->fb_fix.smem_start) & page_mask;
+	fb->fb_mmap_size = (fb->fb_offset_in_mmap + fb->fb_fix.smem_len + (page_size-1)) & page_mask;
+	fb->fb_mmapped = (u_char *)mmap(NULL, fb->fb_mmap_size, PROT_READ|PROT_WRITE,
 	 MAP_SHARED, fb->fd_fb, (off_t)0);
 	if ((long)fb->fb_mmapped == -1) {
 		_ERR_
 		er_printf("cannot mmap(fb_start)");
 		return -1;
 	}
-	fb->fb_start = fb->fb_mmapped + fb->fb_offset;
-	fb->fb_view_size = fb->bytes_per_line * fb->screen_size_y;
+	v_printf("mmap : %p (fb_offset_in_mmap:%08lx, fb_mmap_size:%d)\n",
+	 fb->fb_mmapped, fb->fb_offset_in_mmap, fb->fb_mmap_size);
+	/* move viewport to upper left corner */
+	if (fb->fb_var.xoffset != 0 || fb->fb_var.yoffset != 0) {
+		fb->fb_var.xoffset = 0;
+		fb->fb_var.yoffset = 0;
+		if (fb_pan_display(fb->fd_fb, &(fb->fb_var)) < 0)
+			return -1;
+	}
+	fb_setup_15_16_bpp_color_table();
 
-#ifdef ENABLE_DEBUG
-	v_printf("mmap : %p (fb_offset:%08lx, fb_mem_size:%08lx(%d))\n",
-	 fb->fb_mmapped, fb->fb_offset, fb->fb_mem_size, fb->fb_mem_size);
-	v_printf("fb_start: %p, fb_view_size:%08lx\n", fb->fb_start, fb->fb_view_size);
-#endif // ENABLE_DEBUG
+	fb->fb_start = fb->fb_mmapped + fb->fb_offset_in_mmap;
+	fb->fb_size = fb->fb_mmap_size;
+	fb->fb_end = fb->fb_start + fb->fb_size;
+
+	fb_setup_view_address(fb);
+}
+
+void fb_setup_view_address(frame_buffer_t *fb)
+{
 	v_printf("screen_size_x(by line_length):%d, screen_size_y(by smem_len):%d\n",
-	 fb_fix.line_length / fb->bytes_per_pixel, fb->fb_mem_size / fb->bytes_per_line);
-	if (app__.use_whole_buf
-	 && (fb_fix.line_length / fb->bytes_per_pixel) > (fb->fb_mem_size / fb->bytes_per_line)) {
-		fb->screen_size_x = fb_fix.line_length / fb->bytes_per_pixel;
-		fb->screen_size_y = fb->fb_mem_size / fb->bytes_per_line;
+	 fb->fb_fix.line_length / fb->bytes_per_pixel, fb->fb_mmap_size / fb->bytes_per_line);
+	if (app__.use_whole_buf) {
+///	 && (fb_fix.line_length / fb->bytes_per_pixel) > (fb->fb_mmap_size / fb->bytes_per_line)) {}
+		fb->screen_size_x = fb->fb_fix.line_length / fb->bytes_per_pixel;
+		fb->screen_size_y = fb->fb_mmap_size / fb->bytes_per_line;
 		flf_d_printf("screen_size_x:%d, screen_size_y:%d\n", fb->screen_size_x, fb->screen_size_y);
 //		v_printf("screen_size_x:%d, screen_size_y:%d\n", fb->screen_size_x, fb->screen_size_y);
 	}
-	v_printf("fb_start: %p, fb_view_size: %d\n", fb->fb_start, fb->fb_view_size);
+	v_printf("fb_start/fb_end: %p/%p, fb_size:%d\n", fb->fb_start, fb->fb_end, fb->fb_size);
 	v_printf("screen_size_x:%d, screen_size_y:%d\n", fb->screen_size_x, fb->screen_size_y);
-
-	/* move viewport to upper left corner */
-	if (fb_var.xoffset != 0 || fb_var.yoffset != 0) {
-		fb_var.xoffset = 0;
-		fb_var.yoffset = 0;
-		if (fb_pan_display(fb->fd_fb, &fb_var) < 0)
-			return -1;
-	}
-
-	fb_setup_15_16_bpp_color_table();
-
-	return 0;
 }
 
 int fb_close(frame_buffer_t *fb)
@@ -257,7 +265,7 @@ int fb_close(frame_buffer_t *fb)
 	int ret = 0;
 
 	if ((long)fb->fb_mmapped == -1) {
-		munmap((caddr_t)fb->fb_mmapped, fb->fb_mem_size);
+		munmap((caddr_t)fb->fb_mmapped, fb->fb_mmap_size);
 	}
 	if (color_map_saved == TRUE) {
 ///		fb_put_cmap(fb->fd_fb, &save_color_map);

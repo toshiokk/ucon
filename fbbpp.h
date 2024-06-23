@@ -33,7 +33,7 @@ extern "C" {
 #endif // __cplusplus
 
 extern u_char *fb_start;
-extern size_t fb_view_size;
+extern size_t fb_size;
 extern u_char *fb_end;
 
 extern u_char fb_bytes_per_pixel;

@@ -54,8 +54,6 @@ mk_backup_file __test_ucon.log
   elif [ "$1" = "120" ]; then
     ./ucon -d -f 12 -o 120 -w
   else
-#    ./ucon -d -f 12 -x 3 -y 4 -w
-#    ./ucon -r 0 -d -f 12 -x 2 -y 3
-    ./ucon -r 0 -d -f 12 -x 2 -y 3 -w
+    ./ucon -d -f 12 -o 120 -w
   fi
 } 2>__test_ucon.log >&2

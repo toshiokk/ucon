@@ -189,4 +189,13 @@ void *memcpy_ol(void *dest, void *src, size_t bytes)
 	return memmove(dest, src, bytes);
 }
 
+int snprintf_(char *buffer, size_t buf_len, const char *format, ...)
+{
+	va_list args;
+	va_start(args, format);
+	size_t len = vsnprintf(buffer, buf_len, format, args);
+	va_end(args);
+	return len;
+}
+
 // End of mystring.c

@@ -243,21 +243,21 @@ int imcui_get_converting_line_str(int mode, char *buffer, int buf_len)
 	imj__.im_c_get_remaining_bunsetsu(remaining_bunsetsu, IM_INPUT_LINE_LEN, "|");
 	imj__.im_c_get_all_bunsetsu(all_bunsetsu, IM_INPUT_LINE_LEN, "|");
 	get_candidate_list_str(candid_list, IM_INPUT_LINE_LEN / 2);
-	snprintf(candid_num, IM_INPUT_LINE_LEN, "[%d/%d]",
+	snprintf_(candid_num, IM_INPUT_LINE_LEN, "[%d/%d]",
 	 imj__.im_c_get_cur_cand_idx()+1, imj__.im_c_get_num_of_candids());
 //flf_d_printf("[[%s]][[%s]]\n", first_bunsetsu, remaining_bunsetsu);
 
 	switch (mode) {
 	default:
 	case 0:
-		snprintf(buf, IM_INPUT_LINE_LEN, "%s", all_bunsetsu);
+		snprintf_(buf, IM_INPUT_LINE_LEN, "%s", all_bunsetsu);
 		break;
 	case 1:
-		snprintf(buf, IM_INPUT_LINE_LEN, "%s%s%s",
+		snprintf_(buf, IM_INPUT_LINE_LEN, "%s%s%s",
 		 candid_list, candid_num, remaining_bunsetsu);
 		break;
 	case 2:
-		snprintf(buf, IM_INPUT_LINE_LEN, "%s(%s%s)%s",
+		snprintf_(buf, IM_INPUT_LINE_LEN, "%s(%s%s)%s",
 		 first_bunsetsu, candid_list, candid_num, remaining_bunsetsu);
 		break;
 	}
@@ -331,7 +331,7 @@ PRIVATE const char *get_candid_string(int candid_idx, int cur_candid_idx,
 		else
 			template__ = " %s ";
 	}
-	snprintf(buffer, buf_len, template__, buf);
+	snprintf_(buffer, buf_len, template__, buf);
 	return buffer;
 }
 

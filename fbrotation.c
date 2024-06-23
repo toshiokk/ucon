@@ -31,8 +31,8 @@ view_rotation_t contents_rotation;
 void fbr_setup_constant_parameters()
 {
 	fb_start = fb__.fb_start;
-	fb_view_size = fb__.fb_view_size;
-	fb_end = fb__.fb_start + fb__.fb_view_size;
+	fb_size = fb__.fb_size;
+	fb_end = fb__.fb_start + fb__.fb_size;
 	fb_bytes_per_pixel = fb__.bytes_per_pixel;
 	fb_bytes_inc_px = fb__.bytes_per_pixel;
 	///fb_bytes_inc_py = fb__.bytes_per_pixel * fb__.screen_size_x;
@@ -51,7 +51,7 @@ void fbr_setup_constant_parameters()
 	 + fb_bytes_inc_px * (fb__.screen_size_x - 1) * 1
 	 + fb_bytes_inc_py * (fb__.screen_size_y - 1) * 1;
 flf_d_printf("fb_start/fb_end: %p/%p\n", fb_start, fb_end);
-flf_d_printf("fb_view_size: %d\n", fb_view_size);
+flf_d_printf("fb_size: %d\n", fb_size);
 flf_d_printf("fb_bytes_per_pixel: %d\n", fb_bytes_per_pixel);
 flf_d_printf("fb_bytes_inc_px: %d\n", fb_bytes_inc_px);
 flf_d_printf("fb_bytes_inc_py: %d\n", fb_bytes_inc_py);

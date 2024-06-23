@@ -9,7 +9,6 @@ extern "C" {
 
 #define DEBUG_BUF_LEN		2048
 
-///#define ENABLE_DEBUG
 #ifdef ENABLE_DEBUG
 
 ///#define FORCE_DEBUG

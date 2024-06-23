@@ -5,7 +5,6 @@
 #ifndef mystring_h
 #define mystring_h
 
-#define ENABLE_UTF8
 #include "myutf8.h"
 
 #if defined(__cplusplus)
@@ -42,6 +41,8 @@ char *strcpy_ol(char *dest, const char *src);
 int strlcmp__(const char *str1, const char *str2);
 
 void *memcpy_ol(void *dest, void *src, size_t bytes);
+
+int snprintf_(char *buffer, size_t buf_len, const char *format, ...);
 
 #if defined(__cplusplus)
 }

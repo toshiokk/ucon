@@ -183,7 +183,8 @@ _FLF_
 			break;
 		}
 	}
-	flf_d_printf("font_size: %d, columns: %d, expand_x: %d, expand_y: %d\n", app->font_size, app->columns, app->expand_x, app->expand_y);
+	flf_d_printf("font_size: %d, columns: %d, expand_x: %d, expand_y: %d\n",
+	 app->font_size, app->columns, app->expand_x, app->expand_y);
 }
 
 PRIVATE void app_init(app_t *app)
