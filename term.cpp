@@ -332,8 +332,8 @@ PRIVATE void call_interval_timer_process(vterm_t *vterm)
 #endif // ENABLE_SCREEN_SHOT
 
 ///
-#define ON_THE_FLY_FUNCTION_CHANGE
-#ifdef ON_THE_FLY_FUNCTION_CHANGE
+#define ON_THE_FLY_SCREEN_RESIZING
+#ifdef ON_THE_FLY_SCREEN_RESIZING
 #define DEC_FONT_SIZE_KEY1_STR	"\x1b\x2d"	// Alt-'-'
 #define DEC_FONT_SIZE_KEY1_STR_LEN	2
 #define INC_FONT_SIZE_KEY1_STR	"\x1b\x3d"	// Alt-'='
@@ -342,7 +342,7 @@ PRIVATE void call_interval_timer_process(vterm_t *vterm)
 #define DEC_ROTATION_KEY1_STR_LEN	2
 #define INC_ROTATION_KEY1_STR	"\x1b\x2b"	// Alt-'+'(Shift)
 #define INC_ROTATION_KEY1_STR_LEN	2
-#endif // ON_THE_FLY_FUNCTION_CHANGE
+#endif // ON_THE_FLY_SCREEN_RESIZING
 
 PRIVATE void check_hot_key(term_t *term, char *buf, int input_len)
 {
@@ -358,7 +358,7 @@ _FLF_
 		 NULL);
 	}
 #endif // ENABLE_SCREEN_SHOT
-#ifdef ON_THE_FLY_FUNCTION_CHANGE
+#ifdef ON_THE_FLY_SCREEN_RESIZING
 	if ((input_len == DEC_FONT_SIZE_KEY1_STR_LEN)
 	  && (strncmp(buf, DEC_FONT_SIZE_KEY1_STR, DEC_FONT_SIZE_KEY1_STR_LEN) == 0)) {
 		// Change font size smaller
@@ -377,7 +377,7 @@ _FLF_
 	  && (strncmp(buf, INC_ROTATION_KEY1_STR, INC_ROTATION_KEY1_STR_LEN) == 0)) {
 		term_change_rotation(term, -1);
 	}
-#endif // ON_THE_FLY_FUNCTION_CHANGE
+#endif // ON_THE_FLY_SCREEN_RESIZING
 }
 
 //-----------------------------------------------------------------------------
