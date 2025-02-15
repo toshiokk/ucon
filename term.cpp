@@ -68,7 +68,7 @@ PRIVATE void term_child_exec_shell(term_t *term);
 PRIVATE void term_parent_serve(term_t *term);
 
 PRIVATE void call_interval_timer_process(vterm_t *vterm);
-PRIVATE void check_hot_key(term_t *term, char *buf, int input_len);
+PRIVATE int check_hot_key(term_t *term, char *buf, int input_len);
 PRIVATE void term_change_font_size(term_t *term, int shift);
 PRIVATE void term_change_rotation(term_t *term, int shift);
 PRIVATE void term_select_font_by_columns(int columns);
@@ -276,7 +276,7 @@ mflf_d_printf("SIGUSR2(acquire) signaled\n");
 			dimmer_set_blank_off();
 #endif
 			input_len = read(STDIN_FILENO, input_buf, INPUT_BUF_LEN);
-			check_hot_key(term, input_buf, input_len);
+			input_len = check_hot_key(term, input_buf, input_len);
 			vterm_clear_cursor_blink_counter(&(term->vterm));
 		}
 #ifdef ENABLE_IMJ
@@ -344,7 +344,7 @@ PRIVATE void call_interval_timer_process(vterm_t *vterm)
 #define INC_ROTATION_KEY1_STR_LEN	2
 #endif // ON_THE_FLY_SCREEN_RESIZING
 
-PRIVATE void check_hot_key(term_t *term, char *buf, int input_len)
+PRIVATE int check_hot_key(term_t *term, char *buf, int input_len)
 {
 #ifdef ENABLE_SCREEN_SHOT
 	// check Special function key
@@ -356,6 +356,7 @@ _FLF_
 		screen_shot(fbr_screen_size_hx, fbr_screen_size_hy,
 		 fb__.driver->get_pixel_argb32, fb__.driver->reverse_all,
 		 NULL);
+		input_len = 0;
 	}
 #endif // ENABLE_SCREEN_SHOT
 #ifdef ON_THE_FLY_SCREEN_RESIZING
@@ -363,21 +364,26 @@ _FLF_
 	  && (strncmp(buf, DEC_FONT_SIZE_KEY1_STR, DEC_FONT_SIZE_KEY1_STR_LEN) == 0)) {
 		// Change font size smaller
 		term_change_font_size(term, -1);
+		input_len = 0;
 	}
 	if ((input_len == INC_FONT_SIZE_KEY1_STR_LEN)
 	  && (strncmp(buf, INC_FONT_SIZE_KEY1_STR, INC_FONT_SIZE_KEY1_STR_LEN) == 0)) {
 		// Change font size larger
 		term_change_font_size(term, +1);
+		input_len = 0;
 	}
 	if ((input_len == DEC_ROTATION_KEY1_STR_LEN)
 	  && (strncmp(buf, DEC_ROTATION_KEY1_STR, DEC_ROTATION_KEY1_STR_LEN) == 0)) {
 		term_change_rotation(term, +1);
+		input_len = 0;
 	}
 	if ((input_len == INC_ROTATION_KEY1_STR_LEN)
 	  && (strncmp(buf, INC_ROTATION_KEY1_STR, INC_ROTATION_KEY1_STR_LEN) == 0)) {
 		term_change_rotation(term, -1);
+		input_len = 0;
 	}
 #endif // ON_THE_FLY_SCREEN_RESIZING
+	return input_len;
 }
 
 //-----------------------------------------------------------------------------
@@ -604,10 +610,10 @@ _FLF_
 	// set overlay
 	snprintf(overlay_text, OVERLAY_TEXT_LEN+1,
 	//12345678901234567890123456789012345678901234567890123456789012345678901234567890
-	 "[ Frame(%dx%d) : Font(%dx%d) : Console(%dx%d) ]",
-	 fb__.screen_size_x, fb__.screen_size_y,
+	 "[ Console(%dx%d) : Font(%dx%d) : Frame(%dx%d) ]",
+	 term->vterm.text_columns, term->vterm.text_lines,
 	 cur_font_exp->width, cur_font_exp->height,
-	 term->vterm.text_columns, term->vterm.text_lines);
+	 fb__.screen_size_x, fb__.screen_size_y);
 	vterm_set_overlay(&(term->vterm), OVERLAY_IDX_0, OVERLAY_TEXT_Y, OVERLAY_TEXT_X,
 	 COLOR_LIGHTCYAN, COLOR_LIGHTRED, overlay_text, -1, OVERLAY_TEXT_SECS);
 

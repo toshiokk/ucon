@@ -8,6 +8,18 @@ pause
 /bin/echo -ne "\ec"
 pause
 
+/bin/echo "clear screen(30;37)"
+pause
+/bin/echo -ne "\e[30;37m"
+/bin/echo -ne "\e[2J"
+pause
+
+/bin/echo "clear screen(37;30)"
+pause
+/bin/echo -ne "\e[37;30m"
+/bin/echo -ne "\e[2J"
+pause
+
 /bin/echo -ne "\ec"
 cat _杜子春.txt
 /bin/echo -ne "\e[10;10H"
