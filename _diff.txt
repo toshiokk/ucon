@@ -29,25 +29,58 @@ kdiff3 ../old/ucon/myselect.c myselect.c #======================================
 kdiff3 ../old/ucon/pen.c pen.c #==================================================
 kdiff3 ../old/ucon/picofont.c picofont.c #==================================================
 kdiff3 ../old/ucon/term.cpp term.cpp #==================================================
+71c71
+< PRIVATE void check_hot_key(term_t *term, char *buf, int input_len);
+---
+> PRIVATE int check_hot_key(term_t *term, char *buf, int input_len);
+204c204,207
+< #define OUTPUT_BUF_LEN		4096
+---
+> ///#define OUTPUT_BUF_LEN		100
+> ///#define OUTPUT_BUF_LEN		4096
+> ///#define OUTPUT_BUF_LEN		16384
+> #define OUTPUT_BUF_LEN		65536
+279c282
+< 			check_hot_key(term, input_buf, input_len);
+---
+> 			input_len = check_hot_key(term, input_buf, input_len);
+347c350
+< PRIVATE void check_hot_key(term_t *term, char *buf, int input_len)
+---
+> PRIVATE int check_hot_key(term_t *term, char *buf, int input_len)
+358a362
+> 		input_len = 0;
+365a370
+> 		input_len = 0;
+370a376
+> 		input_len = 0;
+374a381
+> 		input_len = 0;
+378a386
+> 		input_len = 0;
+380a389
+> 	return input_len;
+607,608c616,617
+< 	 "[ Frame(%dx%d) : Font(%dx%d) : Console(%dx%d) ]",
+< 	 fb__.screen_size_x, fb__.screen_size_y,
+---
+> 	 "[ Console(%dx%d) : Font(%dx%d) : Frame(%dx%d) ]",
+> 	 term->vterm.text_columns, term->vterm.text_lines,
+610c619
+< 	 term->vterm.text_columns, term->vterm.text_lines);
+---
+> 	 fb__.screen_size_x, fb__.screen_size_y);
 kdiff3 ../old/ucon/util.c util.c #==================================================
 kdiff3 ../old/ucon/vterm.c vterm.c #==================================================
-153,154d152
-< 	u_char chr;
-< 
-159c157,160
-< ///mflf_d_printf("%d: %s\n", bytes, dump_string_to_static_buf(string, bytes));
----
-> #ifdef ENABLE_DEBUG
-> ///
-> mflf_d_printf("%d:\n %s\n", bytes, dump_string_to_static_buf(string, bytes));
+77d76
+< #endif // ENABLE_DEBUG
+81a81,84
+> #else // ENABLE_DEBUG
+> #define put_parsed_str(chr)
+> #define dump_parsed_str()
 > #endif // ENABLE_DEBUG
-161,162c162,166
-< 		chr = *(string++);
-< ///mflf_d_printf("%02x[%c]\n", chr, isgraph(chr) ? chr : '.');
----
-> 		u_char chr = *(string++);
+1131a1135
 > #ifdef ENABLE_DEBUG
-> ///
-> mflf_d_printf("(%d, %d)%02x[%c]\n", vterm_pen_get_y(vterm), vterm_pen_get_x(vterm), chr, isgraph(chr) ? chr : '.');
+1156a1161
 > #endif // ENABLE_DEBUG
 kdiff3 ../old/ucon/vtermlow.c vtermlow.c #==================================================

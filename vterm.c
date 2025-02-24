@@ -74,11 +74,14 @@ PRIVATE wchar_t subst_dec_sp_gr_ucs32(wchar_t ucs21);
 
 #ifdef ENABLE_DEBUG
 PRIVATE void dump_csi_args(char chr);
-#endif // ENABLE_DEBUG
 
 PRIVATE void clear_parsed_str(void);
 PRIVATE void put_parsed_str(u_char chr);
 PRIVATE void dump_parsed_str(void);
+#else // ENABLE_DEBUG
+#define put_parsed_str(chr)
+#define dump_parsed_str()
+#endif // ENABLE_DEBUG
 
 void vterm_init(vterm_t *vterm)
 {
@@ -1129,6 +1132,7 @@ PRIVATE void dump_csi_args(char chr)
 
 //-----------------------------------------------------------------------------
 
+#ifdef ENABLE_DEBUG
 #define MAX_SEQ		20
 PRIVATE int parsed_str_idx = 0;
 PRIVATE u_char parsed_str[MAX_SEQ+1];
@@ -1154,5 +1158,6 @@ PRIVATE void dump_parsed_str(void)
 	dump_string(parsed_str, parsed_str_idx);
 	clear_parsed_str();
 }
+#endif // ENABLE_DEBUG
 
 // End of vterm.c

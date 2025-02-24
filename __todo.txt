@@ -1,7 +1,9 @@
 # UCON TODO list
 
+[x]250216 changed overlay display format from res/font/chars to chars/font/res
+[x]250216 does not generate key events with on-the-fly keys
 []240623 on the fly change of use-whole-buffer on/off
-[]240623 screen resolution using xres/yres or xres_virtual/yres_virtual
+[x]240623 screen resolution using xres/yres or xres_virtual/yres_virtual (-w)
 [v]240622 reintroduce fonts (contain wide signs and shogi fonts)
 [v]240621 get unknown character's width from adjacent characters from (ucs & 0xffe0) to (ucs | 0x001f)
 [v]240517 fix to be shown unknown glyph in BLUE

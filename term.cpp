@@ -201,7 +201,10 @@ PRIVATE void term_parent_serve(term_t *term)
 	char input_buf[INPUT_BUF_LEN+1];
 
 #ifndef ENABLE_DEBUG
-#define OUTPUT_BUF_LEN		4096
+///#define OUTPUT_BUF_LEN		100
+///#define OUTPUT_BUF_LEN		4096
+///#define OUTPUT_BUF_LEN		16384
+#define OUTPUT_BUF_LEN		65536
 #else // ENABLE_DEBUG
 #define OUTPUT_BUF_LEN		100
 #endif // ENABLE_DEBUG
