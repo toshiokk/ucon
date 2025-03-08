@@ -617,6 +617,7 @@ _FLF_
 	 term->vterm.text_columns, term->vterm.text_lines,
 	 cur_font_exp->width, cur_font_exp->height,
 	 fb__.screen_size_x, fb__.screen_size_y);
+	overlay_text[MIN_(OVERLAY_TEXT_LEN, term->vterm.text_columns)] = '\0';	// limit width
 	vterm_set_overlay(&(term->vterm), OVERLAY_IDX_0, OVERLAY_TEXT_Y, OVERLAY_TEXT_X,
 	 COLOR_LIGHTCYAN, COLOR_LIGHTRED, overlay_text, -1, OVERLAY_TEXT_SECS);
 

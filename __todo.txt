@@ -1,5 +1,6 @@
 # UCON TODO list
 
+[x]250308 limit length of the overlay text displayed on window sizing
 [x]250216 changed overlay display format from res/font/chars to chars/font/res
 [x]250216 does not generate key events with on-the-fly keys
 []240623 on the fly change of use-whole-buffer on/off
