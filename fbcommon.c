@@ -60,7 +60,7 @@ PRIVATE struct fb_var_screeninfo save_fb_var;
 PRIVATE bool_t var_screen_info_modified = FALSE;
 
 /*---------------------------------------------------------------------------*/
-// 16 colors pallete
+// 16 colors palette
 PRIVATE argb32_t table_16_color_argb32[COLORS_16] = {	// 00000000rrrrrrrrggggggggbbbbbbbb
 //    AARRGGBB
 	0x00000000,	//  0: black

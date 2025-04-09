@@ -116,9 +116,9 @@ PRIVATE void app_get_options(app_t *app, int argc, char *argv[])
 		{ "expand",			1, NULL, 'x' },
 		{ "expand_y",		1, NULL, 'y' },
 		{ "use_whole_buf",	0, NULL, 'w' },
+		{ "highlight",		0, NULL, 'l' },
 		{ "exec",			1, NULL, 'c' },		// -c "commands ..."
 		{ "help",			0, NULL, 'h' },
-		{ "highlight",		0, NULL, 'l' },
 		///{ "verbose",		0, NULL, 'v' },
 		{ "debug",			0, NULL, 'd' },
 		{ NULL,				0, NULL, 0   },
@@ -161,6 +161,9 @@ _FLF_
 		case 'w':
 			app->use_whole_buf = TRUE;
 			break;
+		case 'l':
+			app->highlight = TRUE;
+			break;
 		case 'c':
 			app->exec_cmd = optarg;
 			app->exec_argv[0] = optarg;
@@ -168,9 +171,6 @@ _FLF_
 			break;
 		case 'h':
 			app->show_help = TRUE;
-			break;
-		case 'l':
-			app->highlight = TRUE;
 			break;
 		case 'v':
 			///app->verbose = TRUE;
@@ -202,6 +202,7 @@ PRIVATE void app_init(app_t *app)
 	app->expand_y = 1;		// 1 dots per vertical pixels
 	app->no_bell = FALSE;
 	app->use_whole_buf = FALSE;
+	app->highlight = FALSE;
 	if (getenv("SHELL")) {
 		/* This cause a buffer overflow. */
 		memset(shell, '\0', sizeof(shell));
@@ -211,7 +212,6 @@ PRIVATE void app_init(app_t *app)
 		app->exec_cmd = "/bin/bash";
 	}
 ///app->exec_cmd = "/bin/echo";
-	app->highlight = FALSE;
 	app->show_help = FALSE;
 	///app->verbose = FALSE;
 	app->debug = FALSE;
@@ -235,9 +235,9 @@ PRIVATE void app_show_help(void)
 	 "  -x --expand N\n"
 	 "  -y --expand_y N\n"
 	 "  -w --use_whole_buf\n"
+	 "  -l --highlight\n"
 	 "  -e --exec program-name\n"
 	 "  -h --help\n"
-	 "  -l --highlight\n"
 	/// "  -v --verbose\n"
 	 "  -d --debug\n"
 	);

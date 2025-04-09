@@ -206,6 +206,10 @@ void pen_conv_fgc_idx_to_rgb(pen_t *pen)
 			}
 		}
 	}
+	if (app__.highlight && ((color_idx & COLORS_8_MASK) == COLOR_LIGHTGRAY)) {
+		// Light-gray ==> White, White ==> Light-gray
+		color_idx = color_idx ^ COLOR_HIGHLIGHT;
+	}
 	if (color_idx >= 0) {		// valid ?
 		pen_set_fc_rgb(pen, rgb15_from_color_idx(color_idx));
 	}

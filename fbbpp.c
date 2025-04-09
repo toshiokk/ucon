@@ -237,7 +237,7 @@ fb_driver_t fb_drivers[] = {
 #ifdef ENABLE_8BPP
 #warning "ENABLE_8BPP"
 /* 8 bpp */
-PRIVATE cpal8_t pallete_idx_from_color_idx(u_char clr_idx)
+PRIVATE cpal8_t palette_idx_from_color_idx(u_char clr_idx)
 {
 	cpal8_t cpal8;
 
@@ -248,7 +248,7 @@ PRIVATE cpal8_t pallete_idx_from_color_idx(u_char clr_idx)
 	return cpal8;
 }
 #ifdef ENABLE_SCREEN_SHOT
-PRIVATE u_char color_idx_from_pallete_idx(cpal8_t cpal8)
+PRIVATE u_char color_idx_from_palette_idx(cpal8_t cpal8)
 {
 	u_char clr_idx;
 
@@ -262,7 +262,7 @@ PRIVATE u_char color_idx_from_pallete_idx(cpal8_t cpal8)
 /* 8 bpp */
 PRIVATE void fb_8bpp_clear_all(c_idx_t clr_idx, rgb15_t rgb15)
 {
-	cpal8_t cpal8 = pallete_idx_from_color_idx(clr_idx);	//=
+	cpal8_t cpal8 = palette_idx_from_color_idx(clr_idx);	//=
 
 	memset(fb_start, cpal8, fb_size);					//=bpp_clear_all
 
@@ -270,7 +270,7 @@ PRIVATE void fb_8bpp_clear_all(c_idx_t clr_idx, rgb15_t rgb15)
 PRIVATE void fb_8bpp_fill_char_box(u_short xx, u_short yy, bool wide,
  c_idx_t clr_idx, rgb15_t rgb15)
 {
-	cpal8_t cpal8 = pallete_idx_from_color_idx(clr_idx);	//=
+	cpal8_t cpal8 = palette_idx_from_color_idx(clr_idx);	//=
 	u_char *fb_left = fbr_origin + fbr_bytes_inc_font_hy * yy + fbr_bytes_inc_font_hx * xx;
 	u_char glyph_exp_width = fb_font_exp_size_hx * (1 + wide);
 	for (u_char fy = 0; fy < fb_font_exp_size_hy; fy++) {
@@ -285,7 +285,7 @@ PRIVATE void fb_8bpp_fill_char_box(u_short xx, u_short yy, bool wide,
 PRIVATE void fb_8bpp_reverse_char_box(u_short xx, u_short yy, bool wide,
  c_idx_t clr_idx, rgb15_t rgb15)
 {
-	cpal8_t cpal8 = pallete_idx_from_color_idx(clr_idx);	//=
+	cpal8_t cpal8 = palette_idx_from_color_idx(clr_idx);	//=
 	u_char *fb_left = fbr_origin + fbr_bytes_inc_font_hy * yy + fbr_bytes_inc_font_hx * xx;
 	u_char glyph_exp_width = fb_font_exp_size_hx * (1 + wide);
 	for (u_char fy = 0; fy < fb_font_exp_size_hy; fy++) {
@@ -307,8 +307,8 @@ PRIVATE void fb_8bpp_reverse_char_box(u_short xx, u_short yy, bool wide,
 PRIVATE void fb_8bpp_paint_char_box(u_short xx, u_short yy, wchar_t ucs21, bool wide,
  c_idx_t bc_idx, c_idx_t fc_idx, rgb15_t bc_rgb15, rgb15_t fc_rgb15)
 {
-	cpal8_t bcpal8 = pallete_idx_from_color_idx(bc_idx);	//=
-	cpal8_t fcpal8 = pallete_idx_from_color_idx(fc_idx);	//=
+	cpal8_t bcpal8 = palette_idx_from_color_idx(bc_idx);	//=
+	cpal8_t fcpal8 = palette_idx_from_color_idx(fc_idx);	//=
 	u_char glyph_width = fb_font_size_hx * (1 + wide);
 	const u_short *glyph = font_set_glyph(ucs21, 0);
 	u_char *fb_chr_y = fbr_origin + fbr_bytes_inc_font_hy * yy + fbr_bytes_inc_font_hx * xx;
@@ -339,7 +339,7 @@ PRIVATE void fb_8bpp_paint_char_box(u_short xx, u_short yy, wchar_t ucs21, bool 
 PRIVATE argb32_t fb_8bpp_get_pixel_argb32(u_short xx, u_short yy)
 {
 	u_char *fb = fbr_origin + fbr_bytes_inc_hy * yy + fbr_bytes_inc_hx * xx;
-	argb32_t argb32 = argb32_from_color_idx(color_idx_from_pallete_idx(*fb));	//=bpp_get_pixel
+	argb32_t argb32 = argb32_from_color_idx(color_idx_from_palette_idx(*fb));	//=bpp_get_pixel
 	return argb32;
 }
 PRIVATE void fb_8bpp_reverse_all(void)

@@ -111,6 +111,9 @@ font_mul_t font_mul_table[] = {
 	{ 1, /*12,*/ 3, 6, },	// 18x72=1296
 #endif // TALL_SHAPE
 #endif // HUGE_SHAPE
+#ifdef SQUARE_SHAPE
+	{ 1, /*12,*/ 4, 2, },	// 24x24= 576
+#endif // SQUARE_SHAPE
 	{ 1, /*12,*/ 4, 3, },	// 24x36= 864
 #ifdef HUGE_SHAPE
 	{ 1, /*12,*/ 4, 4, },	// 24x48=1152
@@ -124,6 +127,9 @@ font_mul_t font_mul_table[] = {
 #ifdef TALL_SHAPE
 	{ 1, /*12,*/ 5, 9, },	// 30x108=3240
 #endif // TALL_SHAPE
+#ifdef SQUARE_SHAPE
+	{ 1, /*12,*/ 6, 3, },	// 36x 36=1296
+#endif // SQUARE_SHAPE
 	{ 1, /*12,*/ 6, 4, },	// 36x 48=1728
 	{ 1, /*12,*/ 6, 6, },	// 36x 72=2592
 	{ 1, /*12,*/ 6, 9, },	// 36x108=3888
@@ -145,6 +151,9 @@ font_mul_t font_mul_table[] = {
 	{ 2, /*14,*/ 3, 3, },	// 21x42= 882
 #ifdef	HUGE_SHAPE
 	{ 2, /*14,*/ 3, 4, },	// 21x 56=1176
+#ifdef SQUARE_SHAPE
+	{ 2, /*14,*/ 4, 2, },	// 28x 28= 784
+#endif // SQUARE_SHAPE
 	{ 2, /*14,*/ 4, 3, },	// 28x 42=1176
 	{ 2, /*14,*/ 4, 4, },	// 28x 56=1568
 	{ 2, /*14,*/ 4, 6, },	// 28x 84=2352
@@ -181,6 +190,9 @@ font_mul_t font_mul_table[] = {
 #ifdef TALL_SHAPE
 	{ 3, /*16,*/ 3, 6, },	// 24x96=2304
 #endif // TALL_SHAPE
+#ifdef SQUARE_SHAPE
+	{ 3, /*16,*/ 4, 2, },	// 32x32=1024
+#endif // SQUARE_SHAPE
 	{ 3, /*16,*/ 4, 3, },	// 32x48=1536
 	{ 3, /*16,*/ 4, 4, },	// 32x64=2048
 	{ 3, /*16,*/ 4, 6, },	// 32x96=3072

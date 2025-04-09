@@ -37,11 +37,11 @@ typedef struct app_ {
 	char expand_y;	// expnad font y size (1--12)
 	bool_t no_bell;
 	bool_t use_whole_buf;	// use whole frame-buffer
+	bool_t highlight;
 	char *exec_cmd;
 #define MAX_SHELL_ARGS	1
 	char *exec_argv[MAX_SHELL_ARGS+1];
 	bool_t show_help;
-	bool_t highlight;
 	///bool_t verbose;
 	bool_t debug;
 } app_t;
