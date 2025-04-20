@@ -74,7 +74,7 @@ PRIVATE argb32_t table_16_color_argb32[COLORS_16] = {	// 00000000rrrrrrrrggggggg
 	0x00606060,	//  8: darkgray
 	0x00ff0000,	//  9: lightred
 	0x0000ff00,	// 10: lightgreen
-	0x00c0c000,	// 11: yellow
+	0x00f0f000,	// 11: yellow
 	0x000000ff,	// 12: lightblue
 	0x00ff00ff,	// 13: magenta
 	0x0000ffff,	// 14: lightcyan
