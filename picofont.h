@@ -32,10 +32,10 @@
 extern "C" {
 #endif // __cplusplus
 
-#define PICOFONT_WIDTH		8
+#define PICOFONT_WIDTH		16
 #define PICOFONT_HEIGHT		16
 
-const u_char *font_get_undefined_glyph_bitmap(font_t *font, wchar_t ucs21);
+const u_short *font_get_undefined_glyph_bitmap(font_t *font, wchar_t ucs21);
 int font_get_undefined_glyph_width(font_t *font, wchar_t ucs21);
 
 #if defined(__cplusplus)

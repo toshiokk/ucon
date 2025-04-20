@@ -2,8 +2,8 @@ rm _diff.txt
 
 diff_one()
 {
-  echo kdiff3 ../../be/src/$1 ../../ucon/src/$1 >>_diff.txt
-  diff ../../be/src/$1 ../../ucon/src/$1 >>_diff.txt
+  echo meld ../../be/be/$1 ../../ucon/ucon/$1 >>_diff.txt
+  diff ../../be/be/$1 ../../ucon/ucon/$1 >>_diff.txt
 }
 
 diff_one myutf8.h

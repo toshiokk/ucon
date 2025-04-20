@@ -30,34 +30,4 @@
 
 #include "ucon.h"
 
-void verbose_printf(const char *format, ...)
-{
-	va_list args;
-
-	if (app__.verbose == 0)
-	    return;
-	va_start(args, format);
-	vfprintf(stderr, format, args);
-	va_end(args);
-}
-
-void printf_strerror(const char *format, ...)
-{
-	va_list args;
-
-	va_start(args, format);
-	vfprintf(stderr, format, args);
-	va_end(args);
-	printf_stderr(": %s\r\n", strerror(errno));
-}
-
-void printf_stderr(const char *format, ...)
-{
-	va_list args;
-
-	va_start(args, format);
-	vfprintf(stderr, format, args);
-	va_end(args);
-}
-
 // End of message.c

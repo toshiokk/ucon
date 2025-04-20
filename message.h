@@ -32,12 +32,6 @@
 extern "C" {
 #endif // __cplusplus
 
-#define msg_printf(args...)		printf_stderr(args)
-#define _ERR_					printf_stderr("%s, %d, !! ERROR !!\n", __FILE__, __LINE__);
-void verbose_printf(const char *format, ...);
-void printf_strerror(const char *format, ...);
-void printf_stderr(const char *format, ...);
-
 #if defined(__cplusplus)
 }
 #endif // __cplusplus

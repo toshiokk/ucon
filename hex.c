@@ -20,16 +20,16 @@
 
 #include "ucon.h"
 
-PRIVATE int get_hex_n_digits(char *buffer, int digits);
+PRIVATE long get_hex_n_digits(char *buffer, int digits);
 
 /*---------------------------------------------------------------------------*/
 void hex_init(font_t *font)
 {
-	font->font_width = 8;
-	font->font_height = 16;
+	font->width = 8;
+	font->height = 16;
 	memset(font->glyph_bitmap, 0xff, sizeof(font->glyph_bitmap));
 	memset(font->glyph_width, 0x00, sizeof(font->glyph_width));
-	font->glyphs = -1;
+	font->glyphs = 0;
 }
 int hex_destroy(font_t *font)
 {
@@ -53,15 +53,16 @@ int hex_load(font_t *font, char *file_path)
 	FILE *fp;
 	char buffer[MAX_LINE_LEN+1];
 	int char_code;
-	char *bitmap;
+	u_short *bitmap_ptr;
 	int len;
-	int idx;
-	int byte;
+	int off;
+	long bitmap;
 	int lines;
 	int height;
 	int width;
+	int digits;
 
-	verbose_printf("Loading font file: %s ... ", file_path);
+	v_printf("Loading font file: %s ...\n", file_path);
 	filter[0] = '\0';
 	if (strlen(file_path) > 3
 	 && strcmp(".gz", &file_path[strlen(file_path)-3]) == 0) {
@@ -83,26 +84,28 @@ int hex_load(font_t *font, char *file_path)
 		char_code = get_hex_n_digits(buffer, 4);
 		if (char_code >= 0) {
 			lines++;
-			bitmap = font->glyph_bitmap[char_code];
+			bitmap_ptr = font->glyph_bitmap[char_code];
 			len = strlen(buffer)-1;
 			len = MIN_(len-HEX_CODE_LEN, MAX_FONT_HEIGHT * 2 * 2);
-			for (idx = 0; idx < len; idx += 2) {
-				byte = get_hex_n_digits(&buffer[HEX_CODE_LEN+idx], 2);
-				if (byte < 0)
-					break;
-				*bitmap++ = byte;
-			}
-			height = len / 2;
 //flf_d_printf("len:%d, height:%d\n", len, height);
-			if (height <= MAX_FONT_HEIGHT) {
+			if ((len / 2) <= MAX_FONT_HEIGHT) {
 				// narrow
+				digits = 2;
+				height = len / digits;
 				width = height / 2;
-				font->font_width = width;
-				font->font_height = height;
+				font->width = width;
+				font->height = height;
 			} else {
 				// wide character
-				height /= 2;
+				digits = 4;
+				height = len / digits;
 				width = height;
+			}
+			for (off = 0; off < len; off += digits) {
+				bitmap = get_hex_n_digits(&buffer[HEX_CODE_LEN+off], digits);
+				if (bitmap < 0)
+					break;
+				*bitmap_ptr++ = (u_short)bitmap;
 			}
 //flf_d_printf("%04x:width:%d, height:%d\n", char_code, width, height);
 			font->glyph_width[char_code] = width;
@@ -122,14 +125,15 @@ int hex_load(font_t *font, char *file_path)
 	if (lines == 0) {
 		return 3;
 	}
-	verbose_printf("OK\n");
-///flf_d_printf("width:%d, height:%d\n", font->font_width, font->font_height);
+	v_printf("OK\n");
+///flf_d_printf("width:%d, height:%d\n", font->width, font->height);
 	return 0;
 }
 
-PRIVATE int get_hex_n_digits(char *buffer, int digits)
+PRIVATE long get_hex_n_digits(char *buffer, int digits)
 {
-	int hex;
+	long hex;
+	int digit;
 	char chr;
 
 #if 0
@@ -145,7 +149,7 @@ PRIVATE int get_hex_n_digits(char *buffer, int digits)
 #else
 	// fast replacement of sscanf(str, "%0?x", &hex)
 	hex = 0;
-	for ( ; digits > 0; digits--) {
+	for (digit = 0; digit < MIN_(4, digits); digit++) {
 		hex <<= 4;
 		chr = *buffer++;
 		if ('0' <= chr && chr <= '9')
@@ -157,6 +161,8 @@ PRIVATE int get_hex_n_digits(char *buffer, int digits)
 		else
 			return -1;
 	}
+	// 0x00XX ==> 0xXX00
+	hex <<= ((4 - digits) * 4);
 	return hex;
 #endif
 }

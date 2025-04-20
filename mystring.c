@@ -156,19 +156,19 @@ char *strcpy_blen(char *buf, int buf_len, const char *str)
 	return buf;
 }
 
-//------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 
-char *strlcat(char *buf, const char *str, int buf_len)
+char *strlcat__(char *buf, const char *str, int buf_len)
 {
 	int len;
 
 	len = strlen(buf);
 	if (len < buf_len) {
-		strlcpy(&buf[len], str, buf_len - len);
+		strlcpy__(&buf[len], str, buf_len - len);
 	}
 	return buf;
 }
-char *strlcpy(char *buf, const char *str, int buf_len)
+char *strlcpy__(char *buf, const char *str, int buf_len)
 {
 	strncpy(buf, str, buf_len);
 	buf[buf_len] = '\0';	// make sure of null termination
@@ -179,7 +179,7 @@ char *strcpy_ol(char *dest, const char *src)
 	memmove(dest, src, strlen(src)+1);
 	return dest;
 }
-int strlcmp(const char *str1, const char *str2)
+int strlcmp__(const char *str1, const char *str2)
 {
 	return strncmp(str1, str2, strlen(str2));
 }
@@ -187,6 +187,15 @@ int strlcmp(const char *str1, const char *str2)
 void *memcpy_ol(void *dest, void *src, size_t bytes)
 {
 	return memmove(dest, src, bytes);
+}
+
+int snprintf_(char *buffer, size_t buf_len, const char *format, ...)
+{
+	va_list args;
+	va_start(args, format);
+	size_t len = vsnprintf(buffer, buf_len, format, args);
+	va_end(args);
+	return len;
 }
 
 // End of mystring.c

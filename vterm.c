@@ -34,7 +34,7 @@
 PRIVATE int vterm_iso_C0_set(vterm_t *vterm, u_char chr);
 PRIVATE void vterm_reset_utf8_state(vterm_t *vterm);
 PRIVATE int vterm_parse_utf8_seq(vterm_t *vterm, u_char chr);
-PRIVATE void vterm_put_ucs21_char(vterm_t *vterm, wchar_t ucs21);
+PRIVATE void vterm_put_ucs32_char(vterm_t *vterm, wchar_t ucs32);
 PRIVATE void vterm_wrap_pen_pos(vterm_t *vterm, int width);
 
 PRIVATE void vterm_parse_func_esc(vterm_t *vterm, u_char chr);
@@ -70,20 +70,21 @@ PRIVATE int get_csi_arg_idx(void);
 PRIVATE int parse_csi_args(vterm_t *vterm, u_char chr);
 PRIVATE int get_csi_arg(int arg_idx);
 
-PRIVATE wchar_t subst_dec_sp_gr_char(wchar_t ucs21);
+PRIVATE wchar_t subst_dec_sp_gr_ucs32(wchar_t ucs21);
 
 #ifdef ENABLE_DEBUG
 PRIVATE void dump_csi_args(char chr);
-#endif // ENABLE_DEBUG
 
 PRIVATE void clear_parsed_str(void);
 PRIVATE void put_parsed_str(u_char chr);
 PRIVATE void dump_parsed_str(void);
+#else // ENABLE_DEBUG
+#define put_parsed_str(chr)
+#define dump_parsed_str()
+#endif // ENABLE_DEBUG
 
-void vterm_init(vterm_t *vterm, int columns, int lines)
+void vterm_init(vterm_t *vterm)
 {
-	int overlay_idx;
-
 	vterm->top_y = 0;
 	vterm->bottom_y = MAX_TERM_LINES;
 	pen_init(&(vterm->pen));
@@ -110,32 +111,28 @@ void vterm_init(vterm_t *vterm, int columns, int lines)
 
 	vterm_reset_utf8_state(vterm);
 
-	vterm_reinit(vterm, columns, lines);
+	vterm_set_metrics(vterm);
 
-	for (overlay_idx = 0; overlay_idx < OVERLAY_LINES; overlay_idx++) {
+	for (int overlay_idx = 0; overlay_idx < OVERLAY_LINES; overlay_idx++) {
 		vterm_set_overlay(vterm, overlay_idx, -1, 0, COLOR_DEF_BC, COLOR_DEF_FC, "", 0, 0);
 	}
 }
-void vterm_reinit(vterm_t *vterm, int columns, int lines)
+// determine text screen size (columns x lines)
+//  from frame buffer screen size and font size
+void vterm_set_metrics(vterm_t *vterm)
 {
-	columns = MIN_(MAX_TERM_COLS, columns);
-	lines = MIN_(MAX_TERM_LINES, lines);
-	vterm->text_columns = columns;
-	vterm->text_lines = lines;
-flf_d_printf("vterm->text_lines:%2d, vterm->text_columns:%2d\n",
- vterm->text_lines, vterm->text_columns);
+	vterm->text_columns = MIN_(MAX_TERM_COLS, fbr_chars_hx);
+	vterm->text_lines = MIN_(MAX_TERM_LINES, fbr_chars_hy);
 	vterm->text_characters = vterm->text_columns * vterm->text_lines;
-
-	verbose_printf("columns:%d, lines:%d, characters:%d\n",
-	 vterm->text_columns, vterm->text_lines, vterm->text_characters);
+flf_d_printf("text_columns:%3d, text_lines:%2d, text_characters:%4d\n",
+ vterm->text_columns, vterm->text_lines, vterm->text_characters);
 
 	vterm_init_scroll_region(vterm);
-
-	fb_set_metrics();
 _FLF_
 }
 void vterm_destroy(vterm_t *vterm)
 {
+	// nothing to do
 }
 
 /*---------------------------------------------------------------------------*/
@@ -146,8 +143,8 @@ void vterm_emulate_str__update_screen(vterm_t *vterm, const char *string, int by
 	vterm_paint_screen__cursor(vterm);
 }
 
-void vterm_emulate_str_yx_bc_fc(vterm_t *vterm, int yy, int xx, c_idx_t bc_idx, c_idx_t fc_idx,
- const char *string, int bytes)
+void vterm_emulate_str_yx_bc_fc(vterm_t *vterm, int yy, int xx,
+ c_idx_t bc_idx, c_idx_t fc_idx, const char *string, int bytes)
 {
 	vterm_pen_set_yx(vterm, yy, xx);
 	pen_set_bgc_fgc_idx(&(vterm->pen), bc_idx, fc_idx);
@@ -157,17 +154,20 @@ void vterm_emulate_str_yx_bc_fc(vterm_t *vterm, int yy, int xx, c_idx_t bc_idx, 
 // emulate VT-100 terminal
 void vterm_emulate_str(vterm_t *vterm, const char *string, int bytes)
 {
-	u_char chr;
-
 	if (bytes < 0) {
 		bytes = strlen(string);
 	}
-///d_printf("ZZZ");
-dump_string(string, bytes);
-///mflf_d_printf("%d: %s\n", bytes, dump_string_to_static_buf(string, bytes));
+///dump_string(string, bytes);
+#ifdef ENABLE_DEBUG
+///
+mflf_d_printf("%d:\n %s\n", bytes, dump_string_to_static_buf(string, bytes));
+#endif // ENABLE_DEBUG
 	while (bytes-- > 0) {
-		chr = *(string++);
-///mflf_d_printf("%02x[%c]\n", chr, isgraph(chr) ? chr : '.');
+		u_char chr = *(string++);
+#ifdef ENABLE_DEBUG
+///
+mflf_d_printf("(%d, %d)%02x[%c]\n", vterm_pen_get_y(vterm), vterm_pen_get_x(vterm), chr, isgraph(chr) ? chr : '.');
+#endif // ENABLE_DEBUG
 		vterm_emulate_char(vterm, chr);
 	}
 }
@@ -184,7 +184,7 @@ int vterm_emulate_char(vterm_t *vterm, u_char chr)
 			vterm_reset_utf8_state(vterm);
 		} else {
 			if (vterm_parse_utf8_seq(vterm, chr) == 0) {
-				vterm_put_ucs21_char(vterm, vterm->ucs21);
+				vterm_put_ucs32_char(vterm, vterm->ucs32);
 			}
 		}
 		break;
@@ -283,7 +283,7 @@ PRIVATE int vterm_iso_C0_set(vterm_t *vterm, u_char chr)
 PRIVATE void vterm_reset_utf8_state(vterm_t *vterm)
 {
 	vterm->utf8_state = 0;
-	vterm->ucs21 = 0x0000;
+	vterm->ucs32 = 0x0000;
 }
 PRIVATE int vterm_parse_utf8_seq(vterm_t *vterm, u_char chr)
 {
@@ -293,52 +293,58 @@ PRIVATE int vterm_parse_utf8_seq(vterm_t *vterm, u_char chr)
 			dump_parsed_str();
 			vterm_reset_utf8_state(vterm);
 		}
-		vterm->ucs21 = chr;
-		// ASCII char, send ucs21
+		vterm->ucs32 = chr;
+		// ASCII char, send ucs32
 	} else if ((chr & 0xc0) == 0x80) {	// 10xxxxxx
 		if (vterm->utf8_state == 0) {
-			warn_printf("illegal UTF-8 sequence\n");
+			warn_printf("illegal UTF-8 sequence(%02x but not in UTF8 state: %d)\n", chr, vterm->utf8_state);
 			dump_parsed_str();
-			vterm->ucs21 = chr;
+			vterm->ucs32 = chr;
 		} else {
-			vterm->ucs21 = (vterm->ucs21 << 6) | (chr & 0x3f);
+			vterm->ucs32 = (vterm->ucs32 << 6) | (chr & 0x3f);
 			vterm->utf8_state--;
-			// end of UTF-8 sequence, send ucs21
+			// end of UTF-8 sequence, send ucs32
 		}
-	} else if ((chr & 0xe0) == 0xc0) {	// 110xxxxx 10xxxxxx
-		vterm->utf8_state = 1;
-		vterm->ucs21 = (chr & 0x1f);
-	} else if ((chr & 0xf0) == 0xe0) {	// 1110xxxx 10xxxxxx 10xxxxxx
-		vterm->utf8_state = 2;
-		vterm->ucs21 = (chr & 0x0f);
-	} else if ((chr & 0xf8) == 0xf0) {	// 11110xxx 10xxxxxx 10xxxxxx 10xxxxxx
-		vterm->utf8_state = 3;
-		vterm->ucs21 = (chr & 0x07);
-	} else if ((chr & 0xfc) == 0xf8) {	// 111110xx 10xxxxxx 10xxxxxx 10xxxxxx 10xxxxxx
-		vterm->utf8_state = 4;
-		vterm->ucs21 = (chr & 0x03);
-	} else if ((chr & 0xfe) == 0xfc) {	// 1111110x 10xxxxxx 10xxxxxx 10xxxxxx 10xxxxxx 10xxxxxx
-		vterm->utf8_state = 5;
-		vterm->ucs21 = (chr & 0x01);
-	} else {							// 1111111x
-		vterm_reset_utf8_state(vterm);
-		vterm->ucs21 = chr;				// [0xfe, 0xff]
+	} else if ((chr & 0xc0) == 0xc0) {	// 11xxxxxx
+		if (vterm->utf8_state) {
+			warn_printf("illegal UTF-8 sequence(%02x but already in UTF8 state: %d)\n", chr, vterm->utf8_state);
+			dump_parsed_str();
+		}
+		if ((chr & 0xe0) == 0xc0) {	// 110xxxxx 10xxxxxx
+			vterm->utf8_state = 1;
+			vterm->ucs32 = (chr & 0x1f);
+		} else if ((chr & 0xf0) == 0xe0) {	// 1110xxxx 10xxxxxx 10xxxxxx
+			vterm->utf8_state = 2;
+			vterm->ucs32 = (chr & 0x0f);
+		} else if ((chr & 0xf8) == 0xf0) {	// 11110xxx 10xxxxxx 10xxxxxx 10xxxxxx
+			vterm->utf8_state = 3;
+			vterm->ucs32 = (chr & 0x07);
+		} else if ((chr & 0xfc) == 0xf8) {	// 111110xx 10xxxxxx 10xxxxxx 10xxxxxx 10xxxxxx
+			vterm->utf8_state = 4;
+			vterm->ucs32 = (chr & 0x03);
+		} else if ((chr & 0xfe) == 0xfc) {	// 1111110x 10xxxxxx 10xxxxxx 10xxxxxx 10xxxxxx 10xxxxxx
+			vterm->utf8_state = 5;
+			vterm->ucs32 = (chr & 0x01);
+		} else {							// 1111111x
+			vterm_reset_utf8_state(vterm);
+			vterm->ucs32 = chr;				// [0xfe, 0xff]
+		}
 	}
 	return vterm->utf8_state;
 }
 
-PRIVATE void vterm_put_ucs21_char(vterm_t *vterm, wchar_t ucs21)
+PRIVATE void vterm_put_ucs32_char(vterm_t *vterm, wchar_t ucs32)
 {
 	int width_in_pixels;
 	int width;
 
 	if (vterm->dec_sp_gr) {
 		// substitute to graphic character
-		ucs21 = subst_dec_sp_gr_char(ucs21);
+		ucs32 = subst_dec_sp_gr_ucs32(ucs32);
 	}
 	// get font width from font
-	width_in_pixels = font_get_glyph_width(cur_font, ucs21);
-	if (width_in_pixels <= cur_font->font_width)
+	width_in_pixels = font_get_glyph_width_in_pixels(cur_font, ucs32);
+	if (width_in_pixels <= cur_font->width)
 		width = 1;
 	else
 		width = 2;
@@ -352,15 +358,15 @@ _FLF_
 		vterm_insert_n_columns(vterm, width);
 	}
 	if (width == 1) {
-		vterm_put_to_buf_narrow(vterm, ucs21);
+		vterm_put_to_buf_narrow(vterm, ucs32);
 	} else {
-		vterm_put_to_buf_wide(vterm, ucs21);
+		vterm_put_to_buf_wide(vterm, ucs32);
 	}
 	vterm_pen_move_yx(vterm, 0, width);
 ///flf_d_printf("pen(%d, %d)\n", vterm->pen.xx, vterm->pen.yy);
 }
 
-// Before putting the charactor to Pen position:
+// Before putting the character to Pen position:
 // If current pen position is NOT on the last line.
 //	+--------------------------+
 //	|ABCDEFGHIJKLMNOPQRSTUVWXYZp
@@ -387,7 +393,7 @@ _FLF_
 //	|p                         |
 //	+--------------------------+
 
-// After putting a charactor to the last screen position:
+// After putting a character to the last screen position:
 // +--------------------------+
 // |                          |
 // |                          |
@@ -485,7 +491,7 @@ PRIVATE void vterm_parse_func_esc(vterm_t *vterm, u_char chr)
 		break;
 	case '/'/*ISO_G3D6*/:		/* / */
 		break;
-	case 'H':				// ESC H
+	case 'H':					/* ESC H */
 		// set horizontal tab position
 		break;
 	case 'N'/*Fe(ISO_SS2)*/:	/* N *//* 7bit single shift 2 */
@@ -944,7 +950,7 @@ PRIVATE void vterm_set_scroll_region__adjust(vterm_t *vterm, int top_y, int bott
 	if (top_y < 0 || vterm->text_lines <= top_y
 	 || bottom_y < 0 || vterm->text_lines < bottom_y
 	 || top_y >= bottom_y) {
-		msg_printf("illegal (top:%d, bottom:%d)\n", top_y, bottom_y);
+		flf_d_printf("illegal (top:%d, bottom:%d)\n", top_y, bottom_y);
 		// illegal parameter
 		return;
 	}
@@ -987,10 +993,6 @@ PRIVATE void vterm_esc_report(vterm_t *vterm, u_char mode, u_short arg)
 			break;
 		case 6:
 			// send "current cursor position"
-///			int xx = (vterm->pen.xx < vterm->text_columns - 1)
-///			 ? vterm->pen.xx : vterm->text_columns - 1;
-///			int yy = (vterm->pen.yy < vterm->bottom_y - 1)
-///			 ? vterm->pen.yy : vterm->bottom_y - 1;
 			snprintf(report, MAX_REPORT_LEN+1, "\x1b[%d;%dR",
 			 vterm_pen_get_y(vterm)+1, vterm_pen_get_x(vterm)+1);
 			break;
@@ -1089,29 +1091,29 @@ char *dec_sp_gr_utf8[DEC_SP_GR_CHARS] = {
 	"£", //  }
 	"·", //  ~
 };
-wchar_t dec_sp_gr_ucs21[DEC_SP_GR_CHARS];
+wchar_t dec_sp_gr_ucs32[DEC_SP_GR_CHARS];
 
-PRIVATE void make_ucs21_tbl_for_dec_sp_gr(void)
+PRIVATE void make_ucs32_tbl_for_dec_sp_gr(void)
 {
 	static char converted = 0;
-	wchar_t ucs21;
+	wchar_t ucs32;
 
 	if (converted == 0) {
 		for (int idx = 0; idx < DEC_SP_GR_CHARS; idx++) {
 #define MAX_UTF8C_BYTES			4
-			mbtowc(&ucs21, dec_sp_gr_utf8[idx], MAX_UTF8C_BYTES);
-			dec_sp_gr_ucs21[idx] = ucs21;
+			mbtowc(&ucs32, dec_sp_gr_utf8[idx], MAX_UTF8C_BYTES);
+			dec_sp_gr_ucs32[idx] = ucs32;
 		}
 	}
 	converted = 1;
 }
-PRIVATE wchar_t subst_dec_sp_gr_char(wchar_t ucs21)
+PRIVATE wchar_t subst_dec_sp_gr_ucs32(wchar_t ucs32)
 {
-	make_ucs21_tbl_for_dec_sp_gr();
-	if (DEC_SP_GR_CHAR_BEGIN <= ucs21 && ucs21 <= DEC_SP_GR_CHAR_END) {
-		return dec_sp_gr_ucs21[ucs21 - DEC_SP_GR_CHAR_BEGIN];
+	make_ucs32_tbl_for_dec_sp_gr();
+	if (DEC_SP_GR_CHAR_BEGIN <= ucs32 && ucs32 <= DEC_SP_GR_CHAR_END) {
+		return dec_sp_gr_ucs32[ucs32 - DEC_SP_GR_CHAR_BEGIN];
 	}
-	return ucs21;	// No substitution
+	return ucs32;	// No substitution
 }
 //-----------------------------------------------------------------------------
 
@@ -1130,6 +1132,7 @@ PRIVATE void dump_csi_args(char chr)
 
 //-----------------------------------------------------------------------------
 
+#ifdef ENABLE_DEBUG
 #define MAX_SEQ		20
 PRIVATE int parsed_str_idx = 0;
 PRIVATE u_char parsed_str[MAX_SEQ+1];
@@ -1155,5 +1158,6 @@ PRIVATE void dump_parsed_str(void)
 	dump_string(parsed_str, parsed_str_idx);
 	clear_parsed_str();
 }
+#endif // ENABLE_DEBUG
 
 // End of vterm.c

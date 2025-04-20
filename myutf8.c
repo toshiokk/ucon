@@ -4,7 +4,6 @@
 
 #include "utilincs.h"
 
-#ifdef ENABLE_UTF8
 #define	WIDE_CHARS		(12 + 20 + 14 + 1)
 const char *my_wide_utf8c[WIDE_CHARS] = {
  "■", "□", "◆", "◇", "○", "◎", "●", "★", "☆", "☐", "☑", "☒",
@@ -13,11 +12,9 @@ const char *my_wide_utf8c[WIDE_CHARS] = {
  "", "", "", "", "", "", "", "", "", "", "", "", "", "",
  "" };
 PRIVATE wchar_t my_wide_wchar[WIDE_CHARS] = { 0 };
-#endif // ENABLE_UTF8
 
 PRIVATE int my_mbtowc__(wchar_t *pwc, const char *utf8c, int max_len);
 
-#ifdef ENABLE_UTF8
 #ifdef ENABLE_DEBUG
 void test_my_mbwidth(void)
 {
@@ -42,16 +39,12 @@ PRIVATE int make_my_wcwidth_table(void)
 	}
 	return 1;
 }
-#endif // ENABLE_UTF8
 int my_mbwidth(const char *utf8c, int max_len)
 {
 	return my_wcwidth(my_mbtowc(utf8c, max_len));
 }
 int my_wcwidth(wchar_t wc)
 {
-#ifndef ENABLE_UTF8
-	return 1;
-#else // ENABLE_UTF8
 	int chr_idx;
 	int columns;
 
@@ -67,7 +60,6 @@ int my_wcwidth(wchar_t wc)
 	if (columns < 1)
 		columns = 1;		// narrow char.
 	return columns;
-#endif // ENABLE_UTF8
 }
 
 // UTF8 character byte length

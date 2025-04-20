@@ -9,7 +9,9 @@
         - 6x12 ASCII, 12x12 Unicode font
         - 7x14 ASCII, 14x14 Unicode font
         - 8x16 ASCII, 16x16 Unicode font
-    - Built in Japanese IME(Input Method) includes canna dictionary.
+    - Built in Japanese IME(Input Method) with canna dictionary.
+    - Screen rotation support (You can use your monitor as "portrait").
+    - Change font size and rotation on the fly.
 
 ### What is UCON
 - Started based on JFBTERM.
@@ -40,3 +42,5 @@
         |           |
         +-----------+
 ~~~
+
+###### EOF

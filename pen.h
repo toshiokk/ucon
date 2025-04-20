@@ -74,8 +74,8 @@ void pen_reverse(pen_t *pen);
 void pen_no_reverse(pen_t *pen);
 
 void pen_set_bgc_fgc_idx(pen_t *pen, c_idx_t bc_idx, c_idx_t fc_idx);
-void pen_set_bgc_idx(pen_t *pen, c_idx_t color_idx);
-void pen_set_fgc_idx(pen_t *pen, c_idx_t color_idx);
+void pen_set_bgc_idx(pen_t *pen, c_idx_t clr_idx);
+void pen_set_fgc_idx(pen_t *pen, c_idx_t clr_idx);
 c_idx_t pen_get_bgc_idx(pen_t *pen);
 c_idx_t pen_get_fgc_idx(pen_t *pen);
 

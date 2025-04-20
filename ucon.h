@@ -26,6 +26,7 @@
 #include "hex.h"
 #include "fbbpp.h"
 #include "fbcommon.h"
+#include "fbrotation.h"
 #include "pen.h"
 #include "vtermlow.h"
 #include "vterm.h"

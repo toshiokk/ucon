@@ -54,6 +54,6 @@ echo_run automake # convert (Makefile.am and aclocal.m4) into Makefile.in
 echo_run autoconf # convert configure.ac to configure
 
 # by a user -------------------------------------------------------------------
-#./configure --enable-all
+./configure --enable-all
 
 } 2>&1 | tee _autotools.log

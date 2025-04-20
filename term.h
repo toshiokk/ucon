@@ -45,6 +45,7 @@ typedef struct term_ {
 extern term_t term__;
 
 int term_start_child_and_serve(term_t *term);
+
 void signal_init(void);
 
 #if defined(__cplusplus)

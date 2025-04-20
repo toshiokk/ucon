@@ -3,3 +3,5 @@
 sleep 5
 ./_c_screenshot
 ./__m
+./_c_disable_imj
+./__m

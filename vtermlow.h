@@ -144,18 +144,26 @@ typedef struct /*text_char_*/ {
 ///   4320 / 5 = 864
 ///   7680 / 10 = 768
 #ifdef ENABLE_255COLUMNS
+
 // NOTE: If your terminal interface supports columns > 254
 ////# define MAX_TERM_COLS	274	// Lap top
 ////# define MAX_TERM_COLS	384	// FHD
 ////# define MAX_TERM_COLS	512	//  WQXGA
-# define MAX_TERM_COLS	768	// 4K landscape
+///# define MAX_TERM_COLS	768	// 4K landscape
+////
+# define MAX_TERM_COLS	1536	// 8K landscape
+
 #else // ENABLE_255COLUMNS
+
 # define MAX_TERM_COLS	254		// WORKAROUND: ncurses doesn't support columns > 254
+
 #endif // ENABLE_255COLUMNS
 ////#define MAX_TERM_LINES	77	// Lap top
 ////#define MAX_TERM_LINES	108	// FHD
 ////#define MAX_TERM_LINES	160	//  WQXGA
-#define MAX_TERM_LINES	384	// 4K portrait
+///#define MAX_TERM_LINES	384	// 4K portrait
+////
+#define MAX_TERM_LINES	768	// 8K portrait
 
 #define OVERLAY_TEXT_LEN		100
 #define OVERLAY_TEXT_Y			0
@@ -167,9 +175,11 @@ struct overlay_line {
 	time_t timet;
 	int secs;
 	// overlay line
-	text_char_t text_buf_overlay[MAX_TERM_COLS];
-	text_char_t text_buf_save[MAX_TERM_COLS];
+	text_char_t text_overlay[MAX_TERM_COLS];
+	text_char_t text_save[MAX_TERM_COLS];
 };
+
+#define MAX_ROTATION		4	// 0 -- 3
 
 typedef struct vterm_ {
 	int text_columns;		/* 1行あたり文字数 */
@@ -209,7 +219,7 @@ typedef struct vterm_ {
 	} esc_seq_parse_state;
 
 	char utf8_state;		// [0, 5]
-	wchar_t ucs21;
+	wchar_t ucs32;			// 32 bits full Unicode
 
 	/* virtual text buffer */
 	text_char_t text_buf_to_paint[MAX_TERM_LINES][MAX_TERM_COLS];
@@ -239,7 +249,7 @@ void vterm_unregister_vt_signals(void);
 int vterm_reply_sig_release(void);
 int vterm_reply_sig_acquire(void);
 
-void vterm_set_window_size(vterm_t *vterm);
+void vterm_send_sigwinch(vterm_t *vterm);
 
 /*---------------------------------------------------------------------------*/
 
@@ -276,8 +286,8 @@ void vterm_text_clear_all(vterm_t *vterm);
 void vterm_text_clear_columns(vterm_t *vterm, u_char columns);
 void vterm_clear_in_line_mode(vterm_t *vterm, char mode);
 void vterm_clear_in_screen_mode(vterm_t *vterm, char mode);
-void vterm_put_to_buf_narrow(vterm_t *vterm, wchar_t ucs21);
-void vterm_put_to_buf_wide(vterm_t *vterm, wchar_t ucs21);
+void vterm_put_to_buf_narrow(vterm_t *vterm, wchar_t ucs32);
+void vterm_put_to_buf_wide(vterm_t *vterm, wchar_t ucs32);
 
 void vterm_text_scroll_up(vterm_t *vterm, int lines);
 void vterm_text_scroll_up_region(vterm_t *vterm, int yy1, int yy2, int lines);
@@ -296,7 +306,7 @@ int vterm_check_screen_pos(vterm_t *vterm, int *yy, int *xx);
 void vterm_save_text_buf_to_paint(vterm_t *vterm, int yy, text_char_t *text_buf);
 void vterm_restore_text_buf_to_paint(vterm_t *vterm, int yy, text_char_t *text_buf);
 
-void set_text_char_t(text_char_t *text_char, wchar_t ucs21, pen_t *pen, u_char flags);
+void set_text_char_t(text_char_t *text_char, wchar_t ucs32, pen_t *pen, u_char flags);
 void set_flags_to_text_char_t(text_char_t *text_char, u_char flags);
 void set_flags_char_to_text_char_t(text_char_t *text_char, u_char flags, wchar_t ucs21);
 

@@ -35,6 +35,8 @@ extern "C" {
 
 #define IS_IN_RANGE(min, val, max)		((min) <= (val) && (val) < (max))
 
+long get_page_size();
+
 int util_privilege_open(const char *pathname, int flags);
 int util_privilege_ioctl(int fd, int request, void *ptr);
 

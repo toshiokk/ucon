@@ -27,7 +27,7 @@
 
 #include "ucon.h"
 
-frame_buffer_t frame_buffer__;
+frame_buffer_t fb__;
 
 PRIVATE int fb_select_driver(frame_buffer_t *fb,
  struct fb_var_screeninfo *fbvs,
@@ -60,7 +60,7 @@ PRIVATE struct fb_var_screeninfo save_fb_var;
 PRIVATE bool_t var_screen_info_modified = FALSE;
 
 /*---------------------------------------------------------------------------*/
-// 16 colors pallete
+// 16 colors palette
 PRIVATE argb32_t table_16_color_argb32[COLORS_16] = {	// 00000000rrrrrrrrggggggggbbbbbbbb
 //    AARRGGBB
 	0x00000000,	//  0: black
@@ -74,7 +74,7 @@ PRIVATE argb32_t table_16_color_argb32[COLORS_16] = {	// 00000000rrrrrrrrggggggg
 	0x00606060,	//  8: darkgray
 	0x00ff0000,	//  9: lightred
 	0x0000ff00,	// 10: lightgreen
-	0x00c0c000,	// 11: yellow
+	0x00f0f000,	// 11: yellow
 	0x000000ff,	// 12: lightblue
 	0x00ff00ff,	// 13: magenta
 	0x0000ffff,	// 14: lightcyan
@@ -98,13 +98,13 @@ int fb_get_fb_dev_name(frame_buffer_t *fb)
 
 	if ((fb->fd_tty0 = util_privilege_open("/dev/tty0", O_RDWR)) < 0) {
 		_ERR_
-		printf_strerror("open /dev/tty0");
+		se_printf("open /dev/tty0");
 		return -1;
 	}
 
 	if (ioctl(fb->fd_tty0, VT_GETSTATE, &vt_st) < 0) {
 		_ERR_
-		printf_strerror("ioctl VT_GETSTATE");
+		se_printf("ioctl VT_GETSTATE");
 		return -1;
 	}
 	fb_c2fm.console = vt_st.v_active;
@@ -117,7 +117,7 @@ int fb_get_fb_dev_name(frame_buffer_t *fb)
 	} else {
 		if ((fd = util_privilege_open("/dev/fb0", O_RDWR)) < 0) {
 			_ERR_
-			printf_strerror("open /dev/fb0");
+			se_printf("open /dev/fb0");
 			return -1;
 		}
 		if (ioctl(fd, FBIOGET_CON2FBMAP, &fb_c2fm) < 0) {
@@ -136,115 +136,128 @@ flf_d_printf("FB device name: [%s]\n", fb->fb_dev_name);
 int fb_open(frame_buffer_t *fb)
 {
 	struct stat st;
-	struct fb_var_screeninfo fb_var;
-	struct fb_fix_screeninfo fb_fix;
 	int fb_type_idx;
 
 	if ((fb->fd_fb = util_privilege_open(fb->fb_dev_name, O_RDWR)) == -1) {
 		_ERR_
-		printf_strerror("open %s", fb->fb_dev_name);
+		se_printf("open %s", fb->fb_dev_name);
 		return -1;
 	}
 	if (fstat(fb->fd_fb, &st) < 0) {
 		_ERR_
-		printf_strerror("fstat(%s)", fb->fb_dev_name);
+		se_printf("fstat(%s)", fb->fb_dev_name);
 		return -1;
 	}
 	if (!S_ISCHR(st.st_mode) || major(st.st_rdev) != 29) {	/* FB_MAJOR */
 		_ERR_
-		printf_stderr("%s: not a framebuffer device\n", fb->fb_dev_name);
+		er_printf("%s: not a framebuffer device\n", fb->fb_dev_name);
 		return -1;
 	}
 
-	if (fb_get_var_screen_info(fb->fd_fb, &fb_var) < 0) {
+	if (fb_get_var_screen_info(fb->fd_fb, &(fb->fb_var)) < 0) {
 		_ERR_
 		return -1;
 	}
-	if (fb_var.yres_virtual != fb_var.yres) {
-		memcpy_ol((void*)&save_fb_var, (void*)&fb_var, sizeof(save_fb_var));
-		fb_var.yres_virtual = fb_var.yres;
-		fb_var.yoffset = 0;
-		fb_var.activate = FB_ACTIVATE_NOW;
+	if (fb->fb_var.yres_virtual != fb->fb_var.yres) {
+		memcpy_ol((void*)&save_fb_var, (void*)&(fb->fb_var), sizeof(save_fb_var));
+		fb->fb_var.yres_virtual = fb->fb_var.yres;
+		fb->fb_var.yoffset = 0;
+		fb->fb_var.activate = FB_ACTIVATE_NOW;
 		var_screen_info_modified = TRUE;
-		if (fb_set_var_screen_info(fb->fd_fb, &fb_var) < 0) {
+		if (fb_set_var_screen_info(fb->fd_fb, &(fb->fb_var)) < 0) {
 			_ERR_
 			return -1;
 		}
 	}
-	fb_get_fix_screen_info(fb->fd_fb, &fb_fix);
+	fb_get_fix_screen_info(fb->fd_fb, &(fb->fb_fix));
 
-	if (fb_fix.visual == FB_VISUAL_DIRECTCOLOR
-	 || fb_fix.visual == FB_VISUAL_PSEUDOCOLOR) {
+	// informations gotten from FB driver
+	//   fb_fix.smem_start
+	//   fb_fix.smem_len
+	//   fb_fix.line_length
+	//   fb_var.bits_per_pixel
+	//   fb_var.xres
+	//   fb_var.yres
+
+	if (fb->fb_fix.visual == FB_VISUAL_DIRECTCOLOR
+	 || fb->fb_fix.visual == FB_VISUAL_PSEUDOCOLOR) {
 		fb_get_cmap(fb->fd_fb, &save_color_map);
 		color_map_saved = TRUE;
 	}
 
 #ifdef ENABLE_DEBUG
 	if (app__.debug) {
-		fb_show_screeninfo(fb, &fb_var, &fb_fix);
+		fb_show_screeninfo(fb, &(fb->fb_var), &(fb->fb_fix));
 	}
 #endif // ENABLE_DEBUG
-	fb_type_idx = fb_select_driver(fb, &fb_var, &fb_fix);
+	fb_type_idx = fb_select_driver(fb, &(fb->fb_var), &(fb->fb_fix));
 	if (fb_type_idx < 0) {
 		_ERR_
-		printf_stderr("Oops: Unknown framebuffer ???\n");
+		er_printf("Oops: Unknown framebuffer ???\n");
 		return -1;
 	}
 flf_d_printf("Selected driver index: %d, bits per pixel: %d\n",
  fb_type_idx, fb_drivers[fb_type_idx].bitsPerPixel);
 	fb->driver = &fb_drivers[fb_type_idx];
 
-	/* FIX: scanline length is not necessarily the same as display width */
-	fb->width = fb_var.xres;
-	fb->height = fb_var.yres;
-	fb->bytes_per_line = fb_fix.line_length;
-	fb->bits_per_pixel = fb_var.bits_per_pixel;
-	fb->bytes_per_pixel = (fb_var.bits_per_pixel + (8-1)) / 8;
-	verbose_printf("width:%d, height:%d, bits/pixel:%d, bytes/pixel:%d, bytes/line:%d\n",
-	 fb->width, fb->height, fb->bits_per_pixel, fb->bytes_per_pixel, fb->bytes_per_line);
+	// NOTE: (line_length / bits_per_pixel) is not necessarily the same as screen_size_x
+	//       line_length may be different from (screen_size_x * bytes_per_pixel)
+	fb->screen_size_x = fb->fb_var.xres;
+	fb->screen_size_y = fb->fb_var.yres;
+	fb->bytes_per_line = fb->fb_fix.line_length;
+	fb->bits_per_pixel = fb->fb_var.bits_per_pixel;
+	fb->bytes_per_pixel = (fb->fb_var.bits_per_pixel + (8-1)) / 8;
 
-#ifndef PAGE_MASK
-// PAGE_MASK is normally defined in <asm/page.h>
-#define PAGE_MASK		(~(0x1000-1))	// 0xfffff000 : 11111111-11111111-11110000-00000000
-#endif
+	v_printf("screen_size_x:%d, screen_size_y:%d, bits/pixel:%d, bytes/pixel:%d, bytes/line:%d\n",
+	 fb->screen_size_x, fb->screen_size_y, fb->bits_per_pixel, fb->bytes_per_pixel, fb->bytes_per_line);
+	v_printf("smem_start: 0x%08lx, smem_len: 0x%08lx(%d)\n",
+	 fb->fb_fix.smem_start, fb->fb_fix.smem_len, fb->fb_fix.smem_len);
+
+flf_d_printf("page_size: %d\n", get_page_size());
+	size_t page_size = get_page_size();	// may be 0x1000
+	size_t page_mask = ~(page_size-1);	// may be 0xffffffffffff0000
+
 	// mmap Buffer Memory
-	fb->fb_offset = (u_int32)(fb_fix.smem_start) & (~PAGE_MASK);
-	fb->fb_mem_size = (fb_fix.smem_len + fb->fb_offset + ~PAGE_MASK) & PAGE_MASK;
-	fb->fb_view_size = fb->bytes_per_line * fb->height;
-	fb->fb_mmapped = (u_char *)mmap(NULL, fb->fb_mem_size, PROT_READ|PROT_WRITE,
+	fb->fb_offset_in_mmap = ((size_t)fb->fb_fix.smem_start) & page_mask;
+	fb->fb_mmap_size = (fb->fb_offset_in_mmap + fb->fb_fix.smem_len + (page_size-1)) & page_mask;
+	fb->fb_mmapped = (u_char *)mmap(NULL, fb->fb_mmap_size, PROT_READ|PROT_WRITE,
 	 MAP_SHARED, fb->fd_fb, (off_t)0);
 	if ((long)fb->fb_mmapped == -1) {
 		_ERR_
-		printf_stderr("cannot mmap(fb_start)");
+		er_printf("cannot mmap(fb_start)");
 		return -1;
 	}
-	fb->fb_start = fb->fb_mmapped + fb->fb_offset;
-#ifdef ENABLE_DEBUG
-	verbose_printf("mmap : %p (fb_offset:%08lx, fb_mem_size:%08lx)\n",
-	 fb->fb_mmapped, fb->fb_offset, fb->fb_mem_size);
-	verbose_printf("fb_start: %p, fb_view_size:%08lx\n", fb->fb_start, fb->fb_view_size);
-#endif // ENABLE_DEBUG
-	verbose_printf("width(by line_length):%d, height(by smem_len):%d\n",
-	 fb_fix.line_length / fb->bytes_per_pixel, fb->fb_mem_size / fb->bytes_per_line);
-	if (app__.use_whole_buf
-	 && (fb_fix.line_length / fb->bytes_per_pixel) > (fb->fb_mem_size / fb->bytes_per_line)) {
-//		verbose_printf("width:%d, height:%d\n",
-//		 fb_fix.line_length / fb->bytes_per_pixel, fb->fb_mem_size / fb->bytes_per_line);
-		fb->width = fb_fix.line_length / fb->bytes_per_pixel;
-		fb->height = fb->fb_mem_size / fb->bytes_per_line;
-		verbose_printf("width:%d, height:%d\n", fb->width, fb->height);
-	}
-
+	v_printf("mmap : %p (fb_offset_in_mmap:%08lx, fb_mmap_size:%d)\n",
+	 fb->fb_mmapped, fb->fb_offset_in_mmap, fb->fb_mmap_size);
 	/* move viewport to upper left corner */
-	if (fb_var.xoffset != 0 || fb_var.yoffset != 0) {
-		fb_var.xoffset = 0;
-		fb_var.yoffset = 0;
-		if (fb_pan_display(fb->fd_fb, &fb_var) < 0)
+	if (fb->fb_var.xoffset != 0 || fb->fb_var.yoffset != 0) {
+		fb->fb_var.xoffset = 0;
+		fb->fb_var.yoffset = 0;
+		if (fb_pan_display(fb->fd_fb, &(fb->fb_var)) < 0)
 			return -1;
 	}
-
 	fb_setup_15_16_bpp_color_table();
-	return 0;
+
+	fb->fb_start = fb->fb_mmapped + fb->fb_offset_in_mmap;
+	fb->fb_size = fb->fb_mmap_size;
+	fb->fb_end = fb->fb_start + fb->fb_size;
+
+	fb_setup_view_address(fb);
+}
+
+void fb_setup_view_address(frame_buffer_t *fb)
+{
+	v_printf("screen_size_x(by line_length):%d, screen_size_y(by smem_len):%d\n",
+	 fb->fb_fix.line_length / fb->bytes_per_pixel, fb->fb_mmap_size / fb->bytes_per_line);
+	if (app__.use_whole_buf) {
+///	 && (fb_fix.line_length / fb->bytes_per_pixel) > (fb->fb_mmap_size / fb->bytes_per_line)) {}
+		fb->screen_size_x = fb->fb_fix.line_length / fb->bytes_per_pixel;
+		fb->screen_size_y = fb->fb_mmap_size / fb->bytes_per_line;
+		flf_d_printf("screen_size_x:%d, screen_size_y:%d\n", fb->screen_size_x, fb->screen_size_y);
+//		v_printf("screen_size_x:%d, screen_size_y:%d\n", fb->screen_size_x, fb->screen_size_y);
+	}
+	v_printf("fb_start/fb_end: %p/%p, fb_size:%d\n", fb->fb_start, fb->fb_end, fb->fb_size);
+	v_printf("screen_size_x:%d, screen_size_y:%d\n", fb->screen_size_x, fb->screen_size_y);
 }
 
 int fb_close(frame_buffer_t *fb)
@@ -252,7 +265,7 @@ int fb_close(frame_buffer_t *fb)
 	int ret = 0;
 
 	if ((long)fb->fb_mmapped == -1) {
-		munmap((caddr_t)fb->fb_mmapped, fb->fb_mem_size);
+		munmap((caddr_t)fb->fb_mmapped, fb->fb_mmap_size);
 	}
 	if (color_map_saved == TRUE) {
 ///		fb_put_cmap(fb->fd_fb, &save_color_map);
@@ -341,30 +354,30 @@ PRIVATE void fb_show_screeninfo(frame_buffer_t *fb,
 		visual == FB_VISUAL_DIRECTCOLOR ?			"Direct colo" :
 		visual == FB_VISUAL_STATIC_PSEUDOCOLOR ?	"Pseudo color readonly" :
 													"Unknown Visual";
-	verbose_printf("===== Framebuffer Info ==========================\n");
-	verbose_printf("NAME   : [%s]\n", fbfs->id);
-	verbose_printf("TYPE   : %s\n", type_name);
-	verbose_printf("VISUAL : %s\n", vis_name);
-	verbose_printf("SMEM   : %p L=%u\n", fbfs->smem_start, fbfs->smem_len);
-	verbose_printf("LLEN   : %u\n", fbfs->line_length);
-	verbose_printf("RESO   : %ux%u+%u+%u / %ux%u @ %u\n",
+	v_printf("===== Framebuffer Info ==========================\n");
+	v_printf("NAME   : [%s]\n", fbfs->id);
+	v_printf("TYPE   : %s\n", type_name);
+	v_printf("VISUAL : %s\n", vis_name);
+	v_printf("SMEM   : %p L=%u\n", fbfs->smem_start, fbfs->smem_len);
+	v_printf("LLEN   : %u\n", fbfs->line_length);
+	v_printf("RESO   : %ux%u+%u+%u / %ux%u @ %u\n",
 	 fbvs->xres, fbvs->yres, fbvs->xoffset, fbvs->yoffset,
 	 fbvs->xres_virtual, fbvs->yres_virtual,
 	 fbvs->bits_per_pixel);
-	verbose_printf("RED    : %u @ %u %c\n",
+	v_printf("RED    : %u @ %u %c\n",
 	 fbvs->red.offset, fbvs->red.length,
 	 fbvs->red.msb_right ? '-' : '+');
-	verbose_printf("GREEN  : %u @ %u %c\n",
+	v_printf("GREEN  : %u @ %u %c\n",
 	 fbvs->green.offset, fbvs->green.length,
 	 fbvs->green.msb_right ? '-' : '+');
-	verbose_printf("BLUE   : %u @ %u %c\n",
+	v_printf("BLUE   : %u @ %u %c\n",
 	 fbvs->blue.offset, fbvs->blue.length,
 	 fbvs->blue.msb_right ? '-' : '+');
-	verbose_printf("==================================================\n");
+	v_printf("==================================================\n");
 #if __BYTE_ORDER == __BIG_ENDIAN
-	verbose_printf("CPU endian : BIG\n");
+	v_printf("CPU endian : BIG\n");
 #elif __BYTE_ORDER == __LITTLE_ENDIAN
-	verbose_printf("CPU endian : LITTLE\n");
+	v_printf("CPU endian : LITTLE\n");
 #else
 #	error No endianness defined
 #endif
@@ -399,15 +412,10 @@ argb32_t argb32_from_color_idx(c_idx_t color_idx)
 	return table_16_color_argb32[MK_IN_RANGE(0, color_idx, COLORS_16)];
 }
 //-----------------------------------------------------------------------------
-// r, g, b <== color_idx
-void r_g_b_24_from_color_idx(c_idx_t color_idx, u_char *b0, u_char *b1, u_char *b2)
-{
-	r_g_b_24_from_argb32(argb32_from_color_idx(color_idx), b0, b1, b2);
-}
 // r, g, b <== rgb15_t
-void r_g_b_24_from_rgb15(rgb15_t rgb15, u_char *b0, u_char *b1, u_char *b2)
+void rgb24_from_rgb15(rgb15_t rgb15, rgb24_t *rgb24)
 {
-	r_g_b_24_from_argb32(argb32_from_rgb15(rgb15), b0, b1, b2);
+	r_g_b_24_from_argb32(argb32_from_rgb15(rgb15), &(*rgb24)[0], &(*rgb24)[1], &(*rgb24)[2]);
 }
 // r, g, b <== argb32_t
 void r_g_b_24_from_argb32(argb32_t argb32, u_char *b0, u_char *b1, u_char *b2)
@@ -504,7 +512,7 @@ PRIVATE int fb_get_var_screen_info(int fd_fb, struct fb_var_screeninfo *var)
 {
 	if (ioctl(fd_fb, FBIOGET_VSCREENINFO, var) < 0) {
 		_ERR_
-		printf_strerror("ioctl FBIOGET_VSCREENINFO");
+		se_printf("ioctl FBIOGET_VSCREENINFO");
 		return -1;
 	}
 	return 0;
@@ -514,7 +522,7 @@ PRIVATE int fb_set_var_screen_info(int fd_fb, struct fb_var_screeninfo *var)
 {
 	if (ioctl(fd_fb, FBIOPUT_VSCREENINFO, var) < 0) {
 		_ERR_
-		printf_strerror("ioctl FBIOPUT_VSCREENINFO");
+		se_printf("ioctl FBIOPUT_VSCREENINFO");
 		return -1;
 	}
 	return 0;
@@ -524,7 +532,7 @@ PRIVATE int fb_get_fix_screen_info(int fd_fb, struct fb_fix_screeninfo *fix)
 {
 	if (ioctl(fd_fb, FBIOGET_FSCREENINFO, fix) < 0) {
 		_ERR_
-		printf_strerror("ioctl FBIOGET_FSCREENINFO");
+		se_printf("ioctl FBIOGET_FSCREENINFO");
 		return -1;
 	}
 	return 0;
@@ -534,7 +542,7 @@ PRIVATE int fb_get_cmap(int fd_fb, struct fb_cmap *cmap)
 {
 	if (ioctl(fd_fb, FBIOGETCMAP, cmap) < 0) {
 		_ERR_
-		printf_strerror("ioctl FBIOGETCMAP");
+		se_printf("ioctl FBIOGETCMAP");
 		return -1;
 	}
 	return 0;
@@ -544,7 +552,7 @@ PRIVATE int fb_put_cmap(int fd_fb, struct fb_cmap *cmap)
 {
 	if (ioctl(fd_fb, FBIOPUTCMAP, cmap) < 0) {
 		_ERR_
-		printf_strerror("ioctl FBIOPUTCMAP");
+		se_printf("ioctl FBIOPUTCMAP");
 		return -1;
 	}
 	return 0;
@@ -554,7 +562,7 @@ PRIVATE int fb_pan_display(int fd_fb, struct fb_var_screeninfo *var)
 {
 	if (ioctl(fd_fb, FBIOPAN_DISPLAY, var) < 0) {
 		_ERR_
-		printf_strerror("ioctl FBIOPAN_DISPLAY");
+		se_printf("ioctl FBIOPAN_DISPLAY");
 		return -1;
 	}
 	return 0;
@@ -565,9 +573,9 @@ int fb_set_blank(int fd_fb, int vt_num, int blank)
 {
 	struct vt_stat vt_st;
 
-	if (ioctl(frame_buffer__.fd_tty0, VT_GETSTATE, &vt_st) < 0) {
+	if (ioctl(fb__.fd_tty0, VT_GETSTATE, &vt_st) < 0) {
 		_ERR_
-		printf_strerror("ioctl VT_GETSTATE");
+		se_printf("ioctl VT_GETSTATE");
 		return 0;		/* can not get foreground console */
 	}
 	if (vt_st.v_active != vt_num) {
@@ -575,7 +583,7 @@ int fb_set_blank(int fd_fb, int vt_num, int blank)
 	}
 	if (ioctl(fd_fb, FBIOBLANK, blank) < 0) {
 		_ERR_
-		printf_strerror("ioctl FBIOBLANK");
+		se_printf("ioctl FBIOBLANK");
 		return 0;
 	}
 	return 1;		// Did it.

@@ -5,7 +5,7 @@ old_dir=../old/ucon
 
 diff_one()
 {
-  echo kdiff3 $old_dir/$1 $1 ================================================== >>_diff.txt
+  echo "kdiff3 $old_dir/$1 $1 #==================================================" >>_diff.txt
 #  sdiff -w 260 $old_dir/$1 $1 >>_diff.txt
   diff $old_dir/$1 $1 >>_diff.txt
   sdiff-ln 200 $old_dir/$1 $1 >>_sdiff.txt

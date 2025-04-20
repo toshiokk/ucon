@@ -64,16 +64,19 @@ term_t term__;
 int sigchld_signaled = 0;
 int sigterm_signaled = 0;
 
-__sighandler_t sigchld_handler(int signum);
-__sighandler_t sigterm_handler(int signum);
-
 PRIVATE void term_child_exec_shell(term_t *term);
 PRIVATE void term_parent_serve(term_t *term);
 
 PRIVATE void call_interval_timer_process(vterm_t *vterm);
-PRIVATE void check_hot_key(term_t *term, char *buf, int input_len);
+PRIVATE int check_hot_key(term_t *term, char *buf, int input_len);
 PRIVATE void term_change_font_size(term_t *term, int shift);
 PRIVATE void term_change_rotation(term_t *term, int shift);
+PRIVATE void term_select_font_by_columns(int columns);
+PRIVATE void term_setup_font_and_rotation_parameters(bool font);
+
+PRIVATE void term_set_metrics_n_show(term_t *term);
+PRIVATE void term_set_metrics(term_t *term);
+PRIVATE void term_show_metrics(term_t *term);
 
 PRIVATE int term_init(term_t *term);
 PRIVATE void term_destroy(term_t *term, int err);
@@ -138,7 +141,7 @@ flf_d_printf("starting child process...\n");
 	if ((child_pid = fork()) < 0) {
 		/* error */
 		_ERR_
-		printf_strerror("fork");
+		se_printf("fork");
 		err = -9;
 		goto term_start_child_and_serve_err;
 	} else if (child_pid == 0) {
@@ -198,7 +201,10 @@ PRIVATE void term_parent_serve(term_t *term)
 	char input_buf[INPUT_BUF_LEN+1];
 
 #ifndef ENABLE_DEBUG
-#define OUTPUT_BUF_LEN		4096
+///#define OUTPUT_BUF_LEN		100
+///#define OUTPUT_BUF_LEN		4096
+///#define OUTPUT_BUF_LEN		16384
+#define OUTPUT_BUF_LEN		65536
 #else // ENABLE_DEBUG
 #define OUTPUT_BUF_LEN		100
 #endif // ENABLE_DEBUG
@@ -257,7 +263,7 @@ mflf_d_printf("SIGUSR2(acquire) signaled\n");
 ///mflf_d_printf("my_select(): %04x\n", selected);
 		if (selected < 0) {
 			_ERR_
-			printf_strerror("select");
+			se_printf("select");
 			break;
 		}
 		if (selected == MYSELECT_BIT_TIMEOUT) {
@@ -273,7 +279,7 @@ mflf_d_printf("SIGUSR2(acquire) signaled\n");
 			dimmer_set_blank_off();
 #endif
 			input_len = read(STDIN_FILENO, input_buf, INPUT_BUF_LEN);
-			check_hot_key(term, input_buf, input_len);
+			input_len = check_hot_key(term, input_buf, input_len);
 			vterm_clear_cursor_blink_counter(&(term->vterm));
 		}
 #ifdef ENABLE_IMJ
@@ -317,7 +323,7 @@ PRIVATE void call_interval_timer_process(vterm_t *vterm)
 
 	cur_msec = get_cur_abs_msec();
 	if ((cur_msec - prev_msec) % (SELECT_TIMEOUT_MSEC * 2) >= SELECT_TIMEOUT_MSEC) {
-///mflf_d_printf("zzzz %03d\n", (cur_msec - prev_msec) % (SELECT_TIMEOUT_MSEC * 2));
+///mflf_d_printf("zzz %03d\n", (cur_msec - prev_msec) % (SELECT_TIMEOUT_MSEC * 2));
 		vterm_interval_timer_process(vterm);
 		prev_msec = cur_msec;
 	}
@@ -329,8 +335,8 @@ PRIVATE void call_interval_timer_process(vterm_t *vterm)
 #endif // ENABLE_SCREEN_SHOT
 
 ///
-#define ON_THE_FLY_FUNCTION_CHANGE
-#ifdef ON_THE_FLY_FUNCTION_CHANGE
+#define ON_THE_FLY_SCREEN_RESIZING
+#ifdef ON_THE_FLY_SCREEN_RESIZING
 #define DEC_FONT_SIZE_KEY1_STR	"\x1b\x2d"	// Alt-'-'
 #define DEC_FONT_SIZE_KEY1_STR_LEN	2
 #define INC_FONT_SIZE_KEY1_STR	"\x1b\x3d"	// Alt-'='
@@ -339,9 +345,9 @@ PRIVATE void call_interval_timer_process(vterm_t *vterm)
 #define DEC_ROTATION_KEY1_STR_LEN	2
 #define INC_ROTATION_KEY1_STR	"\x1b\x2b"	// Alt-'+'(Shift)
 #define INC_ROTATION_KEY1_STR_LEN	2
-#endif // ON_THE_FLY_FUNCTION_CHANGE
+#endif // ON_THE_FLY_SCREEN_RESIZING
 
-PRIVATE void check_hot_key(term_t *term, char *buf, int input_len)
+PRIVATE int check_hot_key(term_t *term, char *buf, int input_len)
 {
 #ifdef ENABLE_SCREEN_SHOT
 	// check Special function key
@@ -349,124 +355,38 @@ PRIVATE void check_hot_key(term_t *term, char *buf, int input_len)
 	if (input_len == SCREEN_SHOT_KEY_STR_LEN
 	 && strncmp(buf, SCREEN_SHOT_KEY_STR, SCREEN_SHOT_KEY_STR_LEN) == 0) {
 		// Screen-shot key pushed
-		screen_shot(frame_buffer__.width, frame_buffer__.height,
-		 frame_buffer__.driver->get_pixel_argb32, frame_buffer__.driver->reverse_all,
+_FLF_
+		screen_shot(fbr_screen_size_hx, fbr_screen_size_hy,
+		 fb__.driver->get_pixel_argb32, fb__.driver->reverse_all,
 		 NULL);
+		input_len = 0;
 	}
 #endif // ENABLE_SCREEN_SHOT
-#ifdef ON_THE_FLY_FUNCTION_CHANGE
+#ifdef ON_THE_FLY_SCREEN_RESIZING
 	if ((input_len == DEC_FONT_SIZE_KEY1_STR_LEN)
 	  && (strncmp(buf, DEC_FONT_SIZE_KEY1_STR, DEC_FONT_SIZE_KEY1_STR_LEN) == 0)) {
 		// Change font size smaller
 		term_change_font_size(term, -1);
+		input_len = 0;
 	}
 	if ((input_len == INC_FONT_SIZE_KEY1_STR_LEN)
 	  && (strncmp(buf, INC_FONT_SIZE_KEY1_STR, INC_FONT_SIZE_KEY1_STR_LEN) == 0)) {
 		// Change font size larger
 		term_change_font_size(term, +1);
+		input_len = 0;
 	}
 	if ((input_len == DEC_ROTATION_KEY1_STR_LEN)
 	  && (strncmp(buf, DEC_ROTATION_KEY1_STR, DEC_ROTATION_KEY1_STR_LEN) == 0)) {
-		term_change_rotation(term, -1);
+		term_change_rotation(term, +1);
+		input_len = 0;
 	}
 	if ((input_len == INC_ROTATION_KEY1_STR_LEN)
 	  && (strncmp(buf, INC_ROTATION_KEY1_STR, INC_ROTATION_KEY1_STR_LEN) == 0)) {
-		term_change_rotation(term, +1);
+		term_change_rotation(term, -1);
+		input_len = 0;
 	}
-#endif // ON_THE_FLY_FUNCTION_CHANGE
-}
-
-PRIVATE void term_change_font_size(term_t *term, int shift)
-{
-	char overlay_text[OVERLAY_TEXT_LEN+1];
-
-d_printf("\n");
-flf_d_printf("shift: %d\n", shift);
-flf_d_printf("vterm->text_lines:%2d, vterm->text_columns:%2d\n",
- term->vterm.text_lines, term->vterm.text_columns);
-	imj_hide();
-_FLF_
-///flf_d_printf("cur_font_multi_idx: %d, shift: %d\n", cur_font_multi_idx, shift);
-	cur_font_multi_idx = font_select_next(cur_font_multi_idx, shift);
-///flf_d_printf("cur_font_multi_idx: %d\n", cur_font_multi_idx);
-	cur_font = font_get_font(cur_font_multi_idx, &cur_font_idx,
-	 &cur_font_expand_x, &cur_font_expand_y);
-
-_FLF_
-	vterm_reinit(&(term->vterm),
-	 frame_buffer__.width / (cur_font->font_width * cur_font_expand_x),
-	 frame_buffer__.height / (cur_font->font_height * cur_font_expand_y));
-_FLF_
-	vterm_clear_outside_of_view(&(term->vterm));
-_FLF_
-
-	vterm_set_overlay(&(term->vterm), OVERLAY_IDX_0, -1, 0,
-	 COLOR_LIGHTCYAN, COLOR_LIGHTRED, "", 0, 0);
-	//											1234567890123456789012345678901234567890
-	snprintf(overlay_text, OVERLAY_TEXT_LEN+1,
-	 "[Screen size(%dx%d) : Font size(%dx%d) : Framebuffer size(%dx%d)]",
-	 (&(term->vterm))->text_columns, (&(term->vterm))->text_lines,
-	 cur_font->font_width * cur_font_expand_x, cur_font->font_height * cur_font_expand_y,
-	 frame_buffer__.width, frame_buffer__.height);
-	vterm_set_overlay(&(term->vterm), OVERLAY_IDX_0, OVERLAY_TEXT_Y, OVERLAY_TEXT_X,
-	 COLOR_LIGHTCYAN, COLOR_LIGHTRED, overlay_text, -1, OVERLAY_TEXT_SECS);
-
-	vterm_request_repaint_all(&(term->vterm));
-	vterm_set_window_size(&(term->vterm));
-flf_d_printf("vterm->text_lines:%2d, vterm->text_columns:%2d\n\n",
- term->vterm.text_lines, term->vterm.text_columns);
-}
-
-PRIVATE void term_change_rotation(term_t *term, int shift)
-{
-	char overlay_text[OVERLAY_TEXT_LEN+1];
-
-///	vterm->rotation = (vterm->rotation + shift) % max_rotation;
-
-	vterm_reinit(&(term->vterm),
-	 frame_buffer__.width / (cur_font->font_width * cur_font_expand_x),
-	 frame_buffer__.height / (cur_font->font_height * cur_font_expand_y));
-	vterm_clear_outside_of_view(&(term->vterm));
-
-	vterm_set_overlay(&(term->vterm), OVERLAY_IDX_0, -1, 0,
-	 COLOR_LIGHTCYAN, COLOR_LIGHTRED, "", 0, 0);
-	//											1234567890123456789012345678901234567890
-///	snprintf(overlay_text, OVERLAY_TEXT_LEN+1,
-///	 "[Screen rotation : %d Degrees]", term->vterm * 90);
-///	vterm_set_overlay(&(term->vterm), OVERLAY_IDX_0, OVERLAY_TEXT_Y, OVERLAY_TEXT_X,
-///	 COLOR_LIGHTCYAN, COLOR_LIGHTRED, overlay_text, -1, OVERLAY_TEXT_SECS);
-
-	vterm_request_repaint_all(&(term->vterm));
-	vterm_set_window_size(&(term->vterm));
-}
-
-//-----------------------------------------------------------------------------
-
-void signal_init(void)
-{
-	sigchld_signaled = 0;
-	sigterm_signaled = 0;
-
-	signal(SIGCHLD, (__sighandler_t)sigchld_handler);
-	signal(SIGTERM,  (__sighandler_t)sigterm_handler);
-}
-
-__sighandler_t sigchld_handler(int signum)
-{
-	int st;
-	int ret;
-
-	ret = wait(&st);
-	if (ret == child_pid || ret == ECHILD) {
-		sigchld_signaled = 1;
-	}
-	return 0;
-}
-
-__sighandler_t sigterm_handler(int signum)
-{
-	sigterm_signaled = 1;
-	return 0;
+#endif // ON_THE_FLY_SCREEN_RESIZING
+	return input_len;
 }
 
 //-----------------------------------------------------------------------------
@@ -495,11 +415,11 @@ PRIVATE int term_init(term_t *term)
 		return INIT_ERR1;
 	}
 	term_save_term_attr(term);
-	if (fb_get_fb_dev_name(&frame_buffer__) < 0) {
+	if (fb_get_fb_dev_name(&fb__) < 0) {
 		_ERR_
 		return INIT_ERR2;
 	}
-	if (fb_open(&frame_buffer__) < 0) {				// open FB device and mmap
+	if (fb_open(&fb__) < 0) {				// open FB device and mmap
 		_ERR_
 		return INIT_ERR3;
 	}
@@ -519,17 +439,23 @@ PRIVATE int term_init(term_t *term)
 		_ERR_
 		return INIT_ERR6;
 	}
-	cur_font_multi_idx = font_select(app__.font_size, app__.expand_x, app__.expand_y);
-	if (cur_font_multi_idx < 0) {
+	cur_font_mul_idx = font_select_by_height_mul_xy(app__.font_size,
+	 app__.expand_x, app__.expand_y);
+	if (cur_font_mul_idx < 0) {
 		_ERR_
 		return INIT_ERR7;
 	}
-	cur_font = font_get_font(cur_font_multi_idx, &cur_font_idx,
-	 &cur_font_expand_x, &cur_font_expand_y);
 
-	vterm_init(&(term->vterm),
-	 frame_buffer__.width / (cur_font->font_width * cur_font_expand_x),
-	 frame_buffer__.height / (cur_font->font_height * cur_font_expand_y));
+	fbr_setup_constant_parameters();
+	fbr_set_rotation(app__.contents_rotation);
+	term_setup_font_and_rotation_parameters(1);
+	if (app__.columns > 0) {
+		term_select_font_by_columns(app__.columns);	// search font from small to larger one
+		term_select_font_by_columns(app__.columns);	// search font from larger to smaller one
+	}
+	term_set_metrics_n_show(term);
+
+	vterm_init(&(term->vterm));
 
 #ifdef ENABLE_IMJ
 	imj_open();
@@ -539,7 +465,7 @@ PRIVATE int term_init(term_t *term)
 	// redirect console output to pty
 	if (term_redirect_console_output(term->fd_pty_slave) < 0) {
 ///		_ERR_
-///		printf_strerror("ioctl TIOCCONS");
+///		se_printf("ioctl TIOCCONS");
 	}
 _FLF_
 	return 0;
@@ -563,7 +489,7 @@ PRIVATE void term_destroy(term_t *term, int err)
 	// stop redirection of console output to pty
 	if (term_redirect_console_output(term->fd_console) < 0) {
 		_ERR_
-		printf_strerror("ioctl TIOCCONS");
+		se_printf("ioctl TIOCCONS");
 	}
 	vterm_stop_fb();
 
@@ -583,7 +509,7 @@ term_destroy_INIT_ERR5:;
 	term_restore_kd_text_mode(term);
 
 term_destroy_INIT_ERR4:;
-	ret_val_eater = fb_close(&frame_buffer__);
+	ret_val_eater = fb_close(&fb__);
 
 term_destroy_INIT_ERR3:;
 	term_close_dev_console(term);
@@ -592,13 +518,127 @@ term_destroy_INIT_ERR1:;
 
 	ret_val_eater = write(1, "\x1B[?25h", 6);	// cursor on
 }
+
 //-----------------------------------------------------------------------------
+// On the fly font-size and screen-rotation change
+
+// User changed font glyph and size on the fly
+PRIVATE void term_change_font_size(term_t *term, int shift)
+{
+flf_d_printf("shift: %d\n", shift);
+	cur_font_mul_idx = font_select_next(cur_font_mul_idx, shift);
+
+	term_setup_font_and_rotation_parameters(1);
+	term_set_metrics_n_show(term);
+}
+// User changed screen rotation on the fly
+PRIVATE void term_change_rotation(term_t *term, int shift)
+{
+flf_d_printf("shift: %d\n", shift);
+	fbr_set_rotation(view_rotation_t((fbr_get_rotation() + shift) % ROT360));
+
+	int columns = fbr_chars_hx;
+	term_setup_font_and_rotation_parameters(0);
+	term_select_font_by_columns(columns);
+	term_set_metrics_n_show(term);
+}
+
+// TODO: automatically select font that can display
+//  the nearest screen character columns to before changing rotation
+PRIVATE void term_select_font_by_columns(int columns)
+{
+	if (fbr_chars_hx < columns) {
+		// columns became smaller.
+		//  select smaller(mul_x == mul_y) font and make columns larger
+		int shift = -1;
+		while (fbr_chars_hx < columns || (cur_font_mul->mul_x != cur_font_mul->mul_y)) {
+			int prev_cur_font_mul_idx = cur_font_mul_idx;
+			cur_font_mul_idx = font_select_next(cur_font_mul_idx, shift);
+			if (cur_font_mul_idx == prev_cur_font_mul_idx) {
+				break;
+			}
+			term_setup_font_and_rotation_parameters(1);
+		}
+	} else {
+		// columns became bigger.
+		//  select larger(mul_x == mul_y) font and make columns smaller
+		int shift = +1;
+		while (fbr_chars_hx > columns || (cur_font_mul->mul_x != cur_font_mul->mul_y)) {
+			int prev_cur_font_mul_idx = cur_font_mul_idx;
+			cur_font_mul_idx = font_select_next(cur_font_mul_idx, shift);
+			if (cur_font_mul_idx == prev_cur_font_mul_idx) {
+				break;
+			}
+			term_setup_font_and_rotation_parameters(1);
+		}
+	}
+}
+
+PRIVATE void term_setup_font_and_rotation_parameters(bool font)
+{
+	// setup font-size dependent parts
+	if (font) {
+		font_setup_metrics();
+		fbr_copy_font_size_into_driver();
+	}
+
+	// setup screen-rotation dependent parts
+	fbr_setup_rotation_dependent_parameters();
+
+	// setup font-size and screen-rotation dependent parts
+	fbr_set_text_metrics();
+}
+
+// Re-setup "terminal metrics" when font glyph or rotation is changed by user on the fly
+PRIVATE void term_set_metrics_n_show(term_t *term)
+{
+	term_set_metrics(term);
+	term_show_metrics(term);
+}
+
+PRIVATE void term_set_metrics(term_t *term)
+{
+_FLF_
+	vterm_set_metrics(&(term->vterm));
+}
+PRIVATE void term_show_metrics(term_t *term)
+{
+_FLF_
+	// hide overlay
+	vterm_set_overlay(&(term->vterm), OVERLAY_IDX_0, -1, 0,
+	 COLOR_LIGHTCYAN, COLOR_LIGHTRED, "", 0, 0);
+	imj_hide();
+
+	char overlay_text[OVERLAY_TEXT_LEN+1];
+	// set overlay
+	snprintf(overlay_text, OVERLAY_TEXT_LEN+1,
+	//12345678901234567890123456789012345678901234567890123456789012345678901234567890
+	 "[ Console(%dx%d) : Font(%dx%d) : Frame(%dx%d) ]",
+	 term->vterm.text_columns, term->vterm.text_lines,
+	 cur_font_exp->width, cur_font_exp->height,
+	 fb__.screen_size_x, fb__.screen_size_y);
+	overlay_text[MIN_(OVERLAY_TEXT_LEN, term->vterm.text_columns)] = '\0';	// limit width
+	vterm_set_overlay(&(term->vterm), OVERLAY_IDX_0, OVERLAY_TEXT_Y, OVERLAY_TEXT_X,
+	 COLOR_LIGHTCYAN, COLOR_LIGHTRED, overlay_text, -1, OVERLAY_TEXT_SECS);
+
+	// repaint screen
+	vterm_clear_outside_of_view(&(term->vterm));
+	vterm_request_repaint_all(&(term->vterm));
+
+	// send SIGWINCH
+	vterm_send_sigwinch(&(term->vterm));
+flf_d_printf("vterm->text_lines:%2d, vterm->text_columns:%2d\n",
+ term->vterm.text_lines, term->vterm.text_columns);
+}
+
+//-----------------------------------------------------------------------------
+
 PRIVATE int term_open_dev_console(term_t *term)
 {
 	if ((term->fd_console = util_privilege_open("/dev/console", O_WRONLY)) < 0) {
 		if ((term->fd_console = util_privilege_open("/dev/console", O_RDONLY)) < 0) {
 			_ERR_
-			printf_strerror("open /dev/console");
+			se_printf("open /dev/console");
 			return -1;
 		}
 	}
@@ -633,7 +673,7 @@ PRIVATE void term_restore_term_attr(term_t *term)
 PRIVATE int term_set_kd_graphics_mode(term_t *term)
 {
 	if ((term->orig_kdmode = term_get_kdmode(term)) != KD_TEXT) {
-		printf_stderr("Already in KD_GRAPHICS mode. Stop starting %s.\n", PACKAGE);
+		er_printf("Already in KD_GRAPHICS mode. Stop starting %s.\n", PACKAGE);
 		return -1;
 	}
 	term_set_kdmode(KD_GRAPHICS);
@@ -653,7 +693,7 @@ PRIVATE int get_current_vt_num(term_t *term)
 	// get current VT number
 	if (ioctl(term->fd_console, VT_GETSTATE, &vt_st) < 0) {
 		_ERR_
-		printf_strerror("ioctl VT_GETSTATE");
+		se_printf("ioctl VT_GETSTATE");
 		return -1;
 	}
 mflf_d_printf("current VT number: %d\n", vt_st.v_active);
@@ -666,7 +706,7 @@ PRIVATE int term_get_kdmode(term_t *term)
 
 	if (ioctl(term->fd_console, KDGETMODE, &kdmode) < 0) {
 		_ERR_
-		printf_strerror("ioctl KDGETMODE");
+		se_printf("ioctl KDGETMODE");
 		return -1;
 	}
 flf_d_printf("kdmode:%d (KD_TEXT:%d, KD_GRAPHICS:%d)\n", kdmode, KD_TEXT, KD_GRAPHICS);
@@ -685,7 +725,7 @@ flf_d_printf("ioctl KDSETMODE, %s\n",
  kdmode == KD_TEXT ? "KD_TEXT" : (kdmode == KD_GRAPHICS ? "KD_GRAPHICS" : "KD_????"));
 	if (util_privilege_ioctl(0, KDSETMODE, (void *)(long)kdmode) < 0) {
 		_ERR_
-		printf_strerror("ioctl KDSETMODE");
+		se_printf("ioctl KDSETMODE");
 	}
 }
 //-----------------------------------------------------------------------------
@@ -700,7 +740,7 @@ flf_d_printf("fd_pty_master: %d, fd_pty_slave: %d\n", term->fd_pty_master, term-
 	util_privilege_lower();
 	if (ret < 0) {
 		_ERR_
-		printf_strerror("openpty");
+		se_printf("openpty");
 		return -1;
 	}
 	return 0;
@@ -796,7 +836,7 @@ PRIVATE void dimmer_set_blank_on(void)
 	if (!dimmer_blank && ++dimmer_idle_time > DIMMER_TIMEOUT) {
 		// Goto dimmer_blank
 		dimmer_idle_time = 0;
-		if (fb_set_blank(frame_buffer__.fd_fb, frame_buffer__.my_vt_num, 1))
+		if (fb_set_blank(fb__.fd_fb, fb__.my_vt_num, 1))
 			dimmer_blank = 1;
 	}
 }
@@ -806,10 +846,43 @@ PRIVATE void dimmer_set_blank_off(void)
 	if (dimmer_blank) {
 		// Wakeup console
 		dimmer_blank = 0;
-		fb_set_blank(frame_buffer__.fd_fb, frame_buffer__.my_vt_num, 0);
+		fb_set_blank(fb__.fd_fb, fb__.my_vt_num, 0);
 	}
 }
 #endif // ENABLE_DIMMER
+
+//-----------------------------------------------------------------------------
+
+__sighandler_t sigchld_handler(int signum);
+__sighandler_t sigterm_handler(int signum);
+
+void signal_init(void)
+{
+	sigchld_signaled = 0;
+	sigterm_signaled = 0;
+
+	signal(SIGCHLD, (__sighandler_t)sigchld_handler);
+	signal(SIGTERM,  (__sighandler_t)sigterm_handler);
+}
+
+__sighandler_t sigchld_handler(int signum)
+{
+	int st;
+	int ret;
+
+	ret = wait(&st);
+	if (ret == child_pid || ret == ECHILD) {
+		sigchld_signaled = 1;
+	}
+	return 0;
+}
+
+__sighandler_t sigterm_handler(int signum)
+{
+	sigterm_signaled = 1;
+	return 0;
+}
+
 //-----------------------------------------------------------------------------
 
 #ifdef ENABLE_IMJ
@@ -905,7 +978,6 @@ PRIVATE void imj_show(void)
 	int byte_idx;
 	int cursor_byte_idx;
 
-///
 ///_MFLF_
 ///	if (vterm_adjust_pen_pos(imj_vterm)) {
 ///_FLF_
@@ -952,7 +1024,8 @@ PRIVATE void imj_show(void)
 			 INV_C_IDX(IM_BC), INV_C_IDX(IM_FC),
 			 &buffer[cursor_byte_idx], utf8c_bytes(&buf[byte_idx]), 0);
 			// no conversion candidates
-			vterm_set_overlay(imj_vterm, OVERLAY_IDX_2, -1, 0, COLOR_DEF_BC, COLOR_DEF_FC, "", 0, 0);
+			vterm_set_overlay(imj_vterm, OVERLAY_IDX_2, -1, 0, COLOR_DEF_BC, COLOR_DEF_FC,
+			 "", 0, 0);
 			vterm_paint_screen(imj_vterm);
 		}
 		break;
@@ -966,7 +1039,8 @@ PRIVATE void imj_show(void)
 		strcpy(buffer, prompt_convert);
 		utf8strcat_blen(buffer, MIN_(IM_INPUT_LINE_LEN, imj_vterm->text_columns), buf);
 		// display input line
-		vterm_set_overlay(imj_vterm, OVERLAY_IDX_1, imj_line1_y, 0, IM_BC, IM_FC, buffer, -1, 0);
+		vterm_set_overlay(imj_vterm, OVERLAY_IDX_1, imj_line1_y, 0, IM_BC, IM_FC,
+		 buffer, -1, 0);
 		imj__.im_c_get_cur_candid(buf, IM_INPUT_LINE_LEN);
 		xx = utf8s_columns(prompt_input, INT_MAX) + utf8s_columns(buf, byte_idx);
 		xx = MIN_(xx, utf8s_columns(buffer, INT_MAX));
@@ -979,7 +1053,8 @@ PRIVATE void imj_show(void)
 		imcui_get_converting_line_str(1, buf, IM_INPUT_LINE_LEN);
 		utf8strcpy_blen(buffer, MIN_(IM_INPUT_LINE_LEN, imj_vterm->text_columns), buf);
 		// display conversion candidates
-		vterm_set_overlay(imj_vterm, OVERLAY_IDX_2, imj_line2_y, 0, IM_BC, IM_FC, buffer, -1, 0);
+		vterm_set_overlay(imj_vterm, OVERLAY_IDX_2, imj_line2_y, 0, IM_BC, IM_FC,
+		 buffer, -1, 0);
 		vterm_paint_screen(imj_vterm);
 		break;
 	}
@@ -992,8 +1067,10 @@ _MFLF_
 	if (imj_shown) {
 _MFLF_
 		// hide IM by clearing overlay lines
-		vterm_set_overlay(imj_vterm, OVERLAY_IDX_1, -1, 0, COLOR_DEF_BC, COLOR_DEF_FC, "", 0, 0);
-		vterm_set_overlay(imj_vterm, OVERLAY_IDX_2, -1, 0, COLOR_DEF_BC, COLOR_DEF_FC, "", 0, 0);
+		vterm_set_overlay(imj_vterm, OVERLAY_IDX_1, -1, 0, COLOR_DEF_BC, COLOR_DEF_FC,
+		 "", 0, 0);
+		vterm_set_overlay(imj_vterm, OVERLAY_IDX_2, -1, 0, COLOR_DEF_BC, COLOR_DEF_FC,
+		 "", 0, 0);
 		vterm_paint_screen(imj_vterm);
 		imj_shown = 0;
 	}

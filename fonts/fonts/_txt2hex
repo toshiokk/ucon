@@ -15,7 +15,7 @@ tx2hx()
   fi
 }
 
-tx2hx ucon10.fnt _ucon10.hex
-tx2hx ucon12.fnt _ucon12.hex
-tx2hx ucon14.fnt _ucon14.hex
-tx2hx ucon16.fnt _ucon16.hex
+tx2hx ucon10.fnt ucon10.hex
+tx2hx ucon12.fnt ucon12.hex
+tx2hx ucon14.fnt ucon14.hex
+tx2hx ucon16.fnt ucon16.hex

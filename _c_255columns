@@ -1,2 +1,3 @@
-./configure --enable-255columns
-#./configure --enable-255columns --enable-debug
+sh -x -c "./configure --enable-255columns"
+#./configure --enable-255columns
+##./configure --enable-255columns --enable-debug

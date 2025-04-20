@@ -1,1 +1,1 @@
-./configure --enable-debug
+sh -x -c "./configure --enable-debug"

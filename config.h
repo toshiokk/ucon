@@ -11,7 +11,7 @@
 #define ENABLE_24BPP 1
 
 /* description */
-/* #undef ENABLE_255COLUMNS */
+#define ENABLE_255COLUMNS 1
 
 /* description */
 #define ENABLE_32BPP 1
@@ -209,7 +209,7 @@
 #define PACKAGE_NAME "ucon"
 
 /* Define to the full name and version of this package. */
-#define PACKAGE_STRING "ucon 23.0809"
+#define PACKAGE_STRING "ucon 250308"
 
 /* Define to the one symbol short name of this package. */
 #define PACKAGE_TARNAME "ucon"
@@ -218,7 +218,7 @@
 #define PACKAGE_URL ""
 
 /* Define to the version of this package. */
-#define PACKAGE_VERSION "23.0809"
+#define PACKAGE_VERSION "250308"
 
 /* Define as the return type of signal handlers (`int' or `void'). */
 #define RETSIGTYPE void
@@ -242,7 +242,7 @@
 #define TIME_WITH_SYS_TIME 1
 
 /* Version number of package */
-#define VERSION "23.0809"
+#define VERSION "250308"
 
 /* Define to empty if `const' does not conform to ANSI C. */
 /* #undef const */

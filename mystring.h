@@ -5,7 +5,6 @@
 #ifndef mystring_h
 #define mystring_h
 
-#define ENABLE_UTF8
 #include "myutf8.h"
 
 #if defined(__cplusplus)
@@ -36,12 +35,14 @@ char *strcpy_blen_slen(char *buf, int buf_len, const char *str, int len);
 char *utf8strcpy_blen(char *buf, int buf_len, const char *str);
 char *strcpy_blen(char *buf, int buf_len, const char *str);
 
-char *strlcat(char *buf, const char *str, int buf_len);
-char *strlcpy(char *buf, const char *str, int buf_len);
+char *strlcat__(char *buf, const char *str, int buf_len);
+char *strlcpy__(char *buf, const char *str, int buf_len);
 char *strcpy_ol(char *dest, const char *src);
-int strlcmp(const char *str1, const char *str2);
+int strlcmp__(const char *str1, const char *str2);
 
 void *memcpy_ol(void *dest, void *src, size_t bytes);
+
+int snprintf_(char *buffer, size_t buf_len, const char *format, ...);
 
 #if defined(__cplusplus)
 }

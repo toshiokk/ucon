@@ -1,5 +1,6 @@
 # On Ubuntu removable drive is mounted with suid attr OFF.
 # copy binary to $HOME and execute there.
+mk_backup_file __test_ucon.log
 {
   LANG=C; export LANG
   pwd
@@ -48,7 +49,12 @@
     ./ucon -d -f 10 -x 3 -w
   elif [ "$1" = "40" ]; then
     ./ucon -d -f 10 -x 4 -w
+  elif [ "$1" = "80" ]; then
+    ./ucon -d -f 12 -o 80 -w
+  elif [ "$1" = "120" ]; then
+    ./ucon -d -f 12 -o 120 -w
   else
-    ./ucon -d -f 12 -x 2 -y 3 -w
+##    ./ucon -d -f 12 -o 120 -w
+    ./ucon -d -l -f 12 -o 120 -w
   fi
 } 2>__test_ucon.log >&2
