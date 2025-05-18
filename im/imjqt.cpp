@@ -14,7 +14,6 @@ _imj_ __imj;
 
 imjqt::imjqt(QWidget* parent) : QDialog(parent)
 {
-//_TFLF_
 	setupUi(this);
 	__imj.im_open(NULL);
 	connect(pushButtonOn, SIGNAL(clicked()), this, SLOT(im_on()));
@@ -43,16 +42,13 @@ imjqt::imjqt(QWidget* parent) : QDialog(parent)
 
 	update_conversion();
 	textLabel2->setText("");
-//_TFLF_
 }
 
 imjqt::~imjqt()
 {
-//_TFLF_
 	delete MyLineEdit1;
 //	killTimer(timer_id);
 	__imj.im_close();
-//_TFLF_
 }
 
 ///void imjqt::timerEvent(QTimerEvent *te)

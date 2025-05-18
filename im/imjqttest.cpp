@@ -12,7 +12,6 @@ int main(int argc, char **argv)
 {
 //	sig_register_handler();
 
-//_TFLF_
 //	app = new QApplication(argc, argv, QApplication::GuiServer);
 	app = new QApplication(argc, argv);
 ///stderr_printf("qwsServer:%p\n", qwsServer);
@@ -24,16 +23,12 @@ int main(int argc, char **argv)
 	appWin->show();
 
 	app->exec();
-//_TFLF_
 
 	delete appWin;
-//_TFLF_
 //	delete app;		// This cause signal 11. DNU(DoNotUse)
-//_TFLF_
 
 //	sig_unregister_handler();
 
-//_TFLF_
 	exit(0);
 }
 
@@ -41,7 +36,6 @@ int main(int argc, char **argv)
 
 imjqttest::imjqttest(QWidget *parent) : QMainWindow(parent)
 {
-//_TFLF_
 	setupUi(this);
 	textEdit1->setFocus();
 	connect(pushButton01, SIGNAL(clicked()), this, SLOT(slot01()));
@@ -53,23 +47,19 @@ imjqttest::imjqttest(QWidget *parent) : QMainWindow(parent)
 	connect(pushButton07, SIGNAL(clicked()), this, SLOT(slot07()));
 	connect(pushButton09, SIGNAL(clicked()), this, SLOT(slot09()));
 	slot01();
-//_TFLF_
 }
 imjqttest::~imjqttest()
 {
-//_TFLF_
 }
 
 void imjqttest::showMinimized(void)
 {
-//_TFLF_
 	resize(QSize(100, 10));
 //	imjqttestui::showMinimized();
 }
 
 //void imjqttest::closeEvent(QCloseEvent *ce)
 //{
-//_TFLF_
 //	if (QMessageBox::question(this, tr("Shutdown application"),
 //	 tr("Are you OK to quit application ?"),
 //	 QMessageBox::Yes, QMessageBox::No) != QMessageBox::Yes)
@@ -80,37 +70,29 @@ void imjqttest::showMinimized(void)
 
 void imjqttest::slot01()
 {
-//_TFLF_
 	imjqt().exec();
 }
 void imjqttest::slot02()
 {
-//_TFLF_
 }
 void imjqttest::slot03()
 {
-//_TFLF_
 }
 void imjqttest::slot04()
 {
-//_TFLF_
 }
 void imjqttest::slot05()
 {
-//_TFLF_
 	QInputDialog::getText(this, "caption", "label");
 }
 void imjqttest::slot06()
 {
-//_TFLF_
 }
 void imjqttest::slot07()
 {
-//_TFLF_
 	showMinimized();
 }
 void imjqttest::slot09()
 {
-//_TFLF_
 	close();
 }

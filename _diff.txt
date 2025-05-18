@@ -1,113 +1,34 @@
-kdiff3 ../old/ucon/config.h config.h #==================================================
-14c14
-< #define ENABLE_255COLUMNS 1
----
-> /* #undef ENABLE_255COLUMNS */
-212c212
-< #define PACKAGE_STRING "ucon 240511"
----
-> #define PACKAGE_STRING "ucon 250308"
-221c221
-< #define PACKAGE_VERSION "240511"
----
-> #define PACKAGE_VERSION "250308"
-245c245
-< #define VERSION "240511"
----
-> #define VERSION "250308"
-kdiff3 ../old/ucon/fbbpp.h fbbpp.h #==================================================
-kdiff3 ../old/ucon/fbcommon.h fbcommon.h #==================================================
-kdiff3 ../old/ucon/font.h font.h #==================================================
-kdiff3 ../old/ucon/hex.h hex.h #==================================================
-kdiff3 ../old/ucon/main.h main.h #==================================================
-39a40
-> 	bool_t highlight;
-44d44
-< 	bool_t highlight;
-kdiff3 ../old/ucon/message.h message.h #==================================================
-kdiff3 ../old/ucon/mydebug.h mydebug.h #==================================================
-kdiff3 ../old/ucon/myminmax.h myminmax.h #==================================================
-kdiff3 ../old/ucon/myselect.h myselect.h #==================================================
-kdiff3 ../old/ucon/mytypes.h mytypes.h #==================================================
-kdiff3 ../old/ucon/pen.h pen.h #==================================================
-kdiff3 ../old/ucon/picofont.h picofont.h #==================================================
-kdiff3 ../old/ucon/sequence.h sequence.h #==================================================
-kdiff3 ../old/ucon/stdincs.h stdincs.h #==================================================
-kdiff3 ../old/ucon/term.h term.h #==================================================
-kdiff3 ../old/ucon/ucon.h ucon.h #==================================================
-kdiff3 ../old/ucon/util.h util.h #==================================================
-kdiff3 ../old/ucon/vterm.h vterm.h #==================================================
-kdiff3 ../old/ucon/vtermlow.h vtermlow.h #==================================================
-kdiff3 ../old/ucon/fbbpp.c fbbpp.c #==================================================
-240c240
-< PRIVATE cpal8_t pallete_idx_from_color_idx(u_char clr_idx)
----
-> PRIVATE cpal8_t palette_idx_from_color_idx(u_char clr_idx)
-251c251
-< PRIVATE u_char color_idx_from_pallete_idx(cpal8_t cpal8)
----
-> PRIVATE u_char color_idx_from_palette_idx(cpal8_t cpal8)
-265c265
-< 	cpal8_t cpal8 = pallete_idx_from_color_idx(clr_idx);	//=
----
-> 	cpal8_t cpal8 = palette_idx_from_color_idx(clr_idx);	//=
-273c273
-< 	cpal8_t cpal8 = pallete_idx_from_color_idx(clr_idx);	//=
----
-> 	cpal8_t cpal8 = palette_idx_from_color_idx(clr_idx);	//=
-288c288
-< 	cpal8_t cpal8 = pallete_idx_from_color_idx(clr_idx);	//=
----
-> 	cpal8_t cpal8 = palette_idx_from_color_idx(clr_idx);	//=
-310,311c310,311
-< 	cpal8_t bcpal8 = pallete_idx_from_color_idx(bc_idx);	//=
-< 	cpal8_t fcpal8 = pallete_idx_from_color_idx(fc_idx);	//=
----
-> 	cpal8_t bcpal8 = palette_idx_from_color_idx(bc_idx);	//=
-> 	cpal8_t fcpal8 = palette_idx_from_color_idx(fc_idx);	//=
-342c342
-< 	argb32_t argb32 = argb32_from_color_idx(color_idx_from_pallete_idx(*fb));	//=bpp_get_pixel
----
-> 	argb32_t argb32 = argb32_from_color_idx(color_idx_from_palette_idx(*fb));	//=bpp_get_pixel
-kdiff3 ../old/ucon/fbcommon.c fbcommon.c #==================================================
-63c63
-< // 16 colors pallete
----
-> // 16 colors palette
-kdiff3 ../old/ucon/font.c font.c #==================================================
-kdiff3 ../old/ucon/hex.c hex.c #==================================================
-kdiff3 ../old/ucon/main.c main.c #==================================================
-118a119
-> 		{ "highlight",		0, NULL, 'l' },
-121d121
-< 		{ "highlight",		0, NULL, 'l' },
-163a164,166
-> 		case 'l':
-> 			app->highlight = TRUE;
-> 			break;
-172,174d174
-< 		case 'l':
-< 			app->highlight = TRUE;
-< 			break;
-204a205
-> 	app->highlight = FALSE;
-214d214
-< 	app->highlight = FALSE;
-237a238
-> 	 "  -l --highlight\n"
-240d240
-< 	 "  -l --highlight\n"
-kdiff3 ../old/ucon/message.c message.c #==================================================
-kdiff3 ../old/ucon/myminmax.c myminmax.c #==================================================
-kdiff3 ../old/ucon/myselect.c myselect.c #==================================================
-kdiff3 ../old/ucon/pen.c pen.c #==================================================
-208a209,212
-> 	if (app__.highlight && ((color_idx & COLORS_8_MASK) == COLOR_LIGHTGRAY)) {
-> 		// Light-gray ==> White, White ==> Light-gray
-> 		color_idx = color_idx ^ COLOR_HIGHLIGHT;
-> 	}
-kdiff3 ../old/ucon/picofont.c picofont.c #==================================================
-kdiff3 ../old/ucon/term.cpp term.cpp #==================================================
-kdiff3 ../old/ucon/util.c util.c #==================================================
-kdiff3 ../old/ucon/vterm.c vterm.c #==================================================
-kdiff3 ../old/ucon/vtermlow.c vtermlow.c #==================================================
+kdiff3 config.h~ config.h
+kdiff3 fbbpp.h~ fbbpp.h
+kdiff3 fbcommon.h~ fbcommon.h
+kdiff3 font.h~ font.h
+kdiff3 hex.h~ hex.h
+kdiff3 main.h~ main.h
+kdiff3 message.h~ message.h
+kdiff3 mydebug.h~ mydebug.h
+kdiff3 myminmax.h~ myminmax.h
+kdiff3 myselect.h~ myselect.h
+kdiff3 mytypes.h~ mytypes.h
+kdiff3 pen.h~ pen.h
+kdiff3 picofont.h~ picofont.h
+kdiff3 sequence.h~ sequence.h
+kdiff3 stdincs.h~ stdincs.h
+kdiff3 term.h~ term.h
+kdiff3 ucon.h~ ucon.h
+kdiff3 util.h~ util.h
+kdiff3 vterm.h~ vterm.h
+kdiff3 vtermlow.h~ vtermlow.h
+kdiff3 fbbpp.c~ fbbpp.c
+kdiff3 fbcommon.c~ fbcommon.c
+kdiff3 font.c~ font.c
+kdiff3 hex.c~ hex.c
+kdiff3 main.c~ main.c
+kdiff3 message.c~ message.c
+kdiff3 myminmax.c~ myminmax.c
+kdiff3 myselect.c~ myselect.c
+kdiff3 pen.c~ pen.c
+kdiff3 picofont.c~ picofont.c
+kdiff3 term.cpp~ term.cpp
+kdiff3 util.c~ util.c
+kdiff3 vterm.c~ vterm.c
+kdiff3 vtermlow.c~ vtermlow.c
